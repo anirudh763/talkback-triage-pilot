@@ -1012,7 +1012,7 @@ details > summary { cursor: pointer; font-weight: 700; }
       const seenFull = labCond !== "full" && mine[r.id];
       const radios = (name, map, val) => h("div", { class: "opts" }, Object.entries(map).map(([k, v]) => h("label", null, h("input", { type: "radio", name, value: k, checked: val === k }), v.t)));
       const nextUnlabelled = () => { const L = myLabels(); const i = order.findIndex((x, j) => j > labIndex && !L[keyOf(x.id, labCond)]); return i >= 0 ? i : order.findIndex((x) => !L[keyOf(x.id, labCond)]); };
-      card.replaceChildren(
+      card.replaceChildren(...[
         controls,
         h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "eyebrow" }, "Report " + (labIndex + 1) + " of " + order.length + (labCond === "full" ? " · as filed" : " · " + T.CONDITIONS[labCond].label.toLowerCase())), h("span", { class: "pill" }, done + " labelled")),
         h("h3", null, r.app + " #" + r.number + ": " + r.title),
@@ -1033,7 +1033,7 @@ details > summary { cursor: pointer; font-weight: 700; }
             const hd = $("#lab-card h3"); if (hd) { hd.tabIndex = -1; hd.focus(); }
           } }, "Save and next"),
           h("button", { class: "btn", disabled: labIndex >= order.length - 1, onclick: () => { labIndex++; renderLabelView(); } }, "Skip")),
-        h("p", { class: "small muted", id: "lab-where", role: "status" }, whereSaved()));
+        h("p", { class: "small muted", id: "lab-where", role: "status" }, whereSaved())].filter(Boolean));
     }
 
     // raters & agreement (same report and same version only)

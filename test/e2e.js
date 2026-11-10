@@ -67,6 +67,7 @@ const server = http.createServer((req, res) => { const mode = (req.url.match(/mo
     console.log('[owner] agree:', (await page.textContent('#lab-agree')).replace(/\s+/g, ' ').slice(0, 220));
     await page.click('#tab-pilot'); await page.waitForTimeout(100);
     const agreeTable = await page.locator('caption:has-text("same version")').locator('xpath=..').textContent().catch(() => 'MISSING');
+    for (const v of ['check', 'pilot', 'label', 'about']) { await page.click('#tab-' + v); if (await page.evaluate(() => document.body.innerText.split('\n').some((l) => l.trim() === 'null'))) errors.push('stray "null" text on the ' + v + ' tab'); }
     console.log('[owner] agreement table:', agreeTable.replace(/\s+/g, ' ').slice(0, 300));
     await ctx.close();
   }
@@ -77,6 +78,7 @@ const server = http.createServer((req, res) => { const mode = (req.url.match(/mo
     const page = await ctx.newPage(); watch(page, 'guest');
     await page.goto(base + 'guest#label'); await page.waitForTimeout(300);
     await page.check('input[name=lab-evid][value=actionable]'); await page.check('input[name=lab-impact][value=slows_task]'); await page.click('text=Save and next'); await page.waitForTimeout(150);
+    if (await page.evaluate(() => document.body.innerText.split('\n').some((l) => l.trim() === 'null'))) errors.push('stray "null" text on the guest label tab');
     console.log('[guest] after save:', await page.textContent('#lab-where'));
     await page.reload(); await page.waitForTimeout(300);
     await page.click('#btn-copy-labels'); await page.waitForTimeout(100);
