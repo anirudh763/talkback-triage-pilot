@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes duplicate TalkBack announcements of menu items and an unlabeled actions button, which add confusion but do not stop the user from completing the multi-select task, and the steps, app version, Android version, device, and expected behavior are all given, so a developer can reproduce it.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version/device are you using, and what are the exact steps (including how you enter multi-select and open the actions menu) that make TalkBack announce the items twice?",
+      "confidence": 0.75,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Duplicate TalkBack announcements in the action menu let the user finish the task with extra effort, but the report gives no steps to reach multi-select or the actions menu and no version or device details, so a developer cannot reproduce it yet.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What exact steps did you take to reach the Multi select action menu, and what did TalkBack say each time an item was focused?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Duplicate TalkBack announcements of action menu items make the menu harder to use but do not block completing the task, and the version, device, and expected behaviour are given well enough for a developer to attempt reproduction.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and which Android device and version are you using?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The steps are clear and reproducible, and the duplicate announcements and unlabeled actions button are reachable, so the user can still finish the task but with extra confusion.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:59.537Z"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "talkback-triage-pilot",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Do TalkBack reproduction steps and the app version change how an AI triages Android accessibility bug reports? An exploratory pilot and web app.",
+  "license": "MIT",
+  "author": "Anirudh Yadav Boosa",
+  "homepage": "https://anirudh763.github.io/talkback-triage-pilot/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anirudh763/talkback-triage-pilot.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node scripts/check.js",
+    "pairs": "node scripts/pair-review.js",
+    "build": "node scripts/build.js",
+    "analyze": "node scripts/analyze.js",
+    "agreement": "node scripts/agreement.js",
+    "triage": "node scripts/run-triage.mjs",
+    "test": "node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js",
+    "test:e2e": "node test/e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

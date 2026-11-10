@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What exactly did TalkBack announce when you swiped onto the detail view, and does it read anything else before reaching the 'double tap to activate' hint?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The post title is never announced in the detail view, and double-tapping the view does nothing, so a TalkBack user cannot read or activate that view.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Starting from the Activity Log, which exact steps lead to the post detail view, and what does TalkBack announce when you swipe to the title and to the final control?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the untitled post's title is not read aloud and double-tapping the detail view does nothing, but it does not say what task the user was trying to finish or whether the detail view's activation is needed to complete it, and step 1 is too vague to reproduce.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Starting from opening the app, what steps did you take in the Activity Log to reach the post detail view, and which control did you double-tap at the end?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "expected_vs_actual"
+      ],
+      "reason": "The report gives only the final step of the reproduction, and it does not say which control double-tapping was meant to activate, so the impact on finishing a task can't be judged. The attached recording may help, but the steps to reach that point are missing.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device are you using?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The untitled post's title is never announced and double-tapping the detail view does nothing, so the user cannot get the post's information or act on the detail view.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:45:43.442Z"
+}

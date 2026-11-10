@@ -1,0 +1,47 @@
+{
+  "answers": {
+    "full": {
+      "ask": "With TalkBack turned on, what happens when you try to activate the podcast name, and what does TalkBack announce for it?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "expected_vs_actual"
+      ],
+      "reason": "The report describes a small, hard-to-click podcast name and a request to enlarge it, but it does not say whether TalkBack users can reach or activate the control, what TalkBack announces, or how the reported behavior differs from what is expected.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "When you swipe to the podcast name with TalkBack on, what does TalkBack announce, and can you still activate it?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report is a feature request for a larger podcast name and does not describe any TalkBack behavior, so it is unclear whether a screen reader user can complete a task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "When you swipe to the podcast name with TalkBack on, what does TalkBack announce, and can you still activate it?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report is a feature request for a larger podcast name and does not describe any TalkBack behavior, so it is unclear whether a screen reader user can complete a task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:04.712Z"
+}

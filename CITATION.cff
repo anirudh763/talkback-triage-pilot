@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite it as below."
+title: "TalkBack Triage Pilot: do TalkBack reproduction steps and the app version change how an AI triages Android accessibility bug reports?"
+type: software
+authors:
+  - family-names: Boosa
+    given-names: Anirudh Yadav
+    affiliation: University of North Texas
+version: 0.2.0
+date-released: 2026-11-10
+license: MIT
+repository-code: "https://github.com/anirudh763/talkback-triage-pilot"
+url: "https://anirudh763.github.io/talkback-triage-pilot/"
+keywords:
+  - accessibility
+  - TalkBack
+  - screen readers
+  - Android
+  - bug reports
+  - issue triage
+  - large language models
+abstract: >-
+  An exploratory pilot and web app that checks Android accessibility bug reports for TalkBack
+  reproduction steps and the app version, asks an AI whether a developer could start reproducing
+  each issue and whether it blocks a TalkBack user's task, and measures how those answers change when
+  the details are removed from otherwise identical reports. It includes 75 public GitHub issues from
+  WordPress for Android and AntennaPod, the controlled copies with a line-by-line review, a saved AI
+  run, and tools for independent human labelling and agreement analysis.

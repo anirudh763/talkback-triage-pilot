@@ -1,0 +1,57 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report gives clear reproduction steps, app and device versions, and a counted symptom (7 focusable elements per item, 21 swipes from post 1 to post 4), so users can still finish tasks but with extra swipes.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What does TalkBack announce for each of the seven focusable elements on a single post in the Reader list?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report says each Reader list item has seven focusable elements, so a TalkBack user can still finish but must swipe many more times to move between posts.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report gives the app version, device, Android version, a recording, and a clear count of seven focusable elements per Reader list item, but it still slows the user rather than blocking them since they can reach each post by swiping.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android version and Android device and version were you using, and which seven elements did TalkBack announce for each post?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "Each Reader post has seven focusable elements, so TalkBack users can still finish browsing but need many extra swipes to move between posts, and a developer can start reproducing this by enabling TalkBack, opening Reader, and counting focus stops per item.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:45:01.182Z"
+}

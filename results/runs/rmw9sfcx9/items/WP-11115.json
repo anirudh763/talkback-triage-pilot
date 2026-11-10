@@ -1,0 +1,53 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which exact WordPress for Android build or commit hash were you testing, since the version field shows only `develop` with nothing after it?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version"
+      ],
+      "reason": "The Stats icon is reachable but announced as \"Unlabelled, Button\" while its text label is a separate focus target, which adds confusion but does not stop the user from activating the control.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device/version are you using, and what steps lead to the My Site menu icons?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The icon is reachable but announced as unlabelled and separate from its text label, which adds confusion without blocking the task, and the report omits the app version, device, and steps needed to reach the menu.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which steps in the app lead to the My Site menu icons, and which exact WordPress for Android build (version or commit) were you testing?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version"
+      ],
+      "reason": "The icon is reachable but announced only as \"Unlabelled,Button\" and its text label is a separate focus stop, so users can finish the task with extra swipes and confusion.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android device and OS version were you using when this happened?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The icon is reachable and activatable but is announced as an unlabelled button separate from its text label, which adds confusion without blocking the Stats task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:44:29.897Z"
+}

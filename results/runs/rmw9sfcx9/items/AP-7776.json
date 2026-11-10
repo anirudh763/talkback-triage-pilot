@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "On which screen in AntennaPod do you see the problem with a large system font size, and what happens there, such as text being cut off or a button you cannot reach or activate with TalkBack?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about handling large system font sizes and does not describe which screen or control fails, what the user experiences, or whether any task is blocked.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and steps in the app break or behave badly at the large system font size, and what does TalkBack announce or fail to announce there?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is truncated and describes only a general wish for better handling of large system font sizes, with no specific screen, control, or observed TalkBack behavior to judge task impact or reproduce.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which screen and steps in the app break or behave badly at the large system font size, and what does TalkBack announce or fail to announce there?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is truncated and describes only a general wish for better handling of large system font sizes, with no specific screen, control, or observed TalkBack behavior to judge task impact or reproduce.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:00.565Z"
+}

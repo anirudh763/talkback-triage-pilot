@@ -1,0 +1,44 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What exact steps do you take (which screen, gesture and TalkBack setting) to lose focus after selecting an episode in multi-select, and what Android version and device are you using?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says focus is lost when selecting an episode in multi-select, which counts as a blocking focus loss, but it gives no explicit step-by-step TalkBack reproduction, no Android version or device, and the bullet list is cut off.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version/device are you using, and after you select an episode in multi-select, where does TalkBack focus move to?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The first item reports that TalkBack focus is lost after selecting an episode in multi-select, which the task definitions count as blocking, and the steps are specific enough for a developer to reproduce, though the version, device, and the truncated third item are missing.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and Android version/device are you using, and after you select an episode in multi-select, where does TalkBack focus move to?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The first item reports that TalkBack focus is lost after selecting an episode in multi-select, which the task definitions count as blocking, and the steps are specific enough for a developer to reproduce, though the version, device, and the truncated third item are missing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:52.662Z"
+}

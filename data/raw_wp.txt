@@ -1,0 +1,709 @@
+@@@ WP#21444 | closed/completed | 2024-11-11 | 2024-11-13 | | 1 | CONTRIBUTOR
+My Site Personalization accessibility
+As noted [here](https://github.com/wordpress-mobile/WordPress-Android/pull/21441#pullrequestreview-2427549531):
+
+> I will note that the toggle elements have no description, so navigating controls with a screen reader is near impossible. I suggest we add descriptions that provide context when moving selection to each element—e.g., "Draft posts, your recent draft posts, on switch, double-tap to toggle." We might either add a description to the toggle or grouping the entire row into a single accessible group.
+@@@ WP#21409 | closed/completed | 2024-11-04 | 2024-11-21 | | 1 | CONTRIBUTOR
+My Site more menu accessibility
+As mentioned [here](https://github.com/wordpress-mobile/WordPress-Android/pull/21383#pullrequestreview-2413182465):
+
+> One consideration for a tangential UI button: the menu button (three vertical dots) on the My Site tab lacks contextual information. I.e., a description of "more" requires one to know they are within the "prompts" card, where a description of "more prompts" or "view more prompts" would mitigate any confusion. There are also several "more" buttons on the screen, further reducing clarity. We might consider updating the button description to reduce the cognitive load for users relying upon screen readers.
+@@@ WP#21288 | open/ | 2024-10-08 | | [Type] Bug | 2 | CONTRIBUTOR
+Accessibility issues with media pickers
+As mentioned [here](https://github.com/wordpress-mobile/WordPress-Android/pull/21287#pullrequestreview-2354911185):
+
+> I note that when a search field is focused, a screen reader is unable to access the network offline message. One can only move focus to the visible illustration, which includes the aforementioned odd alt text. I.e., when the search field is focused, it is not clear at all that a lack of network connection will disrupt the experience. If one dismisses the virtual keyboard, then you can move screen reader focus to the error message and retry button. This experience is present within the GIF library, free stock media, and editor media insert flows.
+
+This is related to the following screens:
+
+- GifMediaDataSource - adding to media library from Tenor
+- StockMediaDataSource - adding to media library from free photo library
+- MediaLibraryDataSource - adding media to a post from WP media library
+@@@ WP#21284 | closed/completed | 2024-10-07 | 2024-10-10 | | 1 | CONTRIBUTOR
+Improve self-hosted user list for screenreaders
+As mentioned [here](https://github.com/wordpress-mobile/WordPress-Android/pull/21275#discussion_r1790401431), the new self-hosted user list could use some accessibility improvements:
+
+> From my perspective, the screen reader experience for this new list could be improved. E.g., swiping up/down moves between individual user items, but merely announces "list" repeatedly, which provides little context.
+
+> We might improve the experience by having the top level list declare the total number of items ("list, 25 of 35 users"), individual items could announce some high-level information ("dcalhoun, administrator"), etc.
+@@@ WP#21127 | open/ | 2024-08-09 | | [Type] Bug | 1 | CONTRIBUTOR
+Feedback form media pager issue with Talkback
+As noted by @dcalhoun [here](https://github.com/wordpress-mobile/WordPress-Android/pull/21121#discussion_r1712012230), the media pager added to the feedback form has an accessibility issue. When Talkback is enabled, scrolling to a page where the remove button is offscreen will cause the close (X) button to be focused.
+
+Steps:
+
+- Navigate to the feedback form.
+- Attach five items.
+- Enable TalkBack.
+- Swipe from left to right on the screen to move selection to a "remove" button that is hidden off screen.
+- Wait momentarily for the TalkBack selection to reset and move to the dialog close button.
+@@@ WP#20770 | closed/completed | 2024-05-06 | 2024-05-07 | [Pri] High | 1 | CONTRIBUTOR
+Can't access post list actions using TalkBack
+### Expected behavior
+
+Using TalkBack, I should be able to open a post's three-dot menu.
+
+### Actual behavior
+
+I can't do this using TalkBack because I can't select the three-dot menu (it only lets me select a post (and open it in the editor).
+
+### User report
+
+A beta user reported this:
+
+> How do I delete a specific article from the Articles section? I tried a lot, but I could not find the article options that previously appeared in older versions of WordPress. Note, I am a screen reader user. Thanks.
+
+### Screen recording
+
+[video]
+
+### Steps to reproduce the behavior
+1. Open the Jetpack app
+2. Go to the Post list screen
+3. Turn on TalkBack
+4. Try to select the three-dot menu (e.g. to delete a post)
+5. Try swiping or tapping to select, but notice that you can't
+
+##### Tested on Samsung Galaxy S10, Android 12, JPAndroid 24.8 (beta)
+@@@ WP#20363 | closed/completed | 2024-03-01 | 2024-03-03 | [Type] Bug;Stats | 1 | MEMBER
+Chart on the Traffic tab shouldn't prompt "Double tap to activate" with Talkback
+### Expected behavior
+On the TRAFFIC tab, when tapping bars, Talkback shouldn't prompt "Double tap to activate" because bars are not selectable.
+
+### Actual behavior
+On the TRAFFIC tab, when tapping bars, Talkback prompts "Double tap to activate".
+
+[video]
+
+### Steps to reproduce the behavior
+
+1. Log in JP app.
+2. Enable Talkback from the device settings.
+3. Open "My Site → Stats"
+4. Open the TRAFFIC tab and select By week, By month or By year.
+5. Tap on a bar.
+
+##### Tested on Pixel 8 Pro Emulator, Android 14, JPAndroid 24.3
+@@@ WP#20287 | closed/completed | 2024-02-26 | 2024-03-01 | Stats;[Type] Crash | 10 | MEMBER
+TRAFFIC tab crashed when Talkback is enabled.
+### Expected behavior
+The traffic tab should work with accessibility.
+
+### Actual behavior
+When Talkback is enabled, the app crashes on opening the Traffic Tab.
+
+### Steps to reproduce the behavior
+1. Log in JP app.
+2. Enable "stats_traffic_tab" from "Me → Debug settings"
+3. Enable Talkback from the device settings.
+4. Open "My Site → Stats"
+5. Open the TRAFFIC tab and select By week, By month or By year.
+6. Notice it crashes.
+
+[video]
+
+##### Tested on Pixel 7 Pro Emulator, Android 14, JPAndroid 24.3-rc-1
+@@@ WP#20212 | closed/completed | 2024-02-20 | 2024-02-21 | [Type] Bug;Notifications | 2 | CONTRIBUTOR
+🤖 Missing accessibility descriptions on inline actions
+The inline actions are missing accessibility descriptions. When being selected in talkback they are announced as "unlabelled"
+@@@ WP#20150 | closed/completed | 2024-02-08 | 2024-03-19 | [Type] Bug;Reader | 0 | CONTRIBUTOR
+[Reader][a11y] Back button in Custom List submenu just says "Button" with Talkback on
+### Expected behavior
+When the focus is on the back button of the nested submenu for Custom List in the Reader dropdown feed menu, it should say something like "Back, Button".
+
+### Actual behavior
+When the focus is on the back button of the nested submenu for Custom List in the Reader dropdown feed menu, it just says "Button"
+
+### Steps to reproduce the behavior
+Talkback ON. An account with custom reader lists.
+
+1. Go to Reader
+2. Open the dropdown feed menu
+3. Go to "Lists"
+4. ⚠️ The first focused item is the back button, but it reads as "Button"
+
+##### Tested on Emulator, Android 14, JPAndroid 24.2-rc-1
+@@@ WP#19889 | open/ | 2024-01-05 | | [Type] Bug;Gutenberg | 0 | MEMBER
+TalkBack unable to confirm media selection when stepping through controls
+### Expected behavior
+I am able to focus the confirmation button within the media selection modal.
+
+### Actual behavior
+I am unable to focus the confirmation button within the media selection modal, I can only select an invisible "Browse for items" button.
+
+### Steps to reproduce the behavior
+1. Open the block editor.
+2. Enable TalkBack.
+3. Add a media block type, e.g., Image block.
+4. Select "Choose from device."
+5. Select an image.
+6. Attempt to swipe left to step towards the "confirm" button.
+
+Screen recording: [video]
+
+> [!NOTE]
+> A workaround is directly tapping on the "confirm" button instead of stepping to the control via swipes. This approach may not be accessible for some users.
+
+##### Tested on Samsung Galaxy S20, Android 13, JPAndroid / WPAndroid 23.9-rc-2
+@@@ WP#19452 | closed/completed | 2023-10-25 | 2023-11-02 | [Type] Bug;Reader | 0 | CONTRIBUTOR
+[Reader] Wrong content read by TalkBack when opening Tag feed
+### Expected Behavior
+When TalkBack is enabled and the user taps on a tag, the content shared with the user through TalkBack should say the screen is loading.
+
+### Actual Behavior
+When TalkBack is enabled and the user taps on a tag, the content shared with the user through TalkBack is inaccurate. The page reads “No posts with this topic. When you follow sites you’ll see their content here.”, while what’s actually happening is that the screen is loading.
+
+### Steps to reproduce
+1. Enable talk back
+2. Naviagte to the reader
+3. Open any post
+4. Tap on any tag
+5. ⚠️ Notice that the content relayed to the user is initially inaccurate.
+@@@ WP#18698 | closed/completed | 2023-06-23 | 2023-08-10 | [Type] Bug;[Pri] High | 0 | CONTRIBUTOR
+TalkBack gives wrong description for Me screen.
+### Expected behavior
+TalkBack gives the proper description for a given screen.
+
+### Actual behavior
+In `Me` screen, TalkBack gives the `My Site` screen description.
+
+Video - Turn the sound on: [video]
+
+### Steps to reproduce the behavior
+1. Activate TalkBack
+2. Open the Jetpack app.
+3. Tap on `Me` tab to see the `Me` screen
+4. ❌ TalkBack gives the `My Site` screen description
+
+##### Tested on Samsung Galaxy Note 20, Android 12, JPAndroid pr18606-7b5b2ab
+@@@ WP#17092 | open/ | 2022-08-25 | | [Type] Bug;[Pri] Low;Jetpack | 3 | CONTRIBUTOR
+Jetpack Badge not read by TalkBack
+### Expected behavior
+Jetpack badge should be read in TalkBack.
+
+### Actual behavior
+Jetpack badge is not read, though Jetpack banner is. Verified in "Home" tab, "Me", and Activity log. Suspect this is the case for Jetpack badge everywhere.
+
+I discovered this in Activity log, where the Jetpack badge is not read when viewing individual events.
+
+### Steps to reproduce the behavior
+1. Open the WordPress app to a screen with the Jetpack badge (not banner).
+2. Turn on TalkBack (press and hold the + and - volume buttons for 3 seconds).
+3. Using TalkBack, navigate through the items on the screen.
+4. Note that when you get to the Jetpack badge, it is skipped - neither highlighted nor read.
+
+[video]
+
+##### Tested on Samsung Galaxy S21, Android 12, WPAndroid 20.5-rc-2
+@@@ WP#11161 | closed/completed | 2020-01-24 | 2020-01-29 | [Type] Enhancement;/My site | 0 | CONTRIBUTOR
+Accessibility: My Site - Create Button and Tooltip Issue
+### Expected behavior
+1. Create FAB should say "create a post or page" when TalkBack selects it.
+2. The tooltip should be inaccessible or even disabled in accessibility mode since it blocks the "Site Pages" button under publishing.
+
+### Actual behavior
+
+1. Create FAB says "Create a post" even though it creates posts and pages.
+[image]
+
+2. The tooltip is activated and it says tap to activate even though that does nothing.
+[image]
+
+### Steps to reproduce the behavior
+1. Enable TalkBack.
+2. Open the app and ensure you are on the `My Site` tab.
+3. Select the FAB and tooltip.
+
+Tested on Google Pixel 4 XL, Android 10, WPAndroid `develop` ()
+@@@ WP#11115 | closed/completed | 2020-01-20 | 2020-01-24 | [Type] Enhancement;/My site | 2 | CONTRIBUTOR
+Accessibility : My Site Menu Icons Issue
+[image]
+
+### Expected behavior
+The entire layout of the icon and the text beneath should focus as one and be read aloud.
+
+### Actual behavior
+The icon and text beneath are two different views and the icon is read as "Unlabelled,Button".
+
+### Steps to reproduce the behavior
+1. Turn TalkBack on.
+2. Go to "My Site".
+3. Select Stats icon.
+
+Tested on Google Pixel 4 XL, Android 10, WPAndroid `develop` ()
+@@@ WP#11091 | closed/completed | 2020-01-16 | 2020-01-16 | [Type] Enhancement;Reader | 0 | CONTRIBUTOR
+Accessibility : Decorative Icon Announcement Issue
+[image]
+
+### Expected behavior
+"site icon" shouldn't be announced.
+
+### Actual behavior
+"site icon" is being announced.
+
+### Steps to reproduce the behavior
+1. Enable TalkBack.
+2. Go to Reader and then Discover.
+3. Hover "Originally posted by xyz"
+4. Hear the announcement.
+
+Tested on Google Pixel 4 XL, Android 10, WPAndroid `develop` ()
+@@@ WP#11077 | closed/completed | 2020-01-13 | 2022-04-28 | [Type] Bug;Media | 1 | CONTRIBUTOR
+Accessibility : WordPress Media Picker - Video Selection Issue
+[image]
+
+### Expected behavior
+"Video Selected" should be shown when a video selection occurs.
+
+### Actual behavior
+"Image Selected" is shown.
+
+### Steps to reproduce the behavior
+1. Create post while TalkBack is enabled.
+2. Add video from WordPress Media Picker.
+3. Select the video and listen to the announcement.
+
+Tested on Google Pixel 4 XL, Android 10, WPAndroid `develop` ()
+@@@ WP#11076 | open/ | 2020-01-13 | | [Type] Enhancement;Gutenberg | 1 | CONTRIBUTOR
+Accessibility : Gutenberg Audit
+This is a list of concerns we found when auditing TalkBack support in Gutenberg. The audit was done using develop (c9578a0), Google Pixel 4 XL, Android 10.
+
+## Concerns
+
+### Block Content Descriptions
+All content descriptions seem to contain an unneeded comma.
+
+[image]
+
+### Block Options
+Some options announce the row of the block and others, for example, Settings don't do that. We should consider adding the Block type to these so that the user knows which block they are in. It's not totally necessary though, because if they were to switch to another block then it would be announced, nonetheless, it would be a good improvement.
+
+### Video Block
+When a video is added the video can be focused/selected but it doesn't state an action that can be performed. In contrast, selecting an image announces it's actions.
+
+### Select Blocks Process
+
+Improving the select block process would be beneficial as I didn't know I had to double-tap to make a block selected until I did some experiments. Also, there are several blocks that can't be selected especially text- …[cut]
+@@@ WP#10962 | closed/completed | 2019-12-16 | 2020-02-19 | [Type] Enhancement;[Pri] High | 0 | CONTRIBUTOR
+Information Architecture modification -> Vision Accessibility audit
+We need to Audit all the modifications introduced with IA project to ensure we correctly support Vision Accessibility.
+
+Reporting below some note by @shiki as a starting point:
+
+> - Reader: When the filter control is selected, TalkBack just says the filter name (e.g. “All sites”). It doesn’t say that it’s a button or that it’s a filter. It’s not obvious what happens after tapping, basically. It might be better for TalkBack to say something like “Filter, , Button”.
+> - Reader: The Settings button is announced as “Unlabeled, Button”.
+> - Reader → Filter List: The Sites and Tags are not marked as headings. A heading attribute is useful if you’re navigating by heading with TalkBack.
+> - Reader → Filter List: The currently selected filter is not announced by TalkBack as “selected”.
+> - My Site: The “Stats”, “Pages”, “Posts”, and “Media” buttons are spoken as “Unlabeled button”.
+> - My Site: The “Stats”, “Pages”, “Posts”, and “Media” labels are unnecessarily accessible. Since the buttons (icons) are accessible, these don’t need to be.
+@@@ WP#10960 | closed/completed | 2019-12-14 | 2019-12-17 | [Type] Enhancement;Login | 0 | CONTRIBUTOR
+Accessibility : Login Screen description should focus first
+### Expected behavior
+The description of the login screen should gain focus and begin its announcement.
+
+### Actual behavior
+The back button gains focus instead.
+
+### Steps to reproduce the behavior
+1. Go to Login.
+2. Once TalkBack is enabled you will hear the announcement.
+@@@ WP#10941 | open/ | 2019-12-10 | | [Type] Enhancement;Reader | 4 | CONTRIBUTOR
+Reader: each list item has 7 focusable elements which makes it slow to navigate
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to Reader.
+1. Swipe right to navigate through several posts in the list.
+
+**Result:** each list item has 7 focusable elements which makes it slow to navigate. (28s recording)
+
+> Navigation through the list of posts in the Reader view is pretty slow using TalkBack because each post in the list has seven focusable elements. As a result, if a TalkBack user wants to get from , for example, the first post to the fourth post without directly clicking on the fourth post, they have to move to the next item (swipe right) 21 times. This may not be a big deal for light usage, but would be very unpleasant with heavy usage.
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10940 | open/ | 2019-12-10 | | [Type] Bug;Site Management;Good First Issue | 10 | CONTRIBUTOR
+Settings: learn more element should be combined into a single focusable element
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Sites > Settings > More.
+1. Swipe right to find the "Learn More" element.
+
+**Result:** (48s recording)
+
+> This part of the Settings – More screen contains two elements that are focusable for TalkBack: (1) the text field, and (2) the learn more button. TalkBack reads the text of the first element (“You can…”) and finishes with “double tap to activate, double tap and hold to long press.” Double-tapping does nothing, however. Double tapping and holding opens a popup dialog. If the learn more button is focused, double tapping opens the same dialog. This could be improved by combining these two focusable elements into a single focusable element that opens the relevant dialog if activated.
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10939 | open/ | 2019-12-10 | | [Type] Bug;Themes;Good First Issue | 5 | CONTRIBUTOR
+Themes: "theme image more" is read aloud for odd-numbered items in the list
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Sites > Themes.
+1. Swipe right or tap on different themes.
+
+**Result:** "theme image more" is read aloud for odd-numbered items in the list. (1m17s recording)
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10938 | open/ | 2019-12-10 | | [Type] Bug;Media | 1 | CONTRIBUTOR
+Media: file details screen labeled as "space", file detail titles are not read if they have content, copy button not labeled as a button
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Site > Media.
+1. Open the global context menu by swiping down then right and double tap "Read from top".
+
+**Result:** (1m8s recording)
+
+* On the main media grid, the instruction read aloud for a thumbnail says "double tap to activate, double tap and hold to long-press" but double tapping and holding to long-press does nothing.
+* The first focusable item on screen is read as "space".
+* Field titles under File Details are not read aloud if they contain content.
+* "Copy" button under URL is not labeled as a button.
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10937 | closed/not_planned | 2019-12-10 | 2026-03-23 | [Type] Bug;Plans & Checkout | 2 | CONTRIBUTOR
+Plans: main plans list remains focusable underneath plan details screen resulting in wrong information being read aloud
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Site > Plan.
+1. Double tap any plan.
+1. Open the global context menu by swiping down then right and double tap "Read from top".
+
+**Result:** the wrong information is read aloud—you can hear the plan list screen being read even though you are on the plan details page. (3m27s recording)
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10936 | closed/not_planned | 2019-12-10 | 2026-03-23 | [Type] Enhancement;Good First Issue;Activity Log | 6 | CONTRIBUTOR
+Activity Log: posts without titles are not read aloud in the detail view
+Steps to reproduce:
+
+1. Publish a post or draft without a title.
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Site > Activity.
+1. Swipe right until you find the post without a title and double tap.
+1. Swipe right to read the detail view.
+1. At the end it says "double tap to activate", try doing that.
+
+**Result:** the title for the post is "Untitled" but it is not read aloud and double tapping the detail activity view doesn't do anything. (23s recording)
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10935 | closed/completed | 2019-12-10 | 2020-08-19 | [Type] Enhancement;Good First Issue | 8 | CONTRIBUTOR
+Activity Log: activity icon does not need to be read aloud
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack > "Use service" or use the Volume key shortcut.
+1. In the WordPress app, go to My Site > Activity.
+1. Swipe right to read through several items in the log.
+
+**Result:** the activity icon is read aloud as "activity log" for each item which is repetitive and doesn't add value. Ideally, the type of item would be read first then the title and the icon would not be read aloud at all. (1m13s recording)
+
+[image]
+<sup>Tested with WPAndroid 13.8-rc-1 on Pixel 3 Android 10.</sup>
+@@@ WP#10905 | open/ | 2019-12-04 | | [Type] Enhancement;Aztec | 1 | CONTRIBUTOR
+Accessibility : Aztec Media Options UI Improvements
+### Accessibility Scanner audit
+
+* Gallery
+
+* Item label
+org.wordpress.android:id/view_overlay
+This item may not have a label readable by screen readers.
+
+* Item label
+org.wordpress.android:id/image_thumbnail
+This item may not have a label readable by screen readers
+
+* Free Photo Picker
+* Touch target
+org.wordpress.android:id/subtitle
+This item's height is 25dp. Consider making the height of this touch target 48dp or larger.
+
+[image]
+
+* WordPress Image Picker
+* Touch target
+org.wordpress.android:id/frame_selection_count
+This item's size is 40dp x 40dp. Consider making this touch target 48dp wide and 48dp high or larger. A parent container may be handling touch events for this item. If selecting the larger container performs the same action as selecting this item, consider defining this item as not clickable. If a different action is performed, consider increasing the size of this item.
+
+[image]
+@@@ WP#10895 | closed/completed | 2019-12-03 | 2019-12-17 | [Type] Enhancement;Posting/Editing | 3 | CONTRIBUTOR
+Accessibility : Post Settings TalkBack Improvements
+For this audit the governing principles are as follows (inspired by a previous audit, #7288)
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+
+### Talkback Audit
+
+* Post Settings
+* First option says "Status Draft in pager". Correct the pager reference.
+* Second options reads "Publish Immediately, Imediately". One of the "immediately"s need to be removed.
+* Password,Categories, Tags,Slug, Location, Excerpt reads as"not set,not set"
+* Excerpt even when set still says "not set". This issue correlates to the avoid so it should be addressed in one go.
+@@@ WP#10894 | closed/completed | 2019-12-03 | 2019-12-20 | [Type] Enhancement;Aztec | 2 | CONTRIBUTOR
+Accessibility : Aztec Media Options TalkBack Improvements
+For this audit the governing principles are as follows (inspired by a previous audit, #7288)
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+
+The following is a list of opportunities to improve the accessibility of the Editor's Media Options.
+
+### TalkBack Issues
+
+* Media Options Dialog
+* When you press the switch that opens the media options the main area that get's focused says "Out of Pager" I guess it's to signify that there's a view that's overlaying the main pager so the user knows to hover to discover the new current view. Possibly renaming the pager i.e. changing what it's announced as might make it clearer as to what the user is interacting with eg. renaming the pager's announcement to "Editor"
+
+* Gallery
+* Disable "Person reading device with notifications" announcement on the permissions view within the media options dialog.
+
+* Free Photo Picker
+* "List" is read by the announcer.
+* Descriptions provided for images …[cut]
+@@@ WP#10893 | closed/completed | 2019-12-03 | 2019-12-06 | [Type] Enhancement;Aztec | 6 | CONTRIBUTOR
+Accessibility : Aztec Editor TalkBack Improvements
+For this audit the governing principles are as follows (inspired by a previous audit, #7288)
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+
+The following is a list of opportunities to improve the accessibility of the Editor.
+
+### TalkBack Issues
+
+* When the Title block in the editor is hovered over for the first time it says "Title, EditBox in pager" I think it's referring to the ViewPager but the user won't what that is, this should possibly be renamed to Editor.
+* When you close the keyboard it says "Back button out of pager", related to the above.
+@@@ WP#10828 | open/ | 2019-11-22 | | [Type] Enhancement;[Status] Stale;/My site | 1 | NONE
+Accessibility: Floating buttons on "My site" view
+Hi, I am analyzing the accessibility and I found an issue with these floating buttons.
+
+[image]
+
+These buttons are unlabeled right now and the screen reader just said "unlabeled button" without any description.
+
+I suggest adding a new string to the "strings.xml" file and then create the attribute "android.contentDescription" on each button with the reference to the new string to make these buttons more accessible :)
+
+I tested that on the "stats" button and this is the result of running the accessibility scanner after that change:
+
+[image]
+
+##### Tested on Xiaomi Mi9T, Android 9
+@@@ WP#10732 | closed/completed | 2019-11-05 | 2019-11-09 | [Type] Enhancement;Reader | 1 | CONTRIBUTOR
+Accessibility: Reader Search
+## Search: Can search sites or posts. Shows list of posts and sites.
+
+###### Talkback Audit
+
+* Search
+* When the search has begun the app doesn't announce this. Also when the search has ended it doesn't announce this either. The app should express the state of the search results.
+@@@ WP#10510 | closed/completed | 2019-09-20 | 2020-01-17 | [Type] Bug;Good First Issue;Signup | 5 | CONTRIBUTOR
+[Signup] TalkBack Terms of Service disclaimer read twice
+Steps to reproduce:
+
+1. Go to Settings > Accessibility > TalkBack and turn on "Use service".
+1. In the WordPress app, go to the log in screen.
+1. Double tap the "Sign up for WordPress.com" button.
+
+**Result:** the Terms of Service disclaimer is read aloud twice but should only be read aloud once. (14s recording)
+
+[image]
+<sup>Tested with WPAndroid 13.2 on Pixel 3 Android 9.</sup>
+@@@ WP#8046 | closed/completed | 2018-07-17 | 2018-07-18 | | 0 | CONTRIBUTOR
+Add contentDescription to images in StockLibrary
+### Expected behavior
+When a user with TalkBack focuses an image in the StockLibrary, TalkBack announces some meaningful description.
+
+### Actual behavior
+When a user with TalkBack focuses an image in the StockLibrary, TalkBack announces "Unlabelled button, ... "
+
+### Steps to reproduce the behavior
+1. Enable Talkback
+2. Open editor
+3. Click on the add media button
+4. Choose from Free Photo library
+5. Type something
+6. Focus one of the images
+7. Notice TalkBack announces "Unlabelled button, ..."
+@@@ WP#7894 | closed/completed | 2018-06-13 | 2018-06-18 | Good First Issue | 1 | CONTRIBUTOR
+Bottom Navigation: Talkback announcements for each option
+### Expected behavior
+Talkback announces a label that best describes what each option available in the bottom navigation bar.
+
+### Actual behavior
+Clicking each option gives the following:
+- ✅ **My site**: "My site - view your site and manage it including stats"
+- ❌ **Reader**: "My site - view your site and manage it including stats reader - follow content from other sites"
+- ✅ **New Post**: "New Post - write a new post"
+- ❌ **Me**: "My site - view your site and manage it including stats"
+- ❌ **Notifications**: "My site - view your site and manage it including stats"
+
+### Steps to reproduce the behavior
+1. Enable TalkBack in the Accessibility menu in device settings.
+2. In WordPress: single-click on each option and note the audio announcement.
+
+##### Tested on [device], Android [version]
+- LG G5 API 24
+@@@ WP#7573 | closed/completed | 2018-03-30 | 2018-04-09 | [Type] Bug | 0 | CONTRIBUTOR
+TalkBack - Some words written in capitals are being spelled out
+### Expected behavior
+Clicking on the "ADD NEW SITE" button (sign up epilogue) announces “add new site”.
+
+### Actual behavior
+Clicking on the "ADD NEW SITE" button spells out “A” “D” “D” instead of saying “add.”
+
+### Steps to reproduce the behavior
+0. Enable Talkback
+1. Create a new WordPress.com account
+2. Click on the "ADD NEW SITE" button on the sign up epilogue
+
+##### Tested on [device], Android [version]
+Pixel 2, SDK 27
+
+NOTE:
+Talkback considers some words written in capitals for abbreviations -> I believe we can just manually set the contentDescription on buttons with textAllCaps attribute to fix the problem.
+
+For example in Czech even "WordPress" is being spelled out
+Steps to reproduce the behavior
+0. Turn on talkback and switch system language to Czech
+1. Clicking on the sign up button spells out “W" "O" "R" "D" "P" "R" "E" "S" "S” instead of saying “wordpress”.
+@@@ WP#7370 | closed/completed | 2018-03-04 | 2018-06-19 | | 0 | CONTRIBUTOR
+Accessibility: Screen titles
+Audit screen titles - screen title should be announced by TalkBack when a screen is shown. Make sure that each screen has a title, because otherwise the TalkBack announces the name of the Application instead.
+@@@ WP#7297 | closed/completed | 2018-02-26 | 2018-04-05 | Reader | 1 | CONTRIBUTOR
+Accessibility: Images in reader post details are not selectable with Switch Access
+Images in Post Details WebView need to be focusable and selectable with Switch Access.
+
+They are sometimes selectable with TalkBack, not sure why Switch Acces is not reacting to them.
+@@@ WP#7288 | closed/completed | 2018-02-23 | 2018-06-19 | Aztec | 0 | CONTRIBUTOR
+Accessibility: Audit Editor
+Audit Editor, on both Aztec and wpandroid sides, to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7287 | closed/completed | 2018-02-23 | 2018-09-04 | Stats | 1 | CONTRIBUTOR
+Accessibility: Audit Stats
+Audit Stats to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+Part of the stats - GraphView is a custom view, that utilizes canvas and custom click logic. We need to make sure it's accessible.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7286 | closed/completed | 2018-02-23 | 2018-06-19 | /Me | 0 | CONTRIBUTOR
+Accessibility: Audit Me screen
+Audit Me screen to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7285 | closed/completed | 2018-02-23 | 2018-03-26 | Notifications | 1 | CONTRIBUTOR
+Accessibility: Audit Notifications
+Audit Notifications screen to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7284 | closed/completed | 2018-02-23 | 2019-03-15 | Reader;[Type] Task | 0 | CONTRIBUTOR
+Accessibility: Audit Reader
+Audit Reader to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7283 | closed/completed | 2018-02-23 | 2018-06-19 | | 0 | CONTRIBUTOR
+Accessibility: Audit My Site fragment and nested screens (excluding Stats and Editor)
+Audit My Site fragment and nested screens (excluding Stats and Editor) to make sure that all their functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#7281 | closed/completed | 2018-02-23 | 2018-06-19 | Signup | 0 | CONTRIBUTOR
+Accessibility: Audit Sign Up and Sign In flow
+Audit the Sign-Up and Sign-In flow to make sure that all the functionality is accessible with TalkBack and Switch Access.
+
+- All the clickable elements should be marked as so.
+- All nonactionable and decorative elements should be non-focusable.
+- Relevant content should be grouped together.
+- All important elements should be described through content description.
+@@@ WP#6934 | closed/completed | 2017-12-03 | 2018-12-03 | [Type] Bug;[Status] Stale | 1 | CONTRIBUTOR
+TalkBack reads Reader tab selected topic when launching in Me
+### Expected behavior
+When launching the app for the first time (after an update or a force-quit) the current tab should only be spoken by TalkBack.
+
+### Actual behavior
+The current tab was announced (Me - View Your Profile & Make Changes) but then the current selected topic in Reader was also announced after (in my case "Grand Meetup").
+
+### Steps to reproduce the behavior
+1. Select the Me tab.
+2. Force quit an app.
+3. Turn on TalkBack.
+3. Relaunch the app.
+4. Me should be announced and then the current topic is accidentally announced..
+
+##### Tested on MotoX 3 Pure Edition, Android 7.0
+@@@ WP#6092 | closed/completed | 2017-06-16 | 2017-07-04 | | 0 | MEMBER
+Me: add a content description to the Gravatar for screen readers
+The avatar on the Me screen should have a content description set, so that users of screen readers know what it is. I recommend calling it "Profile Photo" to match the label we use in Calypso.
+@@@ WP#6072 | closed/completed | 2017-06-15 | 2017-06-15 | | 0 | NONE
+Masterbar: Add more context to main menu
+### Expected behavior
+
+The main menu links in the app, which is similar to the menu on WordPress.com could use more context beyond My Sites, Reader, etc. See the Calypso masterbar logged-in.jsx and logged-out.jsx for strings to be consistent.
+
+Example, for My Sites, it can say My Sites (Visually hidden: View a list of your sites and access their dashboards).
+
+### Actual behavior
+
+I get My Sites, Reader, Me, etc. Which is fine, but the extra context would help screen reader users know better what to expect when visiting each page.
+
+### Steps to reproduce the behavior
+
+* Start Talk Back
+* Open WordPress app
+* Open Reader.
+* Begin navigating a list of post by swiping right to navigate forward, reaching the main menu.
+
+##### Tested on [device], Android [version]
+
+* Tested on Nexus 6P, Version Alpha-60.
+@@@ WP#6071 | closed/completed | 2017-06-15 | 2017-07-02 | | 1 | NONE
+Reader: Add more context to action buttons on posts
+### Expected behavior
+
+When I navigate the Reader in the Android app with a screen reader, I expect to find more context on buttons.
+
+### Actual behavior
+
+* I found the "Visit" icon button was unlabeled. The word "Visit" lacked context for a screen reader user. I want to know what I'm visiting. This can be combined into one button, labeled with "Visit Post Title Name" "Post Title Name" can be hidden visually.
+* The Likes button should be labeled with Like "Post Title Name" Has 77 Likes. Or Like "Post Title Name" No Likes yet. You could also communicate state here. So if a post is in a liked state, it could say: Like "Post Title Name" Pressed Has 77 Likes (or No Likes yet).
+* Similarly with the Comments button, it needs a more specific label. Comment on "Post Title Name"
+* The More button is labeled, but could use more context. "Follow Site Menu" maybe?
+
+### Steps to reproduce the behavior
+
+* Start Talk Back
+* Open WordPress app
+* Open Reader.
+* Begin navigating a list of post by swiping right to navigate forward, reaching the action button area.
+
+##### Tested on [device], Android [version]
+
+* Tested on Nexus 6P, Version Alpha-60.

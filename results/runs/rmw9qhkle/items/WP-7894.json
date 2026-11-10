@@ -1,0 +1,57 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which version of the WordPress for Android app were you using when you tested this?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "Reader, Me, and Notifications are reachable but announce the wrong label ('My site'), which causes confusion without preventing the user from finishing tasks.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using when you hear these announcements?",
+      "confidence": 0.75,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The Reader, Me, and Notifications options are reachable but announce wrong or extra labels (such as 'My site' for Me and Notifications), which causes confusion without blocking task completion.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which TalkBack gestures did you use to move focus to each bottom navigation item, and which WordPress app version were you running?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "Reader, Me, and Notifications announce the 'My site' description or a concatenated label, which makes those options confusing to identify, but the report does not say they are unreachable or unusable.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "Each bottom navigation option is reachable, but TalkBack announces the wrong label for Reader, Me, and Notifications (all repeating the My site description), which causes confusion without blocking task completion, and the report gives exact announcements, expected behavior, and reproduction steps.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:51:36.200Z"
+}

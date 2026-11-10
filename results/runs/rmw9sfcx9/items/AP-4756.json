@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which Android version and device were you using, and what steps lead to the cancel download button in TalkBack, and what does TalkBack announce when it is focused?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names the specific unlabeled cancel-download button and a likely fix, so a developer can start reproducing it, and the missing content description makes the button harder to use but does not state that it cannot be reached or activated.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What TalkBack steps did you use to reach the cancel download button, and what did TalkBack announce when it got focus?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names a specific control (the cancel download button) that lacks a content description, which makes it hard for screen reader users to use, but it does not say whether the button can still be reached or activated.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What TalkBack steps did you use to reach the cancel download button, and what did TalkBack announce when it got focus?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names a specific control (the cancel download button) that lacks a content description, which makes it hard for screen reader users to use, but it does not say whether the button can still be reached or activated.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:09.722Z"
+}

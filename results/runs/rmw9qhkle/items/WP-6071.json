@@ -1,0 +1,59 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which Android version was the Nexus 6P running when you tested this?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes buttons that are reachable but have vague or incomplete labels (such as an unlabeled 'Visit' and labels without post context), which adds confusion and extra effort without stopping task completion, and the steps and expected behavior are clear enough for a developer to reproduce.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What exactly does TalkBack announce when you focus the Visit button, and which app version and Android device were you using?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes buttons that are reachable but have unclear or less specific labels (such as an unlabeled \"Visit\" icon and a Likes button without a post name or state), which adds confusion and extra effort without blocking the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What does TalkBack announce when you focus the Visit button on a post, and what steps did you take to reach it?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The buttons are reachable but their labels lack post-specific context and state, which adds confusion and extra effort without blocking task completion, and the report gives the exact label wording to implement.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which app version, Android version, and device were you using, and what exactly did TalkBack announce when it focused the Visit button?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes reachable buttons (Visit, Likes, Comments, More) whose labels lack context, which makes them confusing but still usable, and it gives reproduction steps and the desired label text.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:00.729Z"
+}

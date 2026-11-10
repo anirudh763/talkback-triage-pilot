@@ -1,0 +1,54 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When you swipe through the plan details screen normally (without using Read from top), do you also reach the plan list items behind it, and can you still read and act on the plan details?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The plan list behind the details screen stays focusable and 'Read from top' announces it, which is confusing and wrong, but the report does not show that the user cannot reach or activate the plan details.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which steps did you take to reach the plan details screen with TalkBack on, and what are your app version and Android version/device?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report describes wrong content being read aloud from the plan list behind the details screen, which causes confusion, but it does not say focus is trapped or that the user cannot complete the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What exact steps did you take with TalkBack to open the plan details screen, and what did TalkBack announce, word for word, when the plan list content was read?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes wrong content being read aloud while the user is on the plan details screen, which adds confusion but does not clearly prevent completing the task, and it gives no steps to reach the state, so a developer would need to ask for them first.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which Android version, device model, and WordPress for Android app version were you using when this happened?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "Steps are clear and a recording is attached, so a developer can reproduce the bug, but TalkBack reads the wrong plan-list content while the user is on the details screen, which adds confusion without stopping the user from finishing the task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:50:59.269Z"
+}

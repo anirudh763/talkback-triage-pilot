@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "On your Android version and device, what does the TalkBack Actions menu show for an episode in the episode list, and do you have a screenshot or recording of it?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a feature gap where episode and subscription long-press actions are not offered in TalkBack's Actions menu, so users can likely still finish tasks but with extra effort, and the steps are clear enough for a developer to reproduce.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Can you confirm your app version and Android version, and whether you can currently reach the Add to queue and Mark as played actions with TalkBack by double-tapping and holding an episode?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report requests that long-press actions appear in the TalkBack actions menu, and the body is truncated, so it does not show whether users can reach these actions by other means such as double-tap-and-hold, which limits the impact to slowed rather than blocked tasks.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Can you confirm your app version and Android version, and whether you can currently reach the Add to queue and Mark as played actions with TalkBack by double-tapping and holding an episode?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report requests that long-press actions appear in the TalkBack actions menu, and the body is truncated, so it does not show whether users can reach these actions by other means such as double-tap-and-hold, which limits the impact to slowed rather than blocked tasks.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:12.549Z"
+}

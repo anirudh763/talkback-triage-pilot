@@ -1,0 +1,60 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which TalkBack gestures did you use to move through the Echo summary, and what did TalkBack announce when the screen advanced?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes Echo summary screens that auto-advance without next/previous controls, which makes them hard for TalkBack users to read, but it does not say whether the content can still be read at all.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen in AntennaPod advances on its own, what steps lead to it, and what does TalkBack announce before it changes?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says auto-advancing screens make TalkBack content hard to read, which suggests extra effort rather than a blocked task, but it does not name the screen, the steps to reach it, or what TalkBack announces.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which screen advances on its own, what TalkBack steps reach it, and what does TalkBack announce before the screen changes?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says the screens auto-advance and make the content hard to read with TalkBack, but it does not say which screens, so the user can still finish with extra effort, and a developer cannot reproduce it yet.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and Android version/device were you using, and what did TalkBack announce when the summary screen advanced?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says the Echo summary screens auto-advance with no back or next control, which makes them hard to read, but it does not say whether the user can ever reach the information, and it gives no version, device, or TalkBack output to reproduce against.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:07.107Z"
+}

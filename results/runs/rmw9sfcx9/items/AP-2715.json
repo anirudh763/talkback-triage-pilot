@@ -1,0 +1,50 @@
+{
+  "answers": {
+    "full": {
+      "ask": "With TalkBack turned on, which screen and control were you using, and what did TalkBack announce when you tried to fast forward or rewind?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for multi-press headset fast forward and rewind and does not describe any TalkBack or assistive-technology behavior, so its effect on screen reader users cannot be judged.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Do you use TalkBack, and when you use it, can you reach and activate AntennaPod's on-screen fast-forward and rewind controls, and what does TalkBack announce for them?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for multi-press headset fast-forward and rewind and does not mention TalkBack or whether the on-screen fast-forward and rewind controls are reachable and labeled, so its effect on assistive-technology users cannot be judged.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Do you use TalkBack, and when you use it, can you reach and activate AntennaPod's on-screen fast-forward and rewind controls, and what does TalkBack announce for them?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for multi-press headset fast-forward and rewind and does not mention TalkBack or whether the on-screen fast-forward and rewind controls are reachable and labeled, so its effect on assistive-technology users cannot be judged.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:36.497Z"
+}

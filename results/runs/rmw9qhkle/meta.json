@@ -1,0 +1,14 @@
+{
+  "conds": [
+    "full",
+    "no_steps",
+    "no_version",
+    "neither"
+  ],
+  "created": "2026-11-09T20:48:50.307Z",
+  "scope": "eligible",
+  "status": "done",
+  "tier": "quick",
+  "total": 187,
+  "note": "Superseded: made with the first removal rules, which in some reports also removed device/version, a recording reference or a workaround."
+}

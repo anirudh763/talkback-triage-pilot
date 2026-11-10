@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Do you use TalkBack or another assistive setting when this happens, and if so, what does TalkBack announce when you swipe up from the video player?",
+      "confidence": 0.4,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes an accidental seek from a swipe-up gesture during full-screen video but never mentions TalkBack or any assistive setting, so its effect on screen reader users cannot be judged from the text alone.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Does this happen with TalkBack turned on, and if so, which steps and gesture do you use, with which AntennaPod version and Android version or device?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes accidental progress-bar seeks near the Android home gesture but does not say whether TalkBack or another assistive setting is involved, so its effect on assistive-technology users cannot be judged.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Do you use TalkBack or another assistive setting when this happens, and if so, what steps do you take and what does TalkBack announce?",
+      "confidence": 0.4,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a gesture conflict between the system home gesture and the video progress bar but never says whether TalkBack or another assistive setting is involved, and it omits the app version, device, and any recording.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:14.524Z"
+}

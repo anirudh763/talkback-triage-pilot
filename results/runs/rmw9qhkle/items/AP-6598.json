@@ -1,0 +1,59 @@
+{
+  "answers": {
+    "full": {
+      "ask": "From the podcast page, can you reach the episode list by swiping right with one finger, and what does TalkBack announce when focus lands on the media player bar?",
+      "confidence": 0.5,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The steps, app version, Android version, device, and expected behaviour are clear enough to reproduce the skipped-container bug, but the report does not say whether the episode list can still be reached by normal one-finger swiping, so the task impact cannot be judged.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version/device are you using, and can you list the exact steps and gestures you performed, including what TalkBack announced at each step?",
+      "confidence": 0.5,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The title says the user cannot reach the episode list container with the next-container gesture, but the report does not say whether the list can be reached another way, such as linear swiping, so the impact cannot be judged, and the missing version, device, and steps prevent reproduction.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which exact steps did you take on the podcast page (for example, which gesture and where you started), what did TalkBack announce at each step, and can you still reach the episode list by swiping one item at a time?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The title and expected behaviour say TalkBack cannot reach the episode list container via the next-container gesture, but the report does not say whether linear swiping can still reach the list, so the task impact is uncertain and no reproduction steps are given.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Can you still reach the episode list by swiping one item at a time with a single finger, and what are your AntennaPod version, Android version, and device?",
+      "confidence": 0.5,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The four-finger container gesture skips the episode list, but the report does not say whether users can still reach the episodes with single-finger swipes, so the effect on finishing a task is unclear, while the steps are specific enough for a developer to reproduce.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:07.976Z"
+}

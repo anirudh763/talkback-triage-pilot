@@ -1,0 +1,57 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable and reads as a bare \"Button\" under TalkBack, so users can still go back but must guess what it does, and the report gives clear reproduction steps, expected and actual behavior, Android version, and app version.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device did you use, and what are the exact TalkBack swipe steps that bring focus to the Back button?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is described as reachable but announced only as \"Button\" without its label, which adds confusion but does not stop the user from finishing the task, and the location and expected versus actual behavior are clear enough for a developer to reproduce and fix.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android version/device did you use, and what are the exact TalkBack swipe steps that bring focus to the Back button?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is described as reachable but announced only as \"Button\" without its label, which adds confusion but does not stop the user from finishing the task, and the location and expected versus actual behavior are clear enough for a developer to reproduce and fix.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and Android version and device were you using when this happened?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable by TalkBack but announces only \"Button\" with no label, which adds confusion but does not stop the user from finishing the task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:25.990Z"
+}

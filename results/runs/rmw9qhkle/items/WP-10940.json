@@ -1,0 +1,47 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [],
+      "reason": "The learn more button is reachable and activates the dialog, but the duplicate focusable text field adds an extra swipe and a dead double-tap, so the task can be finished with extra effort and confusion.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device were you using when this occurred?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The learn more button is reachable and opens the dialog, but the text field's extra focus stop and its unhelpful double-tap behavior add confusion and extra swipes without fully blocking the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [],
+      "reason": "The learn more button is reachable and opens the same dialog, so users can still finish the task, but the unresponsive duplicate focus stop on the text field adds confusion and extra swipes.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device did you test on?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The Learn More button is reachable and opens the dialog when focused and activated, so the task can be finished, but the separate text field's unexpected focus stop, silent double-tap, and duplicate control add confusion and extra swipes.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:50:33.868Z"
+}

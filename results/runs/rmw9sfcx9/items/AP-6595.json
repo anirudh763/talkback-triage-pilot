@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "On which Android version and device does this happen, and what exactly does TalkBack announce when you open the Actions menu on an episode?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a TalkBack Actions menu that lacks the item actions available through long-press, which forces users onto slower routes, but it does not say whether those actions are unreachable or only harder to reach. The steps are clear enough for a developer to start reproducing.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version/device are you using?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives clear steps to reach the TalkBack Actions menu and states that long-press actions such as Add to queue and Mark as played are not offered there, so users can still finish tasks but with more effort.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and Android version/device are you using?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives clear steps to reach the TalkBack Actions menu and states that long-press actions such as Add to queue and Mark as played are not offered there, so users can still finish tasks but with more effort.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:53.915Z"
+}

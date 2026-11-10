@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which version of WordPress for Android were you running when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack spells out the button label \"ADD\" letter by letter instead of saying \"add\", which adds confusion but still lets the user activate the button and finish sign-up.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when TalkBack spelled out the \"ADD NEW SITE\" button?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack spells out all-caps button labels such as \"ADD NEW SITE\" and \"WordPress\" letter by letter instead of reading them as words, which adds confusion but does not stop the user from reaching or activating the control.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version were you running when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "The button is still reachable and activatable, but TalkBack spells out the all-caps label letter by letter, which makes the announcement confusing and slows the user down without blocking the task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The button is reachable and the task can still be completed, but TalkBack spells out capitalized labels letter by letter (\"A\" \"D\" \"D\"), which is confusing and adds effort.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:21.586Z"
+}

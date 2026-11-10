@@ -1,0 +1,57 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack users cannot select the post three-dot menu, so the post actions (such as delete) appear unreachable, and it gives the device, app version, reproduction steps, and expected versus actual behavior.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which app version and Android device are you using, and which TalkBack swipes did you use to reach the three-dot menu on a post?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack users cannot reach the post three-dot menu, so they cannot open post actions such as delete, and selecting a post only opens the editor.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which app version and Android device are you using, and which TalkBack swipes did you use to reach the three-dot menu on a post?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack users cannot reach the post three-dot menu, so they cannot open post actions such as delete, and selecting a post only opens the editor.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What app version, Android version, and device are you using, and what does TalkBack announce when you swipe to the post's row on the post list?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack users cannot select the three-dot menu on the post list, so they cannot reach the options needed to delete or manage a post, and no workaround is described; the steps and expected-versus-actual behavior are clear enough to reproduce.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:10.329Z"
+}

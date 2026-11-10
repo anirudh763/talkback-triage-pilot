@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When you swipe TalkBack onto the Apply button in multi-select, does it receive focus, and what does it announce? Also, which Android version and device are you using?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack does not read the Apply button, which suggests it is reachable but unlabeled, so the user can likely still finish with extra effort, though the report does not confirm focus. The missing content description is clear enough for a developer to inspect and fix.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and steps lead to the multi-select apply button, and when you focus it with TalkBack, is it silent, skipped entirely, or announced as something unhelpful?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack does not read the button but does not say whether the button can be focused, so it could be an unlabeled reachable control (slows) or an unreachable one (blocks), and no steps, version, or device are given to reproduce it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which screen and steps lead to the multi-select apply button, and when you focus it with TalkBack, is it silent, skipped entirely, or announced as something unhelpful?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack does not read the button but does not say whether the button can be focused, so it could be an unlabeled reachable control (slows) or an unreachable one (blocks), and no steps, version, or device are given to reproduce it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:30.900Z"
+}

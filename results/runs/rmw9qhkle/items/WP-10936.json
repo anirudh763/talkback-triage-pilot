@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What exactly does TalkBack announce when it focuses the untitled post's entry in the Activity list, and is it different from a titled post?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The report says double-tapping the untitled post's detail view does nothing and the title is never read aloud, so a TalkBack user cannot open the detail view or get the title information.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What Android version, device, and WordPress for Android version were you using, and what exact steps (including the TalkBack gestures) took you from the Activity Log to the detail view where the title was not read?",
+      "confidence": 0.5,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the untitled post's title is not read aloud and double-tapping the detail view does nothing, but it does not say what the user was trying to complete or whether that action is required to finish a task, and it gives no reproduction steps, versions, or device.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Starting from the app's main screen, which steps lead to the Activity Log detail view, and what does TalkBack announce when you focus the post and when you double-tap it?",
+      "confidence": 0.5,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report gives the app and device versions and says the title is not read and double-tap does nothing, but it does not say how to reach the detail view, what the double-tap was meant to do, or what TalkBack announces instead.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which Android version, device model, and WordPress for Android version were you using, and what exactly does TalkBack announce when it reaches the untitled post's detail view?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The untitled post's title is not announced and double-tapping the detail view does nothing, but the report does not say whether the user can still complete the task without them.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:51:08.158Z"
+}

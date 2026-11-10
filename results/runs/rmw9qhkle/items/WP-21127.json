@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Can you still submit the feedback form and close the dialog normally after the focus jumps to the close button, and what app version and Android device were you using?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot",
+        "expected_vs_actual"
+      ],
+      "reason": "TalkBack focus jumps from the unreachable remove button to the close button, so the user cannot reach remove for an attachment, but the report does not say whether the rest of the feedback flow can still be completed.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which Android version, device, and WordPress app version were you using, and what exactly did TalkBack announce when the close button received focus?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Focus jumps to the close (X) button when the remove button is offscreen, which can confuse users and risk closing the form, but the report does not say the user is unable to finish the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which Android version, device, and WordPress app version were you using, and what exactly did TalkBack announce when the close button received focus?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Focus jumps to the close (X) button when the remove button is offscreen, which can confuse users and risk closing the form, but the report does not say the user is unable to finish the task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:04.001Z"
+}

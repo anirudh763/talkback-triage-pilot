@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android app version were you running when you saw this?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "The buttons remain reachable and can be activated, but TalkBack spells out capitalized labels like \"ADD\" and \"WORDPRESS\" letter by letter, which causes confusion without blocking the task; the steps and expected versus actual behavior are clear enough to reproduce and fix by setting contentDescription.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack spells out the all-caps button label as 'A D D' instead of 'add', which adds confusion but does not stop the user from activating the button, and the report gives expected and actual behavior plus a plausible fix, so a developer can reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version were you running when you saw this, and could you attach a screen recording or screenshot of the TalkBack announcement?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "The button stays reachable and activatable, but TalkBack spells its all-caps label letter by letter, which is confusing and makes the purpose harder to recognize.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which Android version and device model, and which WordPress for Android app version, were you using when this happened?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The button is reachable and activatable, but TalkBack spells out capitalized labels letter by letter, which adds confusion without blocking the sign-up flow.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:51:43.674Z"
+}

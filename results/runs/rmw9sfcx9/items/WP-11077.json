@@ -1,0 +1,54 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version"
+      ],
+      "reason": "The wrong 'Image Selected' announcement for a video does not stop the user from finishing the task, but it adds confusion, and the steps, device, Android version, and expected/actual behavior are given clearly enough to start reproducing it.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which Android version, device model, and WordPress app version were you using when you selected the video?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "TalkBack announces \"Image Selected\" instead of \"Video Selected\" when a video is chosen in the media picker, which is a wrong announcement that adds confusion but does not show that the user cannot finish the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What exact steps did you take in the media picker to select the video (including which screen or tab, and whether you used TalkBack gestures), and what did TalkBack say when the selection happened?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a wrong announcement (\"Image Selected\" instead of \"Video Selected\") that a user could work past, but it gives no reproduction steps, no specific app version beyond the 'develop' branch with a blank commit reference, and does not say what TalkBack actually spoke.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The wrong announcement (\"Image Selected\" instead of \"Video Selected\") is reported with clear steps and expected versus actual behavior, so the user can still finish the task but with confusion.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:44:43.392Z"
+}

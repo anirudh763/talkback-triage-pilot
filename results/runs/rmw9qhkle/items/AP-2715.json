@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Does this affect how you use AntennaPod with TalkBack or another assistive setting, and if so, which steps or controls are hard to complete?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for multi-press headset button seek, not an accessibility barrier; single-press play/pause still works and the report does not describe any TalkBack or assistive-technology interaction failing.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Do you use TalkBack or another assistive setting with your headset buttons, and is there any task you cannot finish because of this?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for double and triple headset-button presses to fast forward and rewind, and it does not describe a TalkBack or assistive-technology barrier that blocks or slows a task, since single-tap play/pause still works.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Do you use TalkBack or another assistive setting with your headset buttons, and is there any task you cannot finish because of this?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for double and triple headset-button presses to fast forward and rewind, and it does not describe a TalkBack or assistive-technology barrier that blocks or slows a task, since single-tap play/pause still works.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:53.046Z"
+}

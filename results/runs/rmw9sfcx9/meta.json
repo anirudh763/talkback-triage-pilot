@@ -1,0 +1,14 @@
+{
+  "conds": [
+    "full",
+    "no_steps",
+    "no_version",
+    "neither"
+  ],
+  "created": "2026-11-09T21:43:06.285Z",
+  "method": 2,
+  "scope": "eligible",
+  "status": "done",
+  "tier": "quick",
+  "total": 187
+}

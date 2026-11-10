@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When you use TalkBack to move to the \"filtered\" message, what does TalkBack announce, and can you activate it with a double-tap, and on which Android version and device does this happen?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes the \"filtered\" message as small and hard to click but does not say whether TalkBack can focus or activate it, so the effect on completing a task is unknown and a developer would need the reproduction steps and TalkBack behavior first.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "With TalkBack enabled, can you swipe to the 'Filtered' message, and what does TalkBack announce when it gets focus?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a small, hard-to-tap visual message but does not say whether TalkBack can reach or announce it, and the attached screenshot cannot be assessed here.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "With TalkBack enabled, can you swipe to the 'Filtered' message, and what does TalkBack announce when it gets focus?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a small, hard-to-tap visual message but does not say whether TalkBack can reach or announce it, and the attached screenshot cannot be assessed here.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:08.001Z"
+}

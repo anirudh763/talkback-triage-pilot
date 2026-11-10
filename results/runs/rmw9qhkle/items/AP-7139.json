@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "With TalkBack or a magnification or high-contrast setting on, can you describe how you find and open a link in the shownotes, and what TalkBack announces when you land on one?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Links in the shownotes are barely distinguishable from body text under dynamic colors, which makes them harder for low-vision users to find and read, though the report does not say whether TalkBack or other assistive settings are involved.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version, Android version, and device are you using, and which dynamic theme setting produces the low-contrast links?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a visual color-contrast problem with shownotes links on dynamic themes, which does not stop TalkBack users from reaching or activating those links, but the missing app version and device details mean a developer cannot yet reproduce it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which Android version and device are you using, and do the links also cause trouble when you navigate them with TalkBack?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes low-contrast shownotes links under dynamic colors that make them hard to spot, which adds effort to finding links, but it does not say they are unreachable or unannounced by a screen reader.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:36.759Z"
+}

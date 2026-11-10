@@ -1,0 +1,501 @@
+@@@ AP#8145 | open/ | 2025-12-10 | | Type: Feature request;Functionality: Echo | 1 | NONE
+Accessibility: AntennaPod echo and talkback
+### App version
+
+3.10.2
+
+### Android version
+
+15
+
+### Device model
+
+OnePlus Nord N200
+
+### Steps to reproduce
+
+1. Turn on TalkBack from Android System Settings.
+2. Open antennapod echo summary
+3. Screens auto adbance without a next/previous to go back/forward
+
+### Expected behaviour
+
+A next and previous button should be added to go back and forth between the screens and the auto-advanced functionality should be turned off.
+
+### Current behaviour
+
+These screens advance on their own, which makes it difficult for talkback users to read the data.
+@@@ AP#8084 | closed/completed | 2025-11-08 | 2025-12-03 | Type: Confirmed bug | 6 | MEMBER
+Android "home" gesture conflicts with video player
+### App version
+
+3.10.0
+
+### Android version
+
+16
+
+### Steps to reproduce
+
+Play a video full-screen. Swipe up twice. First to show the system controls, second to go to the home screen
+
+### Expected behaviour
+
+GK to the home screen without jumping to a different position
+
+### Current behaviour
+
+More often than not you accidentally hit the progress bar and skip to a wrong position
+@@@ AP#7920 | closed/completed | 2025-08-05 | 2025-10-30 | Type: Confirmed bug | 3 | MEMBER
+Subscribe button hidden behind podcast title with large system font
+### App version
+
+3.9.0
+
+### Android version
+
+12
+
+### Device model
+
+Samsung Galaxy A13
+
+### Steps to reproduce
+
+1. In the device settings, set font size right in the middle of the scale
+2. Open a podcast that you're not subscribed to yet
+
+### Expected behaviour
+
+The Subscribe button is clickable and doesn't overlap with other elements
+
+### Current behaviour
+
+The button is overlapped by the podcast title and publisher:
+[image]
+@@@ AP#7776 | open/ | 2025-04-26 | | Type: Feature request | 2 | MEMBER
+More graciously handle large system font size
+### App version
+
+3.8.0
+
+### Feature or improvement you want
+
+(Maintainers later added a link to implementation conclusions further down the thread.)
+
+When you're applying a bigger font size at system level (like my grandmother in law does due to issues with eyesight), more graciousl …[cut]
+@@@ AP#7754 | open/ | 2025-04-12 | | Type: Feature request;Area: Usability;Needs: Mock-up or user story;Needs: Decision | 1 | MEMBER
+Podcast name small, hard to click
+### App version
+
+3.8.0
+
+### Feature or improvement you want
+
+Make the podcast name larger
+
+### Why should this be added?
+
+The name is small, hard to click. Google complains about this. While clicking the cover is currently possible, we might want to change that to open the cover full-screen (#8343). Related but not the same screen: #6318
+
+### Screenshots / Drawings / Technical details
+
+[image]
+@@@ AP#7753 | open/ | 2025-04-12 | | Type: Feature request;Area: Usability;Needs: Mock-up or user story;Needs: Decision | 1 | MEMBER
+"Filtered" message very small, hard to click
+### App version
+
+3.8.0
+
+### Feature or improvement you want
+
+Make the "filtered" message on top of screens larger
+
+### Why should this be added?
+
+The message is hard to click. Google Play complains about this.
+
+### Screenshots / Drawings / Technical details
+
+[image]
+@@@ AP#7450 | closed/duplicate | 2024-10-10 | 2025-08-28 | Type: Feature request | 2 | NONE
+Inbox list with the "Zoom In when holding" feature on one episode
+### App version
+
+3.5.0
+
+### Where did you get the app from
+
+F-Droid
+
+### Feature or improvement you want
+
+I deactivated most of the automatic downloads and "working" with the Inbox.
+
+So when I fetch all streams and my Inbox get filled, I go through the list and tab everything I'm interested in and mark the rest as "seen" or "read" - I'm using the german translation so I am not sure which is the correct word used in the english app.
+
+But because because I have effectively only 2 lines for the title and description and I have a bigger font in use, this is often enough far t …[cut]
+@@@ AP#7139 | closed/completed | 2024-04-25 | 2024-06-23 | Type: Possible bug | 7 | CONTRIBUTOR
+Shownotes links hard to read on dynamic themes
+### App version
+
+3.3.2f (develop branch)
+
+### Where did you get the app from
+
+Other
+
+### Android version
+
+14
+
+### Device model
+
+Simulator (Pixel 8)
+
+### First occurred
+
+Since material you introduction
+
+### Steps to reproduce
+
+1. Enable dynamic colors in the preferences
+2. Go to any episode's shownotes with links
+3. Play a devious version of "where is waldo" and try to find all the links in the show notes 😜
+
+### Expected behaviour
+
+The links stand out somehow
+
+### Current behaviour
+
+They can barley be distinguished from the other text.
+
+To be fair I don't think this is particularly the fault of Antennapod, it is much more Androids fault cause it really does select accent colors that are quite muted and very close to the primary text color.
+However, I think we should still improve their readability. …[cut]
+@@@ AP#7071 | open/ | 2024-04-08 | | Type: Feature request;Needs: Decision | 1 | MEMBER
+Implement Shake to refresh
+### App version
+
+3.3
+
+### Where did you get the app from
+
+Google Play
+
+### Problem you may be having, or feature you want
+
+From the forum:
+> Since the “refresh” button is now housed in the overflow menu, it takes me a couple of extra swipes and taps, and to make it easier, I used MacroDroid to create a macro that refreshes a podcast when I shake my device.
+
+### Suggested solution
+
+Suggested by user:
+> have “Shake to refresh podcast” option
+
+* Add option "Shake to refresh" under Settings > User Interface > Behavior
+* Add option "Detection threshold" right below the 'Shake to refresh' with a slider - only active if 'Shake to refresh' is on …[cut]
+@@@ AP#7070 | open/ | 2024-04-08 | | Type: Feature request;Needs: Decision | 10 | MEMBER
+Let Talkback announce start & end of episode downloads & feed refreshes
+### App version
+
+3.3
+
+### Where did you get the app from
+
+Google Play
+
+### Problem you may be having, or feature you want
+
+From the forum:
+> Currently, there is no way for a TalkBack user to know if an episode has been downloaded or not. The same goes for refreshing a podcast
+
+### Suggested solution
+
+> AP could inform the user via custom TalkBack notifications about the refresh process and episode download.
+For example, the custom notification could be something like this “refresh started” “refresh completed” “Downloading episodes” “Episodes downloaded”.
+@@@ AP#7054 | open/ | 2024-04-01 | | Type: Feature request | 1 | MEMBER
+Improve TalkBack for episode list
+### App version
+
+3.3.2
+
+### Where did you get the app from
+
+Google Play
+
+### Problem you may be having, or feature you want
+
+Navigating an episode list (e.g. when in a Podcast view) is a bit of a pain and should be improved to make it easier for visually impaired users.
+
+### Suggested solution
+
+#### To be implemented for sure
+- [ ] When selecting an episode in multi-select, the focus on the episode is lost. Focus should be kept on the active episode.
+- [ ] When an episode has focus in multi-select, TalkBack says "double tap to activate". To make clearer what 'activate' means here, we should implement a custom TalkBack notice "double tap to select episode"
+- [ ] When touch-navigating around the screen, …[cut]
+@@@ AP#6692 | closed/completed | 2023-10-08 | 2024-03-17 | Type: Confirmed bug;Needs: Upstream fix | 13 | NONE
+TalkBack Announces Items in the Action Menu for "Multi select" Twice
+### App version
+
+3.1.1
+
+### Where did you get the app from
+
+Google Play
+
+### Android version
+
+Android 12
+
+### Device model
+
+Nokia 5.3
+
+### Steps to reproduce
+
+1. With TalkBack turned on, go to "Subscriptions" screen or any other screen where you can select multiple items, and double tap and hold on an item, then double tap on "Multi select"
+2. Find the unlabeled actions button at the end, and double tap on it
+3. TalkBack's focus should be on the last item in the menu, swipe left and you'll hear the same action repeated the second time. For example, if the focus was on the "Delete" button, swiping left again will make TalkBack announce "Delete" again
+
+### Expected behaviour
+
+1. When making multiple selections with TalkBack turned on, the "actions" button should have been announced as "actions button".
+2. In the actions menu, each item should be announced only once by TalkBack, not twice.
+@@@ AP#6598 | closed/completed | 2023-08-25 | 2024-11-20 | Type: Confirmed bug;Needs: Upstream fix | 8 | NONE
+Unable to Get to the Episodes List Container Using TalkBack Gesture
+### App version
+
+3.1.0 (91d5238f0)
+
+### Where did you get the app from
+
+Google Play
+
+### Android version
+
+Android 12
+
+### Device model
+
+Nokia 5.3
+
+### First occurred
+
+After updating to AntennaPod version 3.1.0
+
+### Steps to reproduce
+
+1. With TalkBack turned on, go to Subscriptions>XYZ-Podcast>
+2. Swipe right with four fingers to get to the next container on the screen
+3. Instead of TalkBack focusing on the first item in the episode list container, like it does on the subscriptions page (focuses on the first item in the grid), TalkBack skips to the media player bar at the bottom
+
+### Expected behaviour
+
+When the gesture to go to the next container was performed on the podcast page, TalkBack should have focus on the first item in the episode list.
+@@@ AP#6595 | open/ | 2023-08-24 | | Type: Feature request | 2 | NONE
+Add long-press actions to accessibility actions menu
+### App version
+
+3.1.0
+
+### Where did you get the app from
+
+Google Play
+
+### Problem you may be having, or feature you want
+
+Making Actions Available Present for a Focused Item in the Action Menu of Talkback: when long pressing an item in the episode list or in the subscriptions grid, available actions are shown for an item. Like "Add to queue", "Mark as played", "Remove podcast" etc. If the same actions, or a few important actions were shown in the Actions menu of Talkback, it would make performing actions on a particular item easier and faster.
+To invoke the action menu using Talkback, typically you would do one of the following:
+Use the Talkback menu
+- Set the focus on an item
+- Open the Talkback menu by swiping down then right with one finger, in a single motion
+- If actions are present for the currently focused item, the first item in the menu will be "Actions"
+- Double tap on "Actions" to see the list
+Use the Reading Controls
+- Set the focus on an item
+- Swipe up or down with one finger to cycle through the available actions …[cut]
+@@@ AP#6594 | closed/completed | 2023-08-24 | 2023-10-06 | Type: Possible bug | 4 | NONE
+Talkback Reports Back/Navigate-Up Button as "Unlabeled Button"
+### App version
+
+3.1.0
+
+### Where did you get the app from
+
+Google Play
+
+### Android version
+
+Android 12
+
+### Device model
+
+Nokia 5.3
+
+### Steps to reproduce
+
+With Talkback turned on, going to subscriptions>XYZPod> brings up the podcast page.
+The first item that Talkback has the focus on is the back/navigate-up button, Talkback reports this as "unlabeled".
+The same issue is also present when going to Subscriptions>Statistics> page.
+
+### Expected behaviour
+
+When Talkback's focus is on the navigate-up/back button, Talkback should report it as "back button".
+@@@ AP#4758 | closed/completed | 2020-12-13 | 2021-02-27 | Good first issue | 4 | MEMBER
+Mark separator icons as not important for talkback
+# System info
+
+**App version**: 2.1.0
+
+# Feature description
+
+**Problem you may be having, or feature you want**:
+
+TalkBack currently tries to read the separator icons
+
+**Suggested solution**:
+
+Set them to not relevant
+
+**Screenshots / Drawings / Technical details**:
+
+[image]
+@@@ AP#4756 | closed/completed | 2020-12-13 | 2021-01-01 | Good first issue | 5 | MEMBER
+Download cancel button does not have a content description
+# System info
+
+**App version**: 2.1.0
+
+# Feature description
+
+**Problem you may be having, or feature you want**:
+
+The "cancel download" button does not have a content description and is therefore hard to use for blind users.
+
+**Suggested solution**:
+
+Add a description when binding the view
+
+**Screenshots / Drawings / Technical details**:
+
+[image]
+@@@ AP#4755 | closed/completed | 2020-12-13 | 2021-10-28 | Good first issue | 9 | MEMBER
+Multi-select "apply" button does not have a content description
+# System info
+
+**App version**: 2.1.0 develop
+
+# Feature description
+
+**Problem you may be having, or feature you want**:
+
+TalkBack does not read the button. The app is therefore hard to navigate for blind users
+
+**Suggested solution**:
+
+Add a content description
+
+**Screenshots / Drawings / Technical details**:
+
+Depends on upstream change leinardi/FloatingActionButtonSpeedDial#151
+[image]
+@@@ AP#4723 | closed/completed | 2020-11-29 | 2021-08-07 | Type: Feature request | 5 | MEMBER
+Mono output & L/R balance for ExoPlayer
+# System info
+
+**App version**: 2.1.0-RC3
+
+**App source**: Google Play
+
+# Feature description
+
+**Problem you may be having, or feature you want**:
+Not the case for me personally, but a portion of our users will have hearing loss on one side. They might benefit from mono output and changing left-right balance. This is already possible when selecting the 'Sonic' media player in the settings, but ExoPlayer is the default and does not support this. Not tech-savvy users may simply see a disabled setting in the player screen and leave it at that. Since ExoPlayer is the default & recommended media player, supporting these features for ExoPlayer would be great.
+
+**Suggested solution**:
+> write a custom audio processor for ExoPlayer that is capable of L/R volume and mono downmix (those settings are currently just supported on Sonic)
+@@@ AP#4701 | closed/completed | 2020-11-19 | 2020-11-22 | Type: Feature request | 6 | NONE
+[Accessibility] Color Contrast is not respected.
+# System info
+
+**App version**: 2.0.0
+
+**App source**: F-Droid
+
+**Android version**: 6
+
+**Device model**: Huawei Mate 7
+
+# Bug description
+
+**Steps to reproduce**:
+
+1. Activate the app Accessibility Scanner
+2. Open the app AntennaPod
+3. Activate the registration from the Accessibility Scanner and use the AntennaPod app.
+4. After using the app, stop the recording.
+
+**Expected behaviour**:
+
+The contrast ratio between text and background should be at least 4.5 .
+
+**Current behaviour**:
+
+Some elements don't respect the contrast ratio. For example:
+
+[image]
+
+**First occurred**: about 20 days ago.
+@@@ AP#4700 | closed/completed | 2020-11-19 | 2020-11-26 | Type: Feature request | 1 | NONE
+Touch Target is not respected.
+# System info
+
+**App version**: 2.0.0
+
+**App source**: F-Droid
+
+**Android version**: 6
+
+**Device model**: Huawei Mate 7
+
+# Bug description
+
+**Steps to reproduce**:
+
+1. Activate the app Accessibility Scanner
+2. Open the app AntennaPod
+3. Activate the registration from the Accessibility Scanner and use the AntennaPod app.
+4. After using the app, stop the recording.
+
+**Expected behaviour**:
+
+The size of the elements should be at least 48dp*48dp.
+
+**Current behaviour**:
+
+Some elements don't respect the size of the touch target. For example:
+
+[image]
+
+**First occurred**: about 20 days ago.
+@@@ AP#3563 | closed/completed | 2019-10-27 | 2019-10-27 | Good first issue | 1 | MEMBER
+List of subscriptions is not accessible with TalkBack
+**App version**: 1.7.3
+
+Play Store request: When hovering the icons on the subscriptions page, TalkBack should say their name. That can probably be fixed quite easily by applying a contentDescription to the icons in the list adapter.
+@@@ AP#2715 | closed/completed | 2018-05-28 | 2023-09-30 | Type: Feature request;Functionality: Playback & player screen | 53 | NONE
+Using double/triple headset button press to fast forward/rewind
+**App version:** 1.6.5 (from F-Droid)
+
+**Android version**: 8.0
+**Device model**: Sony Xperia XZ2 Compact
+
+As far as I can tell, there's no way to assign multiple headset button presses for fast forwarding or rewinding. Most music players allow to double press the headset button to skip to next song and triple press to skip to the previous one, so I assume it's a system-level setting that treats multiple presses as "media next/media preview" actions. It would be nice to see AntennaPod use do that too instead of just play/pause with a single tap. As far as I know, the only podcast player right now that supports both fast forward AND rewind is Castbox (proprietary).
+@@@ AP#445 | open/ | 2014-06-02 | | Type: Feature request | 6 | CONTRIBUTOR
+D-Pad Navigation inconsistent
+The nextFocus attributes for the layousts seem to be implemented inconsistently with the new UI. Easiest way to test this, is to setup an Android Emulator, and enable Keyboard input for the the Emulator. Then launch the application. Do not use the Mouse to navigate or interact with the application. Just use the Up/Down/Left/Right and Enter keys to navigate the application. You'll find that you can't get to some items, others you get to that have embedded buttons aren't clickable or you can't get the to the button itself.
+
+This is causing issues on devices like Android HDMI Sticks, Google TV, and OUYA devices that are primarily D-Pad navigation. Having to result to the built in touch pad is not a good user experience.
+
+If I get some time, I'll look at providing a patch to address some of these issues for the D-Pad and the related Media Key Codes as well.

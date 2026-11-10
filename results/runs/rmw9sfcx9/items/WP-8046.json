@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android app version and Android version/device were you using when this occurred?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The unlabelled image buttons are still reachable and announced as \"Unlabelled button,\" so a TalkBack user can likely still pick a photo, but with added confusion and no way to tell the images apart.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android version and Android device/OS version are you using, and what exact steps take you to the StockLibrary image you're focusing?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "Images in StockLibrary are reachable but announced only as \"Unlabelled button, ...\", which adds confusion without stopping the user, and the report gives no app version, device, or steps to reach the screen.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android version and Android device/OS version are you using, and what exact steps take you to the StockLibrary image you're focusing?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "Images in StockLibrary are reachable but announced only as \"Unlabelled button, ...\", which adds confusion without stopping the user, and the report gives no app version, device, or steps to reach the screen.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:04.475Z"
+}

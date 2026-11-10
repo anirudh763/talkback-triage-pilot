@@ -1,0 +1,54 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android release version number were you running, since the report lists only the develop branch with empty parentheses?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version"
+      ],
+      "reason": "The Stats icon is reachable by TalkBack but announced as \"Unlabelled, Button\" while its text label is a separate focus stop, so users can still finish the task with extra swipes and confusion.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device/version are you using, and what exact TalkBack swipe path takes you to the My Site menu icon?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The icon is reachable but announced as unlabelled, and its text is a separate focus stop, so users can likely still finish but with extra swipes and confusion; the missing app version, device, and navigation steps prevent a developer from reproducing it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android device/version are you using, and what exact TalkBack swipe path takes you to the My Site menu icon?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The icon is reachable but announced as unlabelled, and its text is a separate focus stop, so users can likely still finish but with extra swipes and confusion; the missing app version, device, and navigation steps prevent a developer from reproducing it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device are you using?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The Stats icon is reachable and read as an unlabeled button while its text label is a separate focus stop, so users can still finish the task but with extra confusion and swipes.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:59.912Z"
+}

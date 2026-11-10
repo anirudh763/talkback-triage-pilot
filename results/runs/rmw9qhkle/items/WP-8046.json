@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when TalkBack announced \"Unlabelled button\"?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The image buttons are reachable with TalkBack but announce only \"Unlabelled button, ...\", which adds confusion without blocking the user from choosing a photo.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device and OS version are you using, and what steps in the app take you to the StockLibrary image you focused with TalkBack?",
+      "confidence": 0.75,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The images are reachable but announced as an unlabelled button, which adds confusion without stopping the user from finishing the task, and the report omits the steps, app version, and device needed to reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android device and OS version are you using, and what steps in the app take you to the StockLibrary image you focused with TalkBack?",
+      "confidence": 0.75,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The images are reachable but announced as an unlabelled button, which adds confusion without stopping the user from finishing the task, and the report omits the steps, app version, and device needed to reproduce it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:51:28.063Z"
+}

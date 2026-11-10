@@ -1,0 +1,44 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android app version and which Android version and device model were you using when this happened?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack announces incorrect 'no posts' text while the tag feed is still loading, which misleads the user but does not stop them from reaching the content, and the steps and expected/actual behavior are clear enough to start reproducing.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using when this happens?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack announces an incorrect \"No posts\" message while the tag feed is still loading, which misleads the user and adds confusion, but the report implies the correct content eventually appears so the task can still be finished.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using when this happens?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack announces an incorrect \"No posts\" message while the tag feed is still loading, which misleads the user and adds confusion, but the report implies the correct content eventually appears so the task can still be finished.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:43:55.357Z"
+}

@@ -1,0 +1,49 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which screen and TalkBack swipe sequence do you use to start an episode download or podcast refresh, and what does TalkBack say at each point?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says TalkBack users cannot tell when episode downloads or feed refreshes start or finish, which adds confusion and extra checking but does not stop the user from completing core tasks.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen do you open, and which TalkBack gestures do you use, when you start an episode download or a podcast refresh, and what does TalkBack say at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report requests status announcements for downloads and feed refreshes but does not say which screens or controls are involved, what TalkBack currently announces, or whether a user can still finish their task without them.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which screen do you open, and which TalkBack gestures do you use, when you start an episode download or a podcast refresh, and what does TalkBack say at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report requests status announcements for downloads and feed refreshes but does not say which screens or controls are involved, what TalkBack currently announces, or whether a user can still finish their task without them.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:24.312Z"
+}

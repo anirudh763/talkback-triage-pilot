@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When you swipe onto a post in the list with TalkBack on, what does TalkBack announce, and does it announce a three-dot or more-options button at all?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The report says the three-dot menu cannot be reached or activated with TalkBack, which blocks actions such as deleting a post, and the steps, device, Android version, and app version are given well enough to reproduce.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which Android version, device, and WordPress app version are you using, and what are the exact steps from opening the post list to the point where TalkBack can't reach the three-dot menu, including what TalkBack announces on each swipe?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The three-dot post menu cannot be reached or selected with TalkBack, which blocks deleting or managing posts through that menu, but the report gives only one of the steps taken and omits the app version, device, and what TalkBack announces.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which steps did you take from opening the post list to swiping toward the three-dot menu, and what did TalkBack announce at each swipe?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "TalkBack users cannot reach or activate the three-dot post menu, so they cannot complete actions such as deleting a post, and the report gives the device, Android version, app version, and expected versus actual behavior needed to start reproducing it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What app version and Android version and device model are you using, and what does TalkBack announce when it reaches the post row?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "TalkBack users cannot reach or activate the three-dot post menu, so they cannot delete or manage posts from the post list, and the report gives clear reproduction steps with expected and actual behavior.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:43:19.308Z"
+}

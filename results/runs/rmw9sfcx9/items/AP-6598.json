@@ -1,0 +1,58 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Can you reach the episode items by swiping one item at a time with a single finger from the top of the podcast page, and what exactly does TalkBack announce when focus lands on the media player bar?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives device, OS, app version, and reproducible steps showing that the four-finger container swipe skips the episode list and lands on the media player bar, so a user cannot reach the list by that gesture, though the report does not say whether linear swiping reaches it.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What exact steps did you take to reach the podcast page before the next-container gesture, and which AntennaPod version and Android device and version are you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The title and body state that the next-container gesture skips the episode list and lands on the media player bar, but the report gives no steps before step 3, no versions, and no TalkBack output, so a developer cannot yet reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Could you list every step from opening the podcast page to the failed gesture, including steps 1 and 2, since the list starts at step 3, and attach a screenshot or screen recording if possible?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says the container-navigation gesture skips the episode list and lands on the media player bar, but the steps list starts at step 3, so a developer lacks the full reproduction path and any screenshot or recording.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Can you still reach the episode list by swiping one finger at a time?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The four-finger container gesture skips the episode list and lands on the media player bar, but the report does not say whether the list can be reached by single-finger swiping, so the impact on finishing a task cannot be judged.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:48.917Z"
+}

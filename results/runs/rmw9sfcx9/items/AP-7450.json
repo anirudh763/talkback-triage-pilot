@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When TalkBack is on, what exactly happens when you hold an episode in the Inbox list, what does TalkBack announce, and what did you expect it to do?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about title line limits and font size in the Inbox, and it never describes a TalkBack or assistive-technology failure, its steps, or what is announced.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which TalkBack actions do you take on an Inbox episode with the \"Zoom In when holding\" feature enabled, and what does TalkBack announce compared with what you expected?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about Inbox display with a larger font and two-line titles, and it does not mention TalkBack, the steps taken, what was announced, or the app and Android versions, so neither the impact nor a reproduction path can be determined.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which TalkBack actions do you take on an Inbox episode with the \"Zoom In when holding\" feature enabled, and what does TalkBack announce compared with what you expected?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about Inbox display with a larger font and two-line titles, and it does not mention TalkBack, the steps taken, what was announced, or the app and Android versions, so neither the impact nor a reproduction path can be determined.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:10.639Z"
+}

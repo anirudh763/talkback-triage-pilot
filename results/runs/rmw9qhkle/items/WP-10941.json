@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which seven elements does TalkBack focus on for each post in the Reader list, and what does it say for each one?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "what_talkback_said",
+        "expected_vs_actual"
+      ],
+      "reason": "Each Reader list item has seven focusable elements, so a TalkBack user can still reach every post but must swipe many more times to get through the list.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which app version and Android device and version were you using, and what does TalkBack announce for each of the seven focusable elements in a post?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "Each Reader list item has seven focusable elements, so a TalkBack user needs extra swipes (21 to move from post one to post four), but can still finish the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which seven elements does TalkBack focus on in each Reader list item, and which of them would you expect to be combined or skipped?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "what_talkback_said",
+        "expected_vs_actual"
+      ],
+      "reason": "Each Reader list item has seven focusable elements, so TalkBack users need about 21 extra swipes to reach the fourth post, which slows the task without blocking it; the report gives the app version, device, Android version, swipe steps, and a recording, so a developer can reproduce it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when you tested this?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "Each Reader item has seven focusable elements, so a TalkBack user can still reach posts but needs many extra swipes (21 to move from the first post to the fourth), which slows the task without blocking it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:50:25.796Z"
+}

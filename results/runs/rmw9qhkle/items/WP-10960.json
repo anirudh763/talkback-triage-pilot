@@ -1,0 +1,49 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What Android version and device, and which WordPress app version, were you using, and what exactly did TalkBack announce when the back button gained focus?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Focus lands on the back button instead of the login screen description, which forces users to find the announcement themselves, but the report gives no device, version, or actual TalkBack output to confirm the behavior.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What app version and Android version/device are you using, and what exactly does TalkBack announce when the login screen opens?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says initial focus lands on the back button instead of the screen description, which adds confusion but does not stop the user from reaching the login controls, and it gives no steps, app version, device, or TalkBack output to reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What app version and Android version/device are you using, and what exactly does TalkBack announce when the login screen opens?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says initial focus lands on the back button instead of the screen description, which adds confusion but does not stop the user from reaching the login controls, and it gives no steps, app version, device, or TalkBack output to reproduce it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:50:18.661Z"
+}

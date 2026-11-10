@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Are you using TalkBack or another assistive setting, and if so, what steps do you take to refresh a podcast from the overflow menu, and what does TalkBack announce at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for shake-to-refresh that never mentions TalkBack or another assistive setting, so it does not establish that an assistive-technology user is affected or give steps to reproduce a defect.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which steps do you take with TalkBack to reach the refresh action now, and what does TalkBack announce at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request saying the refresh action moved into the overflow menu and now takes extra swipes and taps, but it gives no TalkBack steps, versions, or observed announcements to reproduce.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which steps do you take with TalkBack to reach the refresh action now, and what does TalkBack announce at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request saying the refresh action moved into the overflow menu and now takes extra swipes and taps, but it gives no TalkBack steps, versions, or observed announcements to reproduce.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:19.411Z"
+}

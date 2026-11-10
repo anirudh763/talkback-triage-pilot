@@ -1,0 +1,44 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which screen and which specific text or controls have the low contrast, and what contrast ratio did Accessibility Scanner measure for them?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a visual contrast problem on unspecified elements with vague reproduction steps ('use the app'), so it does not show whether any task is blocked or slowed for screen-reader users.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and which controls or text are low-contrast in the attached image, and what are your AntennaPod version and Android device?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names a 4.5:1 contrast expectation and an attached image of 'some elements' but does not say which screens or controls are affected, how that blocks or slows a task, or which app version and device were used.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod screen and which text or controls fall below the 4.5:1 contrast ratio, and what AntennaPod version and Android device were you using?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps"
+      ],
+      "reason": "The report describes a visual contrast problem on unspecified elements and screens, does not say how it affects completing a task, and gives no app version or device, so a developer would need more information to reproduce it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:41.446Z"
+}

@@ -1,0 +1,49 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which Android version and device are you using, and when you use TalkBack, which steps show that no announcement is made for a download or refresh?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says TalkBack users get no announcement when downloads or feed refreshes start or finish, which makes the status harder to track but does not clearly stop the user from completing a task, and the requested behavior is clear enough for a developer to reproduce and implement.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What steps do you take in AntennaPod with TalkBack on to start an episode download or podcast refresh, what does TalkBack say at each step, and what are your app version, Android version, and device?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a missing status announcement for downloads and feed refreshes, so TalkBack users can still finish tasks but must check status manually, yet it gives no steps, app version, device, or TalkBack output to reproduce against.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What steps do you take in AntennaPod with TalkBack on to start an episode download or podcast refresh, what does TalkBack say at each step, and what are your app version, Android version, and device?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a missing status announcement for downloads and feed refreshes, so TalkBack users can still finish tasks but must check status manually, yet it gives no steps, app version, device, or TalkBack output to reproduce against.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:47.402Z"
+}

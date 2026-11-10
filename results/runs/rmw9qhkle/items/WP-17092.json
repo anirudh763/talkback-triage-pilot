@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [],
+      "reason": "The Jetpack badge is skipped by TalkBack, but the report says the Jetpack banner is read and does not describe the badge as a control or required information, so finishing tasks is likely only slightly affected.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when TalkBack skipped the badge?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps"
+      ],
+      "reason": "The unread Jetpack badge is a visual indicator, and the report says the adjacent banner is read, so the badge's absence is unlikely to stop or meaningfully slow a task, though the video and the described Activity log location let a developer reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when TalkBack skipped the badge?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps"
+      ],
+      "reason": "The unread Jetpack badge is a visual indicator, and the report says the adjacent banner is read, so the badge's absence is unlikely to stop or meaningfully slow a task, though the video and the described Activity log location let a developer reproduce it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device model were you using when you saw this?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report describes a decorative-style Jetpack badge being skipped by TalkBack while the banner is read, with clear reproduction steps and an attached video, and it does not say the badge conveys information needed to finish a task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:49.296Z"
+}

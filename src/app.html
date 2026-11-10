@@ -1,0 +1,1126 @@
+<title>TalkBack Triage Pilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<style>
+/* Layout: a triage desk. A sticky tab bar over one wide working column; reports read like GitHub issues (mono), verdicts sit beside them as status cards. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eceff3;
+  --ink: #141a23;
+  --ink-2: #435063;
+  --ink-3: #5f6a7c;
+  --line: #d5dae3;
+  --accent: #17734a;        /* TalkBack-style focus green, deepened for text contrast */
+  --accent-ink: #ffffff;
+  --accent-soft: #e2f2e9;
+  --focus: #1f9d5a;
+  --crit: #a8231a;  --crit-bg: #fbe7e4;
+  --warn: #8f5200;  --warn-bg: #fbefd9;
+  --ok: #24663a;    --ok-bg: #e3f2e7;
+  --info: #2b579a;  --info-bg: #e5edf9;
+  --none: #566173;  --none-bg: #e9ecf1;
+  --bar: #3a69b0;
+  --removed-bg: #fbe2de; --removed-ink: #86190f;
+  --shadow: 0 1px 2px rgba(20, 26, 35, .06), 0 4px 16px rgba(20, 26, 35, .05);
+  --f-display: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1218; --surface: #151b24; --surface-2: #1c2430; --ink: #e9edf3; --ink-2: #b6bfcd; --ink-3: #8f99ab; --line: #2b3443;
+    --accent: #4fc487; --accent-ink: #08170f; --accent-soft: #15301f; --focus: #62d697;
+    --crit: #ff9284; --crit-bg: #3a1613; --warn: #f3b860; --warn-bg: #352611; --ok: #82d69d; --ok-bg: #142e1c;
+    --info: #95b7f2; --info-bg: #16233a; --none: #a3acbb; --none-bg: #222a36; --bar: #7ea5ea;
+    --removed-bg: #3d1916; --removed-ink: #ffb7ab; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1218; --surface: #151b24; --surface-2: #1c2430; --ink: #e9edf3; --ink-2: #b6bfcd; --ink-3: #8f99ab; --line: #2b3443;
+  --accent: #4fc487; --accent-ink: #08170f; --accent-soft: #15301f; --focus: #62d697;
+  --crit: #ff9284; --crit-bg: #3a1613; --warn: #f3b860; --warn-bg: #352611; --ok: #82d69d; --ok-bg: #142e1c;
+  --info: #95b7f2; --info-bg: #16233a; --none: #a3acbb; --none-bg: #222a36; --bar: #7ea5ea;
+  --removed-bg: #3d1916; --removed-ink: #ffb7ab; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+a { color: var(--info); text-underline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h2 { font-size: 1.35rem; font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.small { font-size: .875rem; }
+.eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+code, .mono { font-family: var(--f-mono); font-size: .86em; }
+
+/* header */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead .wrap { padding-block: 22px 18px; display: grid; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.brand h1 { font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 800; letter-spacing: -.01em; padding: 2px 10px; border: 3px solid var(--focus); border-radius: 8px; }
+.brand p { max-width: 62ch; color: var(--ink-2); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.tab { appearance: none; border: 0; background: none; color: var(--ink-2); font: 700 .95rem var(--f-body); padding: 12px 14px 11px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--ink); }
+
+main { padding-block: 26px 64px; }
+.view { display: grid; gap: 22px; }
+.lede { display: grid; gap: 6px; max-width: 76ch; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+.pad { padding: 18px; }
+.stack { display: grid; gap: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+
+/* form controls */
+label.field { display: grid; gap: 6px; font-weight: 700; font-size: .92rem; }
+input[type="text"], textarea, select { font: inherit; font-weight: 400; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0; }
+textarea { font-family: var(--f-mono); font-size: .84rem; line-height: 1.55; min-height: 300px; resize: vertical; }
+select { width: auto; max-width: 100%; }
+.btn { appearance: none; font: 700 .95rem var(--f-body); border-radius: 8px; padding: 10px 16px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn.link { border: 0; background: none; padding: 4px 2px; color: var(--info); text-decoration: underline; text-underline-offset: 2px; font-weight: 700; }
+fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 0; min-width: 0; }
+legend { font-weight: 700; padding: 0 4px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.opts label { display: inline-flex; gap: 7px; align-items: center; font-weight: 400; }
+input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* checklist */
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.checklist li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; }
+.tick { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .9rem; }
+.tick.yes { background: var(--ok-bg); color: var(--ok); }
+.tick.no { background: var(--none-bg); color: var(--none); }
+.checklist strong { display: block; }
+.checklist .why { font-size: .85rem; color: var(--ink-2); }
+.meter { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+
+/* verdicts */
+.verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.verdict { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--surface); align-content: start; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px; font-weight: 700; font-size: .85rem; line-height: 1.4; }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.b-blocks { background: var(--crit-bg); color: var(--crit); }
+.b-slows { background: var(--warn-bg); color: var(--warn); }
+.b-minor { background: var(--ok-bg); color: var(--ok); }
+.b-cant { background: var(--none-bg); color: var(--none); }
+.b-act { background: var(--info-bg); color: var(--info); }
+.b-need { background: var(--warn-bg); color: var(--warn); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: .92rem; }
+.kv dt { color: var(--ink-3); }
+.kv dd { margin: 0; }
+.status { min-height: 1.4em; color: var(--ink-2); font-size: .92rem; }
+.status.err { color: var(--crit); }
+.notice { border: 1px dashed var(--line); border-radius: var(--r); padding: 12px 14px; color: var(--ink-2); background: var(--surface-2); }
+
+/* report text */
+.report { font-family: var(--f-mono); font-size: .8rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface-2); border-radius: 8px; padding: 12px; max-height: 420px; overflow: auto; margin: 0; }
+.report.tall { max-height: none; }
+.report .gone { background: var(--removed-bg); color: var(--removed-ink); text-decoration: line-through; text-decoration-thickness: 1px; display: block; }
+
+/* tables */
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: 12px 14px 4px; font-weight: 700; font-family: var(--f-display); }
+th, td { text-align: left; padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+thead th { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); border-top: 0; }
+td.num, th.num { text-align: right; }
+.cellbar { display: grid; gap: 4px; min-width: 96px; }
+.cellbar .v { font-weight: 700; }
+.cellbar .v small { font-weight: 400; color: var(--ink-3); }
+.hbar { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.hbar > i { display: block; height: 100%; background: var(--bar); border-radius: 3px; }
+.chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.chip { font: 500 .72rem var(--f-mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink-3); }
+.chip.on { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.flip { color: var(--warn); font-weight: 700; }
+.pill { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+tr.sel td { background: var(--accent-soft); }
+
+.progress { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+@media (prefers-reduced-motion: reduce) { .progress > i { transition: none; } }
+
+.finding { font-family: var(--f-display); font-size: 1.12rem; font-weight: 700; line-height: 1.4; max-width: 70ch; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
+.steps li::before { content: counter(s); width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--focus); display: grid; place-items: center; font-weight: 800; color: var(--accent); }
+.prose { display: grid; gap: 12px; max-width: 72ch; }
+.prose ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+details > summary { cursor: pointer; font-weight: 700; }
+.sitefoot { padding-block: 0 40px; border-top: 1px solid var(--line); padding-top: 18px; }
+.legendline { font-size: .82rem; color: var(--ink-3); }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">
+      <h1>TalkBack Triage Pilot</h1>
+      <p>Checks accessibility bug reports for TalkBack steps and the app version, asks Claude to triage them, and measures what changes when those details are taken out.</p>
+    </div>
+  </div>
+</header>
+<nav class="tabbar" aria-label="Sections">
+    <div class="wrap">
+      <div class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab" role="tab" id="tab-check" aria-controls="check" aria-selected="true">Check a report</button>
+        <button class="tab" role="tab" id="tab-pilot" aria-controls="pilot" aria-selected="false" tabindex="-1">Pilot: 2 apps</button>
+        <button class="tab" role="tab" id="tab-label" aria-controls="label" aria-selected="false" tabindex="-1">Label reports</button>
+        <button class="tab" role="tab" id="tab-about" aria-controls="about" aria-selected="false" tabindex="-1">How it works</button>
+      </div>
+    </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ CHECK ============ -->
+<section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
+  <div class="lede">
+    <h2>Check one bug report</h2>
+    <p class="muted">Paste a report or load a real one from the pilot data. The checklist updates as you type. Triage asks Claude whether the issue blocks a TalkBack user's task and whether there is enough evidence to act.</p>
+  </div>
+  <div class="grid2">
+    <div class="card pad stack">
+      <div class="row">
+        <label class="field" for="ex-select" style="flex:1 1 260px">Load a real report
+          <select id="ex-select"></select>
+        </label>
+        <label class="field" for="ex-app">App
+          <select id="ex-app">
+            <option value="WordPress for Android">WordPress for Android</option>
+            <option value="AntennaPod">AntennaPod</option>
+            <option value="">Another Android app</option>
+          </select>
+        </label>
+      </div>
+      <label class="field" for="in-title">Title
+        <input type="text" id="in-title" autocomplete="off">
+      </label>
+      <label class="field" for="in-body">Report
+        <textarea id="in-body" spellcheck="false"></textarea>
+      </label>
+      <p class="small muted" id="ex-source"></p>
+    </div>
+    <div class="stack">
+      <div class="card pad stack" aria-labelledby="chk-h">
+        <div class="row" style="justify-content:space-between">
+          <h3 id="chk-h">Report checklist</h3>
+          <span class="pill" id="chk-score" aria-live="polite"></span>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="chk-meter" style="width:0"></i></div>
+        <ul class="checklist" id="checklist"></ul>
+        <p class="small muted">The checklist is plain pattern matching, no AI. It is the same code that removes these details in the pilot.</p>
+      </div>
+      <div class="card pad stack">
+        <h3>AI triage</h3>
+        <div class="row">
+          <button class="btn primary" id="btn-triage">Triage with Claude</button>
+          <button class="btn" id="btn-compare">Compare without steps &amp; version</button>
+        </div>
+        <p class="status" id="triage-status" role="status" aria-live="polite"></p>
+        <div class="notice" id="sample-off" hidden>AI triage isn't available in this copy of the page. The checklist works here, and the Pilot tab shows the saved results. To run the triage yourself, see <code>scripts/run-triage.mjs</code> in the project's README.</div>
+      </div>
+    </div>
+  </div>
+  <div id="triage-out" class="stack" aria-live="polite"></div>
+</section>
+
+<!-- ============ PILOT ============ -->
+<section class="view" id="pilot" role="tabpanel" aria-labelledby="tab-pilot" hidden>
+  <div class="lede">
+    <h2>Two-app pilot</h2>
+    <p class="muted" id="pilot-lede"></p>
+  </div>
+
+  <div class="tablewrap" id="coverage"></div>
+
+  <div class="card pad stack" aria-labelledby="run-h">
+    <h3 id="run-h">Run the ablation</h3>
+    <p class="small muted">Each report is triaged once per version. A shortened version is run only when the report has the detail it removes and the checker confirms nothing else it measures was lost. Calls run two at a time on the account of whoever presses Run.</p>
+    <div class="row" style="align-items:stretch">
+      <fieldset>
+        <legend>Conditions</legend>
+        <div class="opts" id="cond-opts"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Model</legend>
+        <div class="opts">
+          <label><input type="radio" name="tier" value="quick" checked> Quick</label>
+          <label><input type="radio" name="tier" value="default"> Default</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Reports</legend>
+        <div class="opts">
+          <label><input type="radio" name="scope" value="eligible" checked> <span id="scope-elig">With steps or version</span></label>
+          <label><input type="radio" name="scope" value="all"> <span id="scope-all">All</span></label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="btn-run">Run pilot</button>
+      <button class="btn" id="btn-stop" disabled>Stop</button>
+      <button class="btn" id="btn-resume" hidden>Finish this run</button>
+      <span class="small muted" id="run-calls"></span>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="run-bar"></i></div>
+    <p class="status" id="run-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="stack" id="results"></div>
+</section>
+
+<!-- ============ LABEL ============ -->
+<section class="view" id="label" role="tabpanel" aria-labelledby="tab-label" hidden>
+  <div class="lede">
+    <h2>Label reports by hand</h2>
+    <p class="muted">People's labels are the reference Claude is compared with, once two people agree on them. Start with the five-report starter set, label on your own, then compare with a second person and fix the rubric where you disagree.</p>
+  </div>
+  <div class="grid2">
+    <div class="card pad stack" id="lab-card"></div>
+    <div class="stack">
+      <div class="card pad stack">
+        <h3>Raters and agreement</h3>
+        <p class="small muted" id="lab-who"></p>
+        <div id="lab-agree"></div>
+      </div>
+      <div class="card pad stack">
+        <h3>Share labels</h3>
+        <p class="small muted">Copy your labels to send them, or paste labels a collaborator sent you to add them as a second rater.</p>
+        <div class="row">
+          <button class="btn" id="btn-copy-labels">Copy my labels</button>
+        </div>
+        <label class="field" for="imp-name">Collaborator's name
+          <input type="text" id="imp-name" autocomplete="off" placeholder="e.g. W. Aljedaani">
+        </label>
+        <label class="field" for="imp-json">Their labels (pasted)
+          <textarea id="imp-json" style="min-height:90px"></textarea>
+        </label>
+        <div class="row"><button class="btn" id="btn-import">Add as a rater</button></div>
+        <p class="status" id="lab-status" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="view" id="about" role="tabpanel" aria-labelledby="tab-about" hidden>
+  <div class="lede">
+    <h2>What this does, step by step</h2>
+    <p class="muted">The question: when an Android accessibility bug report includes TalkBack reproduction steps and the app version, does an AI judge differently whether a developer could start reproducing it? And do people agree with its judgments?</p>
+  </div>
+  <div class="card pad">
+    <ol class="steps">
+      <li><div><h3>Collect real reports</h3><p class="muted">Public GitHub issues from two open-source Android apps, fetched on 9 November 2026. WordPress for Android: issues labelled <code>Accessibility</code> that mention TalkBack or a screen reader (51). AntennaPod: every issue labelled <code>Area: Accessibility</code> (24). Images and videos become <code>[image]</code> and <code>[video]</code>, template checklists are dropped, and bodies are cut at about 1,200 characters.</p></div></li>
+      <li><div><h3>Check each report</h3><p class="muted">Pattern rules flag six details: TalkBack reproduction steps, app version, Android version or device, expected vs. actual behaviour, what TalkBack said, and a recording or screenshot. The rules are deterministic, so anyone can rerun them.</p></div></li>
+      <li><div><h3>Make controlled copies</h3><p class="muted">"TalkBack steps removed" drops only the action steps: the steps heading and the list items under it. It keeps steps that report what happened (for example "Notice it crashes"), anything TalkBack said, recordings, notes, workarounds and "Tested on" lines. "Version removed" drops the app version, Android version, device and app source. Each copy is checked: if the checker sees that any other detail was lost, that copy is not run. Every removal is listed line by line in <code>results/pair_review.md</code>, and the report view shows it with strike-through.</p></div></li>
+      <li><div><h3>Ask Claude about each copy</h3><p class="muted">Each copy goes to Claude in its own call with the same instructions. Claude answers two questions: could a developer start reproducing this with the information here, and could a TalkBack user finish the task. It also says what is missing. No confidence score is shown, because a model's self-reported confidence isn't calibrated.</p></div></li>
+      <li><div><h3>Compare, then check against people</h3><p class="muted">The pilot counts how often Claude's answer changes between a report and its shortened copy, with an exact McNemar test on the pairs. People label reports in the Label tab, blind to Claude's answers, using the same rubric. Each version is scored only against labels of that same version. A simple checklist rule (enough to start reproducing when the text has steps) is scored the same way, to see whether Claude adds anything over the checklist.</p></div></li>
+    </ol>
+  </div>
+  <div class="grid2">
+    <div class="card pad prose">
+      <h3>What the results can and can't show</h3>
+      <ul>
+        <li>The removal comparison shows whether Claude's answer depends on those lines. It doesn't show that Claude is right.</li>
+        <li>Whether Claude is right needs two people labelling independently. Start with five reports, compare, tighten the rubric, then label more.</li>
+        <li>Many WordPress issues were written by the app team as audits, not by end users. Report the two apps separately.</li>
+        <li>Model answers vary between runs. Repeat runs, and keep the model setting fixed within a comparison.</li>
+        <li>Nothing here shows yet that the app improves triage or helps developers reproduce bugs.</li>
+        <li>GitHub outcomes (closed, not planned, still open) are context only.</li>
+      </ul>
+    </div>
+    <div class="card pad prose">
+      <h3>Closest related work</h3>
+      <ul>
+        <li>Aljedaani, Mkaouer, Ludi, Ouni, Jenhani. <a href="https://smilevo.github.io/access/" rel="noopener">On the Identification of Accessibility Bug Reports in Open Source Systems</a>. W4A 2022. Finding which reports are about accessibility; this pilot asks what a developer can do with one.</li>
+        <li>Johnson, Mahmud, Wendland, Moran, Rubin, Fazzini. <a href="https://arxiv.org/abs/2301.01235" rel="noopener">An Empirical Investigation into the Reproduction of Bug Reports for Android Apps</a>. SANER 2022. Environment and steps are often missing or vague.</li>
+        <li>Bi, Xia, Lo, Aleti. <a href="https://xin-xia.github.io/publication/icsme211.pdf" rel="noopener">A First Look at Accessibility Issues in Popular GitHub Projects</a>. ICSME 2021.</li>
+        <li><a href="https://arxiv.org/abs/2506.00128" rel="noopener">Applying Large Language Models to Issue Classification</a> (2025).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="wrap sitefoot">
+  <p class="small muted">Source code, data and method: <a href="https://github.com/anirudh763/talkback-triage-pilot">github.com/anirudh763/talkback-triage-pilot</a>. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
+</footer>
+
+<script>/*CORE*/</script>
+<script type="application/json" id="dataset">/*DATA*/</script>
+<script type="application/json" id="archive">/*ARCHIVE*/</script>
+<script>
+(function () {
+  "use strict";
+  const T = window.TBT;
+  const $ = (s, el) => (el || document).querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+  const h = (tag, attrs, ...kids) => {
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === "class") e.className = v;
+      else if (k === "text") e.textContent = v;
+      else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) if (kid != null && kid !== false) e.append(kid.nodeType ? kid : String(kid));
+    return e;
+  };
+  const pct = (x) => (x == null ? "–" : Math.round(x * 100) + "%");
+  const store = {
+    get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
+  };
+
+  // ---------- data ----------
+  const APPS = {
+    WP: { name: "WordPress for Android", repo: "wordpress-mobile/WordPress-Android" },
+    AP: { name: "AntennaPod", repo: "AntennaPod/AntennaPod" },
+  };
+  const REPORTS = JSON.parse($("#dataset").textContent).map((r) => {
+    const chk = T.check(r);
+    return Object.assign(r, { chk });
+  });
+  const BY_ID = Object.fromEntries(REPORTS.map((r) => [r.id, r]));
+  const gh = (r) => "https://github.com/" + APPS[r.app].repo + "/issues/" + r.number;
+  const COND_ORDER = ["full", "no_steps", "no_version", "neither"];
+  const FIELDS = [
+    { k: "tbSteps", key: "talkback_steps", name: "TalkBack reproduction steps", short: "TB", why: "Ordered steps that say how TalkBack was used: turned on, gestures, what got focus." },
+    { k: "appVersion", key: "app_version", name: "App version or build", short: "VER", why: "A version number or build id, e.g. 3.1.0 or JPAndroid 24.8." },
+    { k: "osDevice", key: "android_version_or_device", name: "Android version or device", short: "DEV", why: "Android 12, API 24, Pixel 8, Nokia 5.3, an emulator." },
+    { k: "expectedActual", key: "expected_vs_actual", name: "Expected vs. actual behaviour", short: "E/A", why: "Says both what should happen and what does." },
+    { k: "heard", key: "what_talkback_said", name: "What TalkBack said", short: "SAID", why: "Quotes the announcement, e.g. reads as \"Button\"." },
+    { k: "media", key: "recording_or_screenshot", name: "Recording or screenshot", short: "MEDIA", why: "A screen recording, screenshot or video is attached." },
+  ];
+  const IMPACT = {
+    blocks_task: { t: "Blocks the task", c: "b-blocks" },
+    slows_task: { t: "Slows the task", c: "b-slows" },
+    minor: { t: "Minor", c: "b-minor" },
+    cannot_tell: { t: "Can't tell", c: "b-cant" },
+  };
+  const EVID = {
+    actionable: { t: "Enough to start reproducing", c: "b-act" },
+    needs_more_evidence: { t: "Needs more evidence", c: "b-need" },
+  };
+  const outcome = (r) => r.state === "open" ? "Open" : r.stateReason === "completed" ? "Closed: completed" : r.stateReason === "not_planned" ? "Closed: not planned" : r.stateReason === "duplicate" ? "Closed: duplicate" : "Closed";
+  const badge = (map, v) => h("span", { class: "badge " + (map[v] ? map[v].c : "b-cant") }, map[v] ? map[v].t : v);
+
+  // ---------- capabilities ----------
+  // Inside Claude the page can call the model; anywhere else (GitHub Pages, a local file) it shows saved runs only.
+  let aiOff = false;
+  const NO_AI_RUN = "This copy can't call the AI, so it shows saved runs only. To rerun the pilot with your own API key, see scripts/run-triage.mjs in the project's README.";
+  let sample = null, db = null, user = null, downloads = null, me = null;
+  const ready = (async () => {
+    const use = (n) => (window.claude && window.claude.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null));
+    [sample, db, user, downloads] = await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
+    if (user) { try { me = await user.me(); } catch (e) { me = null; } }
+    $("#sample-off").hidden = !!sample;
+    if (!sample) { aiOff = true; $("#run-status").textContent = NO_AI_RUN; updateCallCount(); }
+    startDb();
+    renderLabelView();
+    renderResults();
+  })();
+
+  // ---------- tabs ----------
+  const VIEWS = ["check", "pilot", "label", "about"];
+  function show(view, focus) {
+    if (!VIEWS.includes(view)) view = "check";
+    for (const v of VIEWS) {
+      const tab = $("#tab-" + v), panel = $("#" + v);
+      const on = v === view;
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+      tab.tabIndex = on ? 0 : -1;
+      panel.hidden = !on;
+    }
+    if (focus) $("#tab-" + view).focus();
+  }
+  $$(".tab").forEach((tab, i, all) => {
+    tab.addEventListener("click", () => { const v = tab.getAttribute("aria-controls"); history.replaceState(null, "", "#" + v); show(v); });
+    tab.addEventListener("keydown", (e) => {
+      let j = null;
+      if (e.key === "ArrowRight") j = (i + 1) % all.length;
+      if (e.key === "ArrowLeft") j = (i - 1 + all.length) % all.length;
+      if (e.key === "Home") j = 0;
+      if (e.key === "End") j = all.length - 1;
+      if (j != null) { e.preventDefault(); const v = all[j].getAttribute("aria-controls"); history.replaceState(null, "", "#" + v); show(v, true); }
+    });
+  });
+  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+
+  // ============ CHECK VIEW ============
+  const exSel = $("#ex-select");
+  exSel.append(h("option", { value: "" }, "Paste your own…"));
+  for (const app of ["WP", "AP"]) {
+    const g = h("optgroup", { label: APPS[app].name });
+    for (const r of REPORTS.filter((x) => x.app === app)) g.append(h("option", { value: r.id }, "#" + r.number + " " + r.title.slice(0, 70)));
+    exSel.append(g);
+  }
+  function loadExample(id) {
+    const r = BY_ID[id];
+    if (!r) { $("#ex-source").textContent = ""; return; }
+    $("#in-title").value = r.title;
+    $("#in-body").value = r.body;
+    $("#ex-app").value = APPS[r.app].name;
+    $("#ex-source").replaceChildren("From ", h("a", { href: gh(r), target: "_blank", rel: "noopener" }, APPS[r.app].repo + " #" + r.number), " · " + outcome(r) + (r.created ? " · filed " + r.created : ""));
+    updateChecklist();
+  }
+  exSel.addEventListener("change", () => { loadExample(exSel.value); $("#triage-out").replaceChildren(); $("#triage-status").textContent = ""; });
+  function currentReport() { return { title: $("#in-title").value, body: $("#in-body").value, labels: [] }; }
+  function updateChecklist() {
+    const c = T.check(currentReport());
+    const ul = $("#checklist");
+    ul.replaceChildren(...FIELDS.map((f) => h("li", null,
+      h("span", { class: "tick " + (c[f.k] ? "yes" : "no"), "aria-hidden": "true" }, c[f.k] ? "✓" : "–"),
+      h("div", null, h("strong", null, f.name, h("span", { class: "sr" }, c[f.k] ? ": present" : ": missing")), h("span", { class: "why" }, (c[f.k] ? "Present. " : "Missing. ") + f.why)))));
+    const n = FIELDS.filter((f) => c[f.k]).length;
+    $("#chk-score").textContent = n + " of 6 present";
+    $("#chk-meter").style.width = (n / 6) * 100 + "%";
+  }
+  let inputTimer = null;
+  ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => { clearTimeout(inputTimer); inputTimer = setTimeout(updateChecklist, 150); if (exSel.value) { exSel.value = ""; $("#ex-source").textContent = "Edited copy"; } }));
+
+  function errText(e) {
+    const code = e && e.code;
+    return {
+      not_granted: "Claude access was not allowed for this page, so AI triage is off.",
+      sampling_disabled: "Claude isn't available on this account.",
+      rate_limited: "Too many Claude calls right now. Wait a minute, then try again.",
+      session_expired: "Sign in to Claude again, then retry.",
+      invalid_json: "Claude's answer wasn't in the expected format. Try again.",
+      refused: "Claude declined this input.",
+      cancelled: "Stopped.",
+    }[code] || "Something went wrong reaching Claude. Try again.";
+  }
+
+  async function triage(title, body, app, tier, signal) {
+    const res = await sample(T.prompt(title, body, app), { modelTier: tier || "default", signal });
+    const a = T.parseAnswer(res.text);
+    if (!a) throw { code: "invalid_json", text: res.text };
+    a.tier = res.modelTierApplied || tier;
+    return a;
+  }
+
+  function verdictCard(heading, a, sub) {
+    return h("div", { class: "verdict" },
+      h("div", null, h("p", { class: "eyebrow" }, heading), sub ? h("p", { class: "small muted" }, sub) : null),
+      h("div", { class: "row" }, badge(IMPACT, a.impact), badge(EVID, a.evidence)),
+      h("dl", { class: "kv" },
+        h("dt", null, "Why"), h("dd", null, a.reason || "–"),
+        h("dt", null, "Missing"), h("dd", null, a.missing.length ? a.missing.map((m) => (FIELDS.find((f) => f.key === m) || { name: m }).name).join(", ") : "Nothing flagged"),
+        a.ask ? [h("dt", null, "Ask reporter"), h("dd", null, a.ask)] : null));
+  }
+
+  function removedView(full, cut) {
+    // highlight the lines of the original that are gone from the copy
+    const left = cut.split("\n").map((x) => x.trim());
+    const pool = {};
+    for (const x of left) pool[x] = (pool[x] || 0) + 1;
+    const pre = h("pre", { class: "report tall", tabindex: "0", "aria-label": "Report with removed lines marked" });
+    for (const line of full.split("\n")) {
+      const k = line.trim();
+      if (pool[k]) { pool[k]--; pre.append(line + "\n"); }
+      else if (!k) pre.append("\n");
+      else pre.append(h("span", { class: "gone" }, h("span", { class: "sr" }, "Removed: "), line));
+    }
+    return pre;
+  }
+
+  let checkCtl = null;
+  async function runCheck(compare) {
+    await ready;
+    const out = $("#triage-out"), st = $("#triage-status");
+    if (!sample) { $("#sample-off").hidden = false; st.textContent = ""; return; }
+    const r = currentReport();
+    if (!r.body.trim() && !r.title.trim()) { st.textContent = "Add a title or report text first."; return; }
+    if (checkCtl) checkCtl.abort();
+    const ctl = (checkCtl = new AbortController());
+    const app = $("#ex-app").value;
+    $("#btn-triage").disabled = $("#btn-compare").disabled = true;
+    st.classList.remove("err");
+    st.textContent = compare ? "Asking Claude about both versions… this takes a few seconds." : "Asking Claude… this takes a few seconds.";
+    out.replaceChildren();
+    try {
+      if (!compare) {
+        const a = await triage(r.title, r.body, app, "default", ctl.signal);
+        out.replaceChildren(h("div", { class: "verdicts" }, verdictCard("Claude's triage", a, "Report as written")));
+        st.textContent = "Done. " + IMPACT[a.impact].t + ", " + EVID[a.evidence].t.toLowerCase() + ".";
+      } else {
+        const cut = T.strip(r, { steps: T.check(r).tbSteps, version: true });
+        const same = cut.trim() === r.body.trim();
+        const [a, b] = await Promise.all([triage(r.title, r.body, app, "default", ctl.signal), same ? null : triage(r.title, cut, app, "default", ctl.signal)]);
+        const cards = [verdictCard("As written", a, "Full report")];
+        if (b) cards.push(verdictCard("Steps & version removed", b, "Same report, details taken out"));
+        const changed = b && (a.impact !== b.impact || a.evidence !== b.evidence);
+        out.replaceChildren(
+          h("div", { class: "verdicts" }, cards),
+          same ? h("p", { class: "notice" }, "This report has no TalkBack steps or version info to remove, so only one version was triaged.")
+            : h("div", { class: "card pad stack" }, h("h3", null, "What was removed"), h("p", { class: "small muted" }, "Struck-through lines were left out of the second copy."), removedView(r.body, cut)));
+        st.textContent = same ? "Done." : changed ? "Done. Claude's call changed when the details were removed." : "Done. Claude's call stayed the same without the details.";
+      }
+    } catch (e) {
+      st.textContent = errText(e);
+      st.classList.toggle("err", e.code !== "cancelled");
+      if (e.code === "not_granted" || e.code === "sampling_disabled") $("#sample-off").hidden = false;
+    } finally {
+      $("#btn-triage").disabled = $("#btn-compare").disabled = false;
+    }
+  }
+  $("#btn-triage").addEventListener("click", () => runCheck(false));
+  $("#btn-compare").addEventListener("click", () => runCheck(true));
+  exSel.value = "WP-20770";
+  loadExample("WP-20770");
+
+  // ============ PILOT VIEW ============
+  const nWP = REPORTS.filter((r) => r.app === "WP").length, nAP = REPORTS.filter((r) => r.app === "AP").length;
+  const eligible = REPORTS.filter((r) => COND_ORDER.slice(1).some((c) => T.applies(r, c, r.chk)));
+  $("#pilot-lede").textContent = REPORTS.length + " accessibility issues from GitHub: " + nWP + " from WordPress for Android and " + nAP + " from AntennaPod. " + eligible.length + " of them have TalkBack steps or version details that can be removed for the comparison.";
+  $("#scope-elig").textContent = "With steps or version (" + eligible.length + ")";
+  $("#scope-all").textContent = "All (" + REPORTS.length + ")";
+
+  // coverage table: a real finding before any AI runs
+  (function coverage() {
+    const groups = [["WP", REPORTS.filter((r) => r.app === "WP")], ["AP", REPORTS.filter((r) => r.app === "AP")], ["ALL", REPORTS]];
+    const cell = (rs, k) => { const n = rs.filter((r) => r.chk[k]).length; const p = n / rs.length; return h("td", null, h("div", { class: "cellbar" }, h("span", { class: "v" }, pct(p), " ", h("small", null, n + "/" + rs.length)), h("div", { class: "hbar", "aria-hidden": "true" }, h("i", { style: "width:" + p * 100 + "%" })))); };
+    const t = h("table", null,
+      h("caption", null, "How often each detail appears in the filed reports"),
+      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Detail"), h("th", { scope: "col" }, "WordPress (" + nWP + ")"), h("th", { scope: "col" }, "AntennaPod (" + nAP + ")"), h("th", { scope: "col" }, "Both apps (" + REPORTS.length + ")"))),
+      h("tbody", null, FIELDS.map((f) => h("tr", null, h("th", { scope: "row" }, f.name), groups.map(([, rs]) => cell(rs, f.k))))));
+    $("#coverage").replaceChildren(t);
+  })();
+
+  const condBox = $("#cond-opts");
+  for (const c of COND_ORDER) {
+    const n = REPORTS.filter((r) => T.applies(r, c, r.chk)).length;
+    condBox.append(h("label", null, h("input", { type: "checkbox", value: c, checked: c === "full" || c === "neither" }), T.CONDITIONS[c].label + (c === "full" ? "" : " (" + n + ")")));
+  }
+  const selectedConds = () => $$("input[type=checkbox]", condBox).filter((x) => x.checked).map((x) => x.value);
+  const radio = (name) => ($("input[name=" + name + "]:checked") || {}).value;
+  // a shortened copy is run only when it lost its target detail and nothing else the checker measures
+  const PAIR = {};
+  const cleanPair = (r, c) => {
+    if (c === "full") return true;
+    const k = r.id + "~" + c;
+    if (!(k in PAIR)) PAIR[k] = T.applies(r, c, r.chk) && T.pairCheck(r, c).clean;
+    return PAIR[k];
+  };
+  function plan(conds, scope) {
+    const rs = scope === "all" ? REPORTS : eligible;
+    const tasks = [];
+    for (const r of rs) for (const c of conds) if (cleanPair(r, c)) tasks.push({ r, c });
+    return tasks;
+  }
+  function updateCallCount() {
+    const conds = selectedConds();
+    $("#run-calls").textContent = conds.length ? plan(conds, radio("scope")).length + " Claude calls" : "Pick at least one condition";
+    $("#btn-run").disabled = !conds.length || running || aiOff;
+  }
+  condBox.addEventListener("change", updateCallCount);
+  $$("input[name=scope]").forEach((x) => x.addEventListener("change", updateCallCount));
+
+  // runs: {id: {meta, items: {reportId: {cond: answer}}}}
+  const RUNS = {};
+  // runs saved into the page itself, so the file works on its own and for people who can't read the page's store
+  const ARCHIVE = (() => { try { return JSON.parse($("#archive").textContent) || {}; } catch (e) { return {}; } })();
+  for (const id in ARCHIVE) RUNS[id] = { meta: ARCHIVE[id].meta, items: ARCHIVE[id].items, archived: true };
+  let currentRun = null;
+  let running = false, runCtl = null;
+  const localRuns = store.get("tbt-runs") || {};
+  Object.assign(RUNS, localRuns);
+
+  let unsubItems = null;
+  function startDb() {
+    if (!db) {
+      const ids = Object.keys(RUNS).sort().reverse();
+      if (ids.length && !currentRun) currentRun = ids[0];
+      return;
+    }
+    let timer = setTimeout(() => { if (!Object.keys(RUNS).length) $("#run-status").textContent = "Saved runs can't be reached yet."; }, 10000);
+    db.collection("runs").orderBy("created", "desc").limit(30).onSnapshot((snap) => {
+      clearTimeout(timer);
+      for (const d of snap.docs) { const m = d.data(); RUNS[d.id] = RUNS[d.id] || { meta: m, items: {} }; RUNS[d.id].meta = m; }
+      if (!currentRun && snap.docs.length) selectRun(snap.docs[0].id);
+      else renderResults();
+    }, () => { clearTimeout(timer); });
+    db.collection("labels").onSnapshot((snap) => {
+      LABEL_DOCS = {};
+      for (const d of snap.docs) LABEL_DOCS[d.id] = d.data();
+      renderLabelView(); renderResults();
+    }, () => {});
+  }
+  function selectRun(id) {
+    currentRun = id;
+    if (db && RUNS[id] && !RUNS[id].local) {
+      if (unsubItems) unsubItems();
+      unsubItems = db.collection("runs/" + id + "/items").onSnapshot((snap) => {
+        if (running && id === runningId) return renderResults();
+        const items = {};
+        for (const d of snap.docs) items[d.id] = d.data().answers || {};
+        if (snap.docs.length || !RUNS[id].archived) RUNS[id].items = Object.assign(items, RUNS[id].localItems || {});
+        renderResults();
+      }, () => {});
+    }
+    renderResults();
+  }
+
+  let runningId = null;
+  async function execute(runId, tasks) {
+    const run = RUNS[runId];
+    const total = tasks.length;
+    let done = 0, failed = null;
+    running = true; runningId = runId;
+    runCtl = new AbortController();
+    const signal = runCtl.signal;
+    $("#btn-run").disabled = true; $("#btn-stop").disabled = false; $("#btn-resume").hidden = true;
+    const st = $("#run-status"); st.classList.remove("err");
+    const bar = $("#run-bar");
+    const step = () => { bar.style.width = (total ? (done / total) * 100 : 100) + "%"; st.textContent = done + " of " + total + " calls done"; };
+    step();
+    // group by report so each report's answers are written once
+    const pending = {};
+    for (const t of tasks) pending[t.r.id] = (pending[t.r.id] || 0) + 1;
+    let writes = Promise.resolve();
+    const saveItem = (rid) => {
+      const answers = run.items[rid];
+      if (db && !run.local) writes = writes.then(() => db.doc("runs/" + runId + "/items/" + rid).set({ answers, at: new Date().toISOString() }).catch(() => {}));
+      else { run.localItems = run.items; persistLocal(); }
+    };
+    const queue = tasks.slice();
+    async function worker() {
+      while (queue.length && !failed && !signal.aborted) {
+        const { r, c } = queue.shift();
+        try {
+          const body = T.variant(r, c);
+          const a = await triage(r.title, body, APPS[r.app].name, run.meta.tier, signal);
+          run.items[r.id] = Object.assign({}, run.items[r.id], { [c]: a });
+        } catch (e) {
+          if (e && (e.code === "invalid_json" || e.code === "upstream_error" || e.code === "empty_completion" || e.code === "refused")) {
+            run.items[r.id] = Object.assign({}, run.items[r.id], { [c]: { error: e.code } });
+          } else { failed = e; break; }
+        }
+        done++; step();
+        if (--pending[r.id] === 0) saveItem(r.id);
+        if (done % 4 === 0) renderResults();
+      }
+    }
+    await Promise.all([worker(), worker()]);
+    // save partial reports too
+    for (const rid in pending) if (pending[rid] > 0 && run.items[rid]) saveItem(rid);
+    // never let a slow save hold the page in "running"
+    const settle = (pr) => Promise.race([pr.catch(() => {}), new Promise((r) => setTimeout(r, 8000))]);
+    await settle(writes);
+    const status = failed || signal.aborted ? "stopped" : "done";
+    run.meta.status = status;
+    // mark the run finished after its answers are saved, without holding the page
+    if (db && !run.local) writes.then(() => db.doc("runs/" + runId).update({ status })).catch(() => db.doc("runs/" + runId).set(Object.assign({}, run.meta, { status })).catch(() => {}));
+    else persistLocal();
+    running = false; runningId = null;
+    $("#btn-stop").disabled = true;
+    updateCallCount();
+    if (failed) { st.textContent = errText(failed) + " " + done + " of " + total + " calls finished; use Finish this run to continue later."; st.classList.add("err"); }
+    else if (signal.aborted) st.textContent = "Stopped after " + done + " of " + total + " calls. Use Finish this run to continue.";
+    else st.textContent = "Finished: " + done + " calls.";
+    renderResults();
+  }
+  function persistLocal() {
+    const keep = {};
+    for (const id in RUNS) if (RUNS[id].local) keep[id] = { meta: RUNS[id].meta, items: RUNS[id].items, local: true };
+    store.set("tbt-runs", keep);
+  }
+  $("#btn-run").addEventListener("click", async () => {
+    await ready;
+    if (!sample) { $("#run-status").textContent = NO_AI_RUN; return; }
+    const conds = COND_ORDER.filter((c) => selectedConds().includes(c));
+    const tier = radio("tier"), scope = radio("scope");
+    const tasks = plan(conds, scope);
+    if (!tasks.length) return;
+    const id = "r" + Date.now().toString(36);
+    const meta = { created: new Date().toISOString(), tier, conds, scope, total: tasks.length, by: (me && me.id) || null, status: "running", method: 2 };
+    RUNS[id] = { meta, items: {}, local: !db };
+    currentRun = id;
+    if (db) { try { await db.doc("runs/" + id).set(meta); selectRun(id); } catch (e) { RUNS[id].local = true; } }
+    renderResults();
+    execute(id, tasks);
+  });
+  $("#btn-stop").addEventListener("click", () => { if (runCtl) runCtl.abort(); });
+  $("#btn-resume").addEventListener("click", async () => {
+    await ready;
+    const run = RUNS[currentRun];
+    if (!run || !sample) return;
+    const tasks = plan(run.meta.conds, run.meta.scope).filter(({ r, c }) => !(run.items[r.id] && run.items[r.id][c] && !run.items[r.id][c].error));
+    if (!tasks.length) return;
+    if (db && !run.local) await db.doc("runs/" + currentRun).update({ status: "running" }).catch(() => {});
+    execute(currentRun, tasks);
+  });
+
+  // ---------- results ----------
+  let detailId = null;
+  function renderResults() {
+    const box = $("#results");
+    const ids = Object.keys(RUNS).sort((a, b) => (RUNS[b].meta.created || "").localeCompare(RUNS[a].meta.created || ""));
+    if (!ids.length) {
+      box.replaceChildren(h("div", { class: "notice" }, "No runs yet. Press Run pilot to triage the reports. Results are saved here so others who open this page see them too."));
+      return;
+    }
+    if (!currentRun || !RUNS[currentRun]) currentRun = ids[0];
+    const run = RUNS[currentRun];
+    const conds = COND_ORDER.filter((c) => (run.meta.conds || []).includes(c));
+    const results = {};
+    for (const rid in run.items) { results[rid] = {}; for (const c in run.items[rid]) if (!run.items[rid][c].error) results[rid][c] = run.items[rid][c]; }
+    const reports = (run.meta.scope === "all" ? REPORTS : eligible);
+    const S = T.summarize(reports, results, conds);
+    const doneCalls = Object.values(run.items).reduce((s, x) => s + Object.keys(x).length, 0);
+    if (!running && run.meta.total && doneCalls >= run.meta.total) run.meta.status = "done";
+    const incomplete = !running && doneCalls < (run.meta.total || 0);
+    $("#btn-resume").hidden = !incomplete;
+
+    // run picker
+    const picker = h("select", { id: "run-pick", "aria-label": "Saved run" }, ids.map((id) => {
+      const m = RUNS[id].meta; const d = new Date(m.created);
+      return h("option", { value: id, selected: id === currentRun }, d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " · " + (m.tier === "quick" ? "Quick" : "Default") + " model · " + (m.conds || []).length + " conditions" + (m.method === 2 ? "" : " · superseded") + (m.status === "done" ? "" : " · " + m.status));
+    }));
+    picker.addEventListener("change", () => selectRun(picker.value));
+
+    // what this run can say
+    let finding = null;
+    if (run.meta.method !== 2) {
+      finding = h("p", { class: "notice" }, "Superseded run. It was made before the removal rules were fixed: some \"steps removed\" copies also lost the device, app version, a recording note or a workaround. Read it as \"removing sections changed Claude's answers\", not as the effect of TalkBack steps.");
+    } else {
+      const main = conds.includes("no_steps") ? "no_steps" : conds.find((c) => c !== "full");
+      if (main && S.paired[main] && S.paired[main].n) {
+        const p = S.paired[main];
+        const what = { no_steps: "only the TalkBack steps", no_version: "only the app version and device", neither: "the TalkBack steps and version" }[main];
+        finding = h("div", { class: "stack" },
+          h("p", { class: "eyebrow" }, "Exploratory · one run · no human labels yet"),
+          h("p", { class: "finding" }, "With " + what + " taken out, Claude changed from \"enough to start reproducing\" to \"needs more evidence\" on " + p.toNeeds + " of " + p.n + " reports, and the other way on " + p.toActionable + "."),
+          h("p", { class: "small muted" }, "This shows Claude's answer depends on those lines. Whether either answer is right needs people's labels (Label reports tab)."));
+      }
+    }
+
+    // metrics table
+    const metric = (label, key, invert) => h("tr", null, h("th", { scope: "row" }, label), S.rows.map((row) => {
+      const v = row[key];
+      const n = row.n ? Math.round((v || 0) * row.n) : 0;
+      return h("td", null, h("div", { class: "cellbar" }, h("span", { class: "v" }, pct(v), " ", h("small", null, row.n ? n + "/" + row.n : "")), h("div", { class: "hbar", "aria-hidden": "true" }, h("i", { style: "width:" + (v || 0) * 100 + "%" }))));
+    }));
+    const mt = h("table", null,
+      h("caption", null, "What Claude said, by condition"),
+      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Claude's answer"), S.rows.map((row) => h("th", { scope: "col" }, T.CONDITIONS[row.cond].label, h("br"), h("span", { class: "legendline" }, row.n + " reports"))))),
+      h("tbody", null,
+        metric("Says needs more evidence", "needsEvidence"),
+        metric("Says it blocks the task", "blocks"),
+        metric("Says it can't tell", "cannotTell"),
+        metric("Flags missing TalkBack steps", "flagsSteps"),
+        metric("Flags missing app version", "flagsVersion")));
+
+    // paired comparisons
+    const pairedList = h("ul", { class: "stack", style: "margin:0;padding-left:1.2em" }, Object.entries(S.paired).filter(([, p]) => p.n).map(([c, p]) =>
+      h("li", null, h("strong", null, T.CONDITIONS[c].label + " vs. as filed"), " (" + p.n + " paired reports): evidence call changed on " + Math.round(p.evidenceFlip * 100) + "% (" + p.toNeeds + " to needs more evidence, " + p.toActionable + " to enough). Exact McNemar " + (p.p < 0.001 ? "p < 0.001" : "p = " + p.p.toFixed(3)) + ". Impact call changed on " + Math.round(p.impactFlip * 100) + "%.")));
+
+    // human agreement
+    const human = humanAgreement(results, conds, reports);
+
+    // per-report table
+    const rowsEl = reports.map((r) => {
+      const res = run.items[r.id] || {};
+      const full = res.full;
+      const tr = h("tr", { class: r.id === detailId ? "sel" : null },
+        h("td", null, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, r.app + " #" + r.number), h("div", { class: "small muted" }, r.title.slice(0, 80))),
+        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": present" : ": missing") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " present" : " missing")))))),
+        h("td", null, h("span", { class: "pill" }, outcome(r))),
+        conds.map((c) => {
+          const a = res[c];
+          if (!T.applies(r, c, r.chk)) return h("td", { class: "muted small" }, "n/a");
+          if (!a) return h("td", { class: "muted small" }, "–");
+          if (a.error) return h("td", { class: "small" }, "error");
+          const flipped = c !== "full" && full && !full.error && (full.impact !== a.impact || full.evidence !== a.evidence);
+          return h("td", { class: "small" }, IMPACT[a.impact].t, h("br"), h("span", { class: a.evidence === "needs_more_evidence" ? "flip" : "muted" }, EVID[a.evidence].t), flipped ? h("div", { class: "flip" }, "changed") : null);
+        }),
+        h("td", null, h("button", { class: "btn link", "aria-label": "Details for " + r.app + " #" + r.number, onclick: () => { detailId = r.id; renderResults(); const d = $("#detail"); if (d) d.focus(); } }, "Details")));
+      return tr;
+    });
+    const rt = h("table", null,
+      h("caption", null, "Every report in this run"),
+      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Report"), h("th", { scope: "col" }, "Details in report"), h("th", { scope: "col" }, "GitHub outcome"), conds.map((c) => h("th", { scope: "col" }, T.CONDITIONS[c].short)), h("th", { scope: "col" }, h("span", { class: "sr" }, "Open")))),
+      h("tbody", null, rowsEl));
+
+    const exportRow = h("div", { class: "row" },
+      h("button", { class: "btn", onclick: (e) => copyText(toCSV(run, reports, conds), e.target, "Results copied as CSV") }, "Copy results (CSV)"),
+      downloads ? h("button", { class: "btn", onclick: () => downloads.save({ filename: "talkback-triage-" + currentRun + ".csv", data: toCSV(run, reports, conds) }).catch(() => {}) }, "Download CSV") : null,
+      h("span", { class: "small muted", id: "copy-status", role: "status" }));
+
+    box.replaceChildren(...[
+      h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Results"), h("label", { class: "row small", for: "run-pick" }, "Run", picker)),
+      h("p", { class: "small muted" }, doneCalls + " of " + (run.meta.total || "?") + " calls answered · " + (run.meta.tier === "quick" ? "Quick" : "Default") + " model · " + (run.meta.scope === "all" ? "all reports" : "reports with steps or version")),
+      finding,
+      h("div", { class: "tablewrap" }, mt),
+      Object.keys(S.paired).length ? h("div", { class: "card pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
+      human,
+      detailId ? detailPanel(BY_ID[detailId], run, conds) : null,
+      h("div", { class: "tablewrap" }, rt),
+      exportRow].filter(Boolean));
+  }
+
+  function detailPanel(r, run, conds) {
+    const res = run.items[r.id] || {};
+    const cards = conds.filter((c) => res[c] && !res[c].error).map((c) => verdictCard(T.CONDITIONS[c].label, res[c]));
+    const show = T.applies(r, "no_steps", r.chk) ? "no_steps" : "neither";
+    const cut = T.variant(r, show);
+    return h("section", { class: "card pad stack", id: "detail", tabindex: "-1", "aria-label": "Details for " + r.app + " #" + r.number },
+      h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, r.app + " #" + r.number + ": " + r.title), h("button", { class: "btn", onclick: () => { detailId = null; renderResults(); } }, "Close")),
+      h("p", { class: "small muted" }, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, "Open on GitHub"), " · " + outcome(r) + " · " + r.comments + (r.comments === 1 ? " comment" : " comments")),
+      cards.length ? h("div", { class: "verdicts" }, cards) : h("p", { class: "muted" }, "Not triaged in this run yet."),
+      h("p", { class: "small muted" }, cut.trim() !== r.body.trim() ? "Struck-through lines are what the \"" + T.CONDITIONS[show].label + "\" copy leaves out. Everything else is identical." : "Nothing in this report was removable."),
+      removedView(r.body, cut));
+  }
+
+  function toCSV(run, reports, conds) {
+    const esc = (v) => { const s = v == null ? "" : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const head = ["run", "report", "app", "issue", "title", "outcome", "talkback_steps", "app_version", "os_device", "expected_actual", "what_said", "media", "condition", "task_impact", "evidence", "missing", "reason", "ask_reporter"];
+    const lines = [head.join(",")];
+    for (const r of reports) for (const c of conds) {
+      const a = (run.items[r.id] || {})[c];
+      if (!a || a.error) continue;
+      lines.push([currentRun, r.id, APPS[r.app].name, r.number, r.title, outcome(r), +r.chk.tbSteps, +r.chk.appVersion, +r.chk.osDevice, +r.chk.expectedActual, +r.chk.heard, +r.chk.media, c, a.impact, a.evidence, a.missing.join(" "), a.reason, a.ask].map(esc).join(","));
+    }
+    return lines.join("\n");
+  }
+  async function copyText(text, btn, okMsg, stSel) {
+    const st = $(stSel || "#copy-status");
+    try { await navigator.clipboard.writeText(text); if (st) st.textContent = okMsg; }
+    catch (e) {
+      const ta = h("textarea", { "aria-label": "Copy this text", style: "min-height:120px" });
+      ta.value = text; btn.after(ta); ta.focus(); ta.select();
+      if (st) st.textContent = "Select the text and copy it.";
+    }
+  }
+
+  // ============ LABEL VIEW ============
+  // Labels are keyed by report and version: "WP-20770" is the report as filed,
+  // "WP-20770~no_steps" is the copy with the TalkBack steps removed.
+  const keyOf = (rid, cond) => (cond && cond !== "full" ? rid + "~" + cond : rid);
+  const parseKey = (k) => { const [rid, cond] = k.split("~"); return { rid, cond: cond || "full" }; };
+  const LS_KEY = "tbt-labels-v2";
+  const storageOK = (() => { try { localStorage.setItem("tbt-probe", "1"); localStorage.removeItem("tbt-probe"); return true; } catch (e) { return false; } })();
+  let LABEL_DOCS = {};           // from the page's store: {docId: {labels, name?, imported?}}
+  let localLabels = Object.assign({}, store.get("tbt-labels") || {}, store.get(LS_KEY) || {});
+  let sharedOK = null;           // null until the first shared save is tried
+  let labIndex = 0, labSet = "starter", labCond = "full";
+  const myKey = () => (db && me && me.id ? me.id : null);
+  const newer = (a, b) => (!a ? b : !b ? a : (a.at || "") >= (b.at || "") ? a : b);
+  // this browser's copy and the page's copy, merged; the newer answer wins
+  function myLabels() {
+    const k = myKey();
+    const shared = (k && LABEL_DOCS[k] && LABEL_DOCS[k].labels) || {};
+    const out = {};
+    for (const key of new Set([...Object.keys(localLabels), ...Object.keys(shared)])) out[key] = newer(localLabels[key], shared[key]);
+    return out;
+  }
+  function raters() {
+    const k = myKey();
+    const list = [{ key: k || "local", name: (me && me.name) || "You", labels: myLabels(), mine: true }];
+    for (const id in LABEL_DOCS) {
+      if (id === k) continue;
+      const d = LABEL_DOCS[id];
+      list.push({ key: id, name: d.imported ? d.name : null, labels: d.labels || {}, imported: !!d.imported });
+    }
+    return list;
+  }
+  function whereSaved() {
+    if (sharedOK) return "Saved with this page and in this browser.";
+    if (storageOK) return sharedOK === false ? "Saved in this browser only (this page doesn't let you save to it). Use Copy my labels to send them." : "Saved in this browser.";
+    return "This browser isn't keeping labels. Use Copy my labels before you leave this page.";
+  }
+  let writing = Promise.resolve();
+  function saveMyLabel(key, val) {
+    val = Object.assign({}, val, { at: new Date().toISOString() });
+    localLabels[key] = val;
+    store.set(LS_KEY, localLabels);
+    const k = myKey();
+    if (k && sharedOK !== false) {
+      const labels = myLabels();
+      writing = writing.then(() => db.doc("labels/" + k).set({ labels, updated: val.at })).then(() => {
+        sharedOK = true;
+        LABEL_DOCS[k] = Object.assign({}, LABEL_DOCS[k], { labels });
+      }).catch(() => { sharedOK = false; }).then(() => { $("#lab-where").textContent = whereSaved(); });
+    }
+    $("#lab-where").textContent = whereSaved();
+  }
+
+  // five reports to start with: both apps, each with TalkBack steps, a version and a clean shortened copy
+  const STARTER = ["WP-20770", "WP-20150", "WP-10937", "AP-6598", "AP-6594"].filter((id) => BY_ID[id]);
+  function labelOrder() {
+    let rs = labSet === "starter" ? STARTER.map((id) => BY_ID[id]) : labSet === "pilot" ? eligible : REPORTS;
+    if (labCond !== "full") rs = rs.filter((r) => T.applies(r, labCond, r.chk) && T.pairCheck(r, labCond).clean);
+    return rs;
+  }
+
+  async function renderLabelView() {
+    const order = labelOrder();
+    const mine = myLabels();
+    labIndex = Math.max(0, Math.min(labIndex, order.length - 1));
+    const card = $("#lab-card");
+    const setSel = h("select", { id: "lab-set" },
+      h("option", { value: "starter", selected: labSet === "starter" }, "Starter set (" + STARTER.length + " reports)"),
+      h("option", { value: "pilot", selected: labSet === "pilot" }, "Pilot reports (" + eligible.length + ")"),
+      h("option", { value: "all", selected: labSet === "all" }, "All reports (" + REPORTS.length + ")"));
+    const condSel = h("select", { id: "lab-cond" }, COND_ORDER.map((c) => h("option", { value: c, selected: labCond === c }, c === "full" ? "As filed" : T.CONDITIONS[c].label)));
+    setSel.addEventListener("change", () => { labSet = setSel.value; labIndex = 0; renderLabelView(); });
+    condSel.addEventListener("change", () => { labCond = condSel.value; labIndex = 0; renderLabelView(); });
+    const controls = h("div", { class: "row" },
+      h("label", { class: "field", for: "lab-set" }, "Reports", setSel),
+      h("label", { class: "field", for: "lab-cond" }, "Version to label", condSel));
+    if (!order.length) { card.replaceChildren(controls, h("p", { class: "notice" }, "No reports in this set have that version.")); }
+    else {
+      const r = order[labIndex];
+      const key = keyOf(r.id, labCond);
+      const cur = mine[key] || {};
+      const text = labCond === "full" ? r.body : T.variant(r, labCond);
+      const done = order.filter((x) => mine[keyOf(x.id, labCond)]).length;
+      const seenFull = labCond !== "full" && mine[r.id];
+      const radios = (name, map, val) => h("div", { class: "opts" }, Object.entries(map).map(([k, v]) => h("label", null, h("input", { type: "radio", name, value: k, checked: val === k }), v.t)));
+      const nextUnlabelled = () => { const L = myLabels(); const i = order.findIndex((x, j) => j > labIndex && !L[keyOf(x.id, labCond)]); return i >= 0 ? i : order.findIndex((x) => !L[keyOf(x.id, labCond)]); };
+      card.replaceChildren(
+        controls,
+        h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "eyebrow" }, "Report " + (labIndex + 1) + " of " + order.length + (labCond === "full" ? " · as filed" : " · " + T.CONDITIONS[labCond].label.toLowerCase())), h("span", { class: "pill" }, done + " labelled")),
+        h("h3", null, r.app + " #" + r.number + ": " + r.title),
+        labCond === "full" ? h("p", { class: "small muted" }, APPS[r.app].name + " · ", h("a", { href: gh(r), target: "_blank", rel: "noopener" }, "GitHub")) : h("p", { class: "small muted" }, APPS[r.app].name + " · shortened copy, shown exactly as Claude saw it"),
+        seenFull ? h("p", { class: "notice small" }, "You already labelled the full version of this report, so you may remember what was removed. If you can, have someone who hasn't read it label this version.") : null,
+        h("pre", { class: "report", tabindex: "0", "aria-label": "Report text" }, text || "(no text)"),
+        h("fieldset", null, h("legend", null, "Could a developer start reproducing this issue with the information here?"), radios("lab-evid", EVID, cur.evidence)),
+        h("fieldset", null, h("legend", null, "Could a TalkBack user finish the task?"), radios("lab-impact", IMPACT, cur.impact)),
+        h("div", { class: "row" },
+          h("button", { class: "btn", disabled: labIndex === 0, onclick: () => { labIndex--; renderLabelView(); } }, "Previous"),
+          h("button", { class: "btn primary", onclick: () => {
+            const impact = radio("lab-impact"), evidence = radio("lab-evid");
+            if (!impact || !evidence) { $("#lab-status").textContent = "Answer both questions, or press Skip."; return; }
+            saveMyLabel(key, { impact, evidence });
+            $("#lab-status").textContent = "Saved " + r.app + " #" + r.number + ".";
+            const n = nextUnlabelled(); labIndex = n >= 0 ? n : Math.min(labIndex + 1, order.length - 1);
+            renderLabelView(); renderResults();
+            const hd = $("#lab-card h3"); if (hd) { hd.tabIndex = -1; hd.focus(); }
+          } }, "Save and next"),
+          h("button", { class: "btn", disabled: labIndex >= order.length - 1, onclick: () => { labIndex++; renderLabelView(); } }, "Skip")),
+        h("p", { class: "small muted", id: "lab-where", role: "status" }, whereSaved()));
+    }
+
+    // raters & agreement (same report and same version only)
+    const list = raters();
+    let names = {};
+    if (user) { try { names = await user.profiles(list.filter((x) => !x.imported && x.key !== "local").map((x) => x.key)); } catch (e) { names = {}; } }
+    const nameOf = (x) => x.imported ? x.name : x.mine ? (x.name || "You") : ((names[x.key] && names[x.key].name) || "Another rater");
+    $("#lab-who").textContent = "Label without looking at Claude's answers; this tab never shows them.";
+    const rows = list.map((x) => h("tr", null, h("th", { scope: "row" }, nameOf(x)), h("td", { class: "num" }, String(Object.keys(x.labels).length))));
+    const parts = [h("div", { class: "tablewrap" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Rater"), h("th", { scope: "col", class: "num" }, "Labels"))), h("tbody", null, rows)))];
+    const withLabels = list.filter((x) => Object.keys(x.labels).length);
+    if (withLabels.length >= 2) {
+      const [a, b] = withLabels;
+      const both = Object.keys(a.labels).filter((k) => b.labels[k]);
+      const ki = T.cohenKappa(both.map((k) => [a.labels[k].impact, b.labels[k].impact]));
+      const kb = T.cohenKappa(both.map((k) => [a.labels[k].impact === "blocks_task", b.labels[k].impact === "blocks_task"]));
+      const ke = T.cohenKappa(both.map((k) => [a.labels[k].evidence, b.labels[k].evidence]));
+      parts.push(both.length
+        ? h("dl", { class: "kv" },
+          h("dt", null, "Labelled by both"), h("dd", null, String(both.length)),
+          h("dt", null, "Enough to start reproducing"), h("dd", null, Math.round(ke.po * 100) + "% agree · κ = " + ke.k.toFixed(2)),
+          h("dt", null, "Blocks the task, yes/no"), h("dd", null, Math.round(kb.po * 100) + "% agree · κ = " + kb.k.toFixed(2)),
+          h("dt", null, "Task impact, 4 levels"), h("dd", null, Math.round(ki.po * 100) + "% agree · κ = " + ki.k.toFixed(2)))
+        : h("p", { class: "small muted" }, nameOf(a) + " and " + nameOf(b) + " haven't labelled the same reports yet."));
+      if (both.length && both.length < 20) parts.push(h("p", { class: "small muted" }, "With fewer than about 20 shared labels, kappa moves a lot with each disagreement. Use it to find where the rubric is unclear, not as a result."));
+    } else parts.push(h("p", { class: "small muted" }, "Agreement appears once two people have labelled the same reports."));
+    $("#lab-agree").replaceChildren(...parts);
+  }
+
+  // the people's answer for one report and version: the two raters' shared answer, or the only rater's
+  function referenceLabels() {
+    const list = raters().filter((x) => Object.keys(x.labels).length);
+    const ref = {};
+    const keys = new Set(list.flatMap((x) => Object.keys(x.labels)));
+    for (const key of keys) {
+      const vals = list.map((x) => x.labels[key]).filter(Boolean);
+      if (vals.length === 1) ref[key] = vals[0];
+      else {
+        const imp = vals[0].impact === vals[1].impact ? vals[0].impact : null;
+        const ev = vals[0].evidence === vals[1].evidence ? vals[0].evidence : null;
+        if (imp || ev) ref[key] = { impact: imp, evidence: ev };
+      }
+    }
+    return ref;
+  }
+  // the checklist rule, for comparison: "enough to start reproducing" when the text has reproduction steps
+  const ruleEvidence = (r, c) => (T.check({ title: r.title, body: T.variant(r, c), labels: r.labels }).hasSteps ? "actionable" : "needs_more_evidence");
+  function humanAgreement(results, conds, reports) {
+    const ref = referenceLabels();
+    const n = Object.keys(ref).length;
+    if (!n) return h("div", { class: "notice" }, "Agreement with people appears here once reports are labelled in the Label reports tab. Each version is compared only with labels of that same version.");
+    const cellK = (k) => h("td", null, k && k.n ? Math.round(k.po * 100) + "% · κ " + k.k.toFixed(2) + " (" + k.n + ")" : "–");
+    const rows = conds.map((c) => {
+      const pB = [], pE = [], pR = [];
+      for (const r of reports) {
+        const g = ref[keyOf(r.id, c)];
+        if (!g) continue;
+        const a = results[r.id] && results[r.id][c];
+        if (a && g.impact) pB.push([a.impact === "blocks_task", g.impact === "blocks_task"]);
+        if (a && g.evidence) pE.push([a.evidence, g.evidence]);
+        if (g.evidence && (c === "full" || T.applies(r, c, r.chk))) pR.push([ruleEvidence(r, c), g.evidence]);
+      }
+      return h("tr", null, h("th", { scope: "row" }, T.CONDITIONS[c].label), cellK(T.cohenKappa(pE)), cellK(T.cohenKappa(pR)), cellK(T.cohenKappa(pB)));
+    });
+    return h("div", { class: "tablewrap" }, h("table", null,
+      h("caption", null, "Agreement with people's labels of the same version"),
+      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Version"), h("th", { scope: "col" }, "Claude: enough to start reproducing"), h("th", { scope: "col" }, "Checklist rule: enough to start reproducing"), h("th", { scope: "col" }, "Claude: blocks the task"))),
+      h("tbody", null, rows)));
+  }
+
+  $("#btn-copy-labels").addEventListener("click", (e) => copyText(JSON.stringify({ tool: "talkback-triage-pilot", version: 2, labels: myLabels() }), e.target, (() => { const n = Object.keys(myLabels()).length; return "Copied " + n + (n === 1 ? " label." : " labels."); })(), "#lab-status"));
+  $("#btn-import").addEventListener("click", async () => {
+    const st = $("#lab-status");
+    const name = $("#imp-name").value.trim();
+    let data = null;
+    try { data = JSON.parse($("#imp-json").value); } catch (e) { data = null; }
+    const labels = data && (data.labels || data);
+    if (!name || !labels || typeof labels !== "object") { st.textContent = "Add a name and paste the labels exactly as they were copied."; return; }
+    const clean = {};
+    for (const k in labels) {
+      const { rid, cond } = parseKey(k);
+      if (BY_ID[rid] && COND_ORDER.includes(cond) && labels[k] && IMPACT[labels[k].impact] && EVID[labels[k].evidence]) clean[k] = { impact: labels[k].impact, evidence: labels[k].evidence, at: labels[k].at || null };
+    }
+    if (!Object.keys(clean).length) { st.textContent = "No usable labels found in what was pasted."; return; }
+    const slug = "imported-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+    let saved = false;
+    if (db && user && (await user.isOwner())) {
+      try { await db.doc("labels/" + slug).set({ imported: true, name, labels: clean }); saved = true; } catch (e) { saved = false; }
+    }
+    LABEL_DOCS[slug] = { imported: true, name, labels: clean };
+    st.textContent = "Added " + Object.keys(clean).length + " labels from " + name + (saved ? "." : " for this visit only.");
+    renderLabelView(); renderResults();
+  });
+
+  updateCallCount();
+  renderResults();
+  renderLabelView();
+})();
+</script>

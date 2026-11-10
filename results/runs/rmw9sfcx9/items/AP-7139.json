@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Can you attach a screenshot of a shownotes page with dynamic colors enabled, and say whether TalkBack announces the links as links when you swipe to them?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "Under dynamic colors, links are visually hard to tell apart from body text, which makes finding them harder for low-vision users but does not stop them from completing the task, and the steps to reproduce are specific enough to start.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "When you use TalkBack, can you swipe to the links and hear them announced, and does the problem only affect how they look on screen?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes low visual contrast of links under dynamic colors and never mentions TalkBack or whether links can be focused or announced, so the effect on screen reader users cannot be judged, though the visual reproduction steps are clear.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "When you use TalkBack, can you swipe to the links and hear them announced, and does the problem only affect how they look on screen?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes low visual contrast of links under dynamic colors and never mentions TalkBack or whether links can be focused or announced, so the effect on screen reader users cannot be judged, though the visual reproduction steps are clear.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:15.546Z"
+}

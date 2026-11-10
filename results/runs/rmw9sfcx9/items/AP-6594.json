@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is reachable under TalkBack but is announced as \"unlabeled\", which adds confusion without stopping the user from completing a task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version and device were you using, and on which screen did TalkBack announce the back button as unlabeled?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is reachable but TalkBack announces it as \"unlabeled,\" which adds confusion without stopping the user from finishing tasks, and the report gives enough of the expected and actual behavior for a developer to start checking the button's content description.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is the first element TalkBack focuses on and is reachable, but TalkBack announces it as unlabeled, which adds confusion without stopping the user from completing a task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and which Android version and device are you using?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is reachable by TalkBack focus but is announced as \"unlabeled\", which adds confusion without blocking the user from finishing the task, and the steps are clear enough for a developer to start reproducing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:00.994Z"
+}

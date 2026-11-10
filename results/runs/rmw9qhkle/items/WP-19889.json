@@ -1,0 +1,59 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When you swipe left from the selected image, what does TalkBack announce at each stop, and does a direct double-tap on the confirm button activate it?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "Swipe navigation never reaches the confirm button, so the user cannot finish the media selection that way, and the only described alternative (direct tap) is unverified and noted as possibly inaccessible.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What exact steps (starting screen, which buttons to tap or swipe to) open the media selection modal, and which WordPress for Android version and Android device and OS version are you using?",
+      "confidence": 0.85,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says TalkBack cannot focus the confirmation button in the media selection modal, so the user cannot finish selecting media, but it gives no steps to reach the modal, no app or device details, and no description of what TalkBack announces.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What exact steps (starting screen, which buttons to tap or swipe to) open the media selection modal, and which WordPress for Android version and Android device and OS version are you using?",
+      "confidence": 0.85,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says TalkBack cannot focus the confirmation button in the media selection modal, so the user cannot finish selecting media, but it gives no steps to reach the modal, no app or device details, and no description of what TalkBack announces.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and Android version and device are you using, and what does TalkBack announce when you swipe left from the selected image?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The confirm button cannot be reached by swiping, but the report says a direct tap on it works, so the user can still finish the task with extra effort.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:33.436Z"
+}

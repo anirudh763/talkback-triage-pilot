@@ -1,0 +1,50 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which TalkBack gestures do you use to open the overflow menu and reach refresh, and what does TalkBack announce at each step?",
+      "confidence": 0.6,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a feature request for shake-to-refresh because refresh moved into the overflow menu, which adds extra swipes and taps but does not stop the task, and it gives no TalkBack steps, device, or announcement details.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Do you use TalkBack or another assistive setting, and what steps does it take you to reach the refresh action in the overflow menu?",
+      "confidence": 0.4,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request that does not say the reporter uses TalkBack or another assistive setting, and the 'extra swipes and taps' could be touch gestures, so the impact on assistive-technology users cannot be judged. It also gives no reproduction steps or device details, and the suggested-solution text is truncated.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Do you use TalkBack or another assistive setting, and what steps does it take you to reach the refresh action in the overflow menu?",
+      "confidence": 0.4,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request that does not say the reporter uses TalkBack or another assistive setting, and the 'extra swipes and taps' could be touch gestures, so the impact on assistive-technology users cannot be judged. It also gives no reproduction steps or device details, and the suggested-solution text is truncated.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:42.139Z"
+}

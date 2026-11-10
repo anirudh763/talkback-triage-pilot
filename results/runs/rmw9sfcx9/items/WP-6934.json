@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which version of WordPress for Android were you running when this happened?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives clear reproduction steps, device and Android version, and expected versus actual behavior, but the extra announcement of the Reader topic after the Me tab only adds confusion while the user can still finish their task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using when this happens?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack adds an unexpected announcement of the selected Reader topic after the Me tab is announced on launch, which causes confusion but does not stop the user from completing a task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version were you running when TalkBack announced the Reader topic on launch?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives the launch conditions, device and Android version, expected and actual behavior, and the extra announcement, which is confusing but does not stop the user from finishing tasks.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What WordPress for Android app version and Android version/device were you using when this happened?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes an extra, unexpected TalkBack announcement of the Reader selected topic after the Me tab is announced on relaunch, which adds confusion but does not stop the user from finishing tasks, and the steps are clear enough to start reproducing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:28.072Z"
+}

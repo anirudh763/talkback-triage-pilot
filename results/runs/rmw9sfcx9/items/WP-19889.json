@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What exactly does TalkBack announce when you swipe left after selecting the image, and does tapping the confirm button directly work with TalkBack on?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The confirm button cannot be reached by swiping through the media selection modal, and the only focusable control is an invisible 'Browse for items' button, so the reporter cannot complete the confirmation step by the standard TalkBack method.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What WordPress for Android version and Android device and version are you using, and what exact swipe sequence brings you to the media selection modal?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The confirmation button cannot be focused with TalkBack swipes, so the reporter must use a direct-touch workaround that the report itself says may not be accessible, but the report lacks the steps to reach the modal, the app and device versions, and what TalkBack announces.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Starting from which screen in the app, what exact swipe sequence did you use to open the media selection modal and move toward the confirm button, and what did TalkBack announce at each step?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the confirm button cannot be focused by swiping and only an invisible \"Browse for items\" control is reachable, and the attached video is not visible to me, but the report does not list the screens or swipe sequence needed to reach the modal, or what TalkBack announced.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What Android version, device model, and WordPress for Android app version are you using, and what does TalkBack announce when it lands on the 'Browse for items' button?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The confirm button cannot be focused by swiping, focus lands on an invisible 'Browse for items' button instead, and the only workaround (direct tapping) is described as possibly not accessible, so a screen reader user may be unable to finish the step.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:43:50.911Z"
+}

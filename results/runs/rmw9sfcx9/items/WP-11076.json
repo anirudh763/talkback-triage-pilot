@@ -1,0 +1,45 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which specific blocks can't be selected with TalkBack, and what exactly happens step by step (swipes and double-taps) and what TalkBack announces when you try to select one?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "Most concerns describe slowed or confusing announcements, but the report is truncated mid-sentence on the claim that several blocks cannot be selected, which could be a blocking issue, and no exact TalkBack steps or announcements are given.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which specific blocks can't be selected with TalkBack, and what app version and Android device were you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report is a multi-item audit whose most serious item (blocks that cannot be selected) is cut off, and it gives no app version, device, reproduction steps, or exact TalkBack announcements.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which specific blocks can't be selected with TalkBack, and what app version and Android device were you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report is a multi-item audit whose most serious item (blocks that cannot be selected) is cut off, and it gives no app version, device, reproduction steps, or exact TalkBack announcements.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:44:48.981Z"
+}

@@ -1,0 +1,48 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Does this happen with TalkBack turned on, and if so, what does TalkBack announce when you swipe up during full-screen playback?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes accidental progress-bar seeking during full-screen video gestures on Android 16 but never says TalkBack or another assistive setting is in use, so the effect on screen reader users cannot be judged.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "With TalkBack turned on, what happens when you swipe up twice during full-screen video playback, and which Android version, device, and AntennaPod version are you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes an accidental seek caused by a gesture conflict but never says whether TalkBack or another assistive setting was active, so its effect on assistive-technology users cannot be judged.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "With TalkBack turned on, what happens when you swipe up twice during full-screen video playback, and which Android version, device, and AntennaPod version are you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes an accidental seek caused by a gesture conflict but never says whether TalkBack or another assistive setting was active, so its effect on assistive-technology users cannot be judged.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:53.724Z"
+}

@@ -1,0 +1,53 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.9,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "With TalkBack enabled, the app crashes when the Traffic tab is opened, so the user cannot reach the By week, month, or year data, and the report gives clear reproduction steps, device, Android version, app version, and a video.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when the Traffic tab crashed with TalkBack on?",
+      "confidence": 0.9,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report says the app crashes when opening the Traffic tab with TalkBack enabled, which blocks the task, but it gives no app version or device/Android version to match against crash logs, and the attached video could not be reviewed.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when the Traffic tab crashed with TalkBack on?",
+      "confidence": 0.9,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report says the app crashes when opening the Traffic tab with TalkBack enabled, which blocks the task, but it gives no app version or device/Android version to match against crash logs, and the attached video could not be reviewed.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when the crash happened?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report gives clear steps and expected versus actual behavior showing the app crashes when the Traffic tab opens with TalkBack on, which prevents the user from viewing traffic stats at all.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:20.521Z"
+}

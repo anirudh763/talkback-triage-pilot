@@ -1,0 +1,43 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version"
+      ],
+      "reason": "The floating buttons on the My site view are reachable but TalkBack announces only \"unlabeled button\", so users must guess what each one does, which adds confusion without blocking the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What WordPress for Android app version and Android device and OS version were you using when TalkBack announced \"unlabeled button\"?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "TalkBack announces the floating buttons on the My site view only as \"unlabeled button,\" so they remain reachable but need extra effort to identify, and a developer can reproduce this on that view with the reported announcement.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What WordPress for Android app version and Android device and OS version were you using when TalkBack announced \"unlabeled button\"?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "TalkBack announces the floating buttons on the My site view only as \"unlabeled button,\" so they remain reachable but need extra effort to identify, and a developer can reproduce this on that view with the reported announcement.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:45:54.625Z"
+}

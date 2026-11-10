@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which icons on the subscriptions page are unlabeled, and what exactly does TalkBack announce when you swipe to each one?",
+      "confidence": 0.4,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report names the subscriptions page and unlabeled icons but does not say which icons, whether TalkBack can focus them, or whether the user can still complete a task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "On which screen and with which steps do you reach the subscription icons, and what exactly does TalkBack announce when it focuses each icon?",
+      "confidence": 0.5,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report names an unlabeled icon on the subscriptions page but does not say whether the icons are reachable by TalkBack, whether the task can still be finished, or what TalkBack actually announces, and it gives no reproduction steps, app version, or device.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "On which screen and with which steps do you reach the subscription icons, and what exactly does TalkBack announce when it focuses each icon?",
+      "confidence": 0.5,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report names an unlabeled icon on the subscriptions page but does not say whether the icons are reachable by TalkBack, whether the task can still be finished, or what TalkBack actually announces, and it gives no reproduction steps, app version, or device.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:49.156Z"
+}

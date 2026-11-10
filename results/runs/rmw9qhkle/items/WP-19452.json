@@ -1,0 +1,45 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android version and Android device/version were you using, and does TalkBack announce the correct posts once the tag feed finishes loading?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot",
+        "talkback_steps"
+      ],
+      "reason": "TalkBack announces an incorrect 'No posts with this topic' message while the tag feed is still loading, which is confusing, but the report does not say the user is blocked from reaching the posts once loading finishes.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using, and can you share a short screen recording of the TalkBack announcement when the tag feed opens?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack announces an incorrect empty-state message ('No posts with this topic') while the tag feed is still loading, which is misleading and may confuse the user, but the user can still wait and reach the content.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android version/device are you using, and can you share a short screen recording of the TalkBack announcement when the tag feed opens?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack announces an incorrect empty-state message ('No posts with this topic') while the tag feed is still loading, which is misleading and may confuse the user, but the user can still wait and reach the content.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:37.577Z"
+}

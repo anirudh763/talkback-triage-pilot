@@ -1,0 +1,44 @@
+{
+  "answers": {
+    "full": {
+      "ask": "With TalkBack on, how do you reach the multi-select apply button (which steps and screen), and when you swipe to it, is it focused and silent, or can you not reach it at all?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack does not read the apply button but does not say whether the button can be reached by swiping or how the user reaches it, so the impact on finishing a task cannot be judged, and the steps to reach the multi-select screen are missing.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "On which screen does the apply button appear, and when you swipe to it with TalkBack, does focus land on it (silently) or skip over it entirely?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report says TalkBack does not read the multi-select apply button but does not say whether the button can be focused or activated, so it is unclear if users are blocked or only slowed.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "On which screen does the apply button appear, and when you swipe to it with TalkBack, does focus land on it (silently) or skip over it entirely?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report says TalkBack does not read the multi-select apply button but does not say whether the button can be focused or activated, so it is unclear if users are blocked or only slowed.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:14.609Z"
+}

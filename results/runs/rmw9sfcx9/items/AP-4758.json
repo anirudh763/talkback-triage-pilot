@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which screen and steps show the separator icons, and what exactly does TalkBack say when it reaches them?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack reads the separator icons, which adds extra announcements but does not appear to block a task, and it gives no screen, steps, Android version, or spoken text for a developer to reproduce from.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "On which screen do the separator icons appear, what steps lead there with TalkBack on, and what exactly does TalkBack announce for them?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack reads separator icons, which adds extra announcements, but it does not say which screen shows them, how to reach them, or what TalkBack says, so a developer cannot start reproducing it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "On which screen do the separator icons appear, what steps lead there with TalkBack on, and what exactly does TalkBack announce for them?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says TalkBack reads separator icons, which adds extra announcements, but it does not say which screen shows them, how to reach them, or what TalkBack says, so a developer cannot start reproducing it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:04.853Z"
+}

@@ -1,0 +1,58 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What does TalkBack currently announce when it focuses the My Sites item in the main menu?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says the existing menu labels work and asks only for added descriptive context, so a TalkBack user can still reach and activate each item, and a developer can start reproducing by navigating to the main menu and comparing the current labels with the Calypso strings it cites.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device or version are you using, and what exactly does TalkBack announce when you focus the My Sites item?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a request for more descriptive labels on main menu items, and the reporter says the current labels are reachable and usable, so finishing tasks is only marginally affected. The reporter gives the current and desired label text and points to the Calypso source strings, so a developer could start from it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which Android version was the Nexus 6P running, and what exactly did TalkBack announce when you focused the My Sites item?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is an enhancement request to add descriptive context to menu labels, and the reporter says the current labels are reachable and understandable, so task completion is not blocked. A developer can reproduce it by opening the main menu with TalkBack and comparing the announcements to the Calypso strings the report cites.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device are you using?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The main menu items are already labeled and reachable with TalkBack, and the request is for extra descriptive context, so the effect on finishing tasks is small, and the steps and expected behavior are clear enough to start reproducing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:35.197Z"
+}

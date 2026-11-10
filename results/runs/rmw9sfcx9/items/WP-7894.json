@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which version of the WordPress for Android app were you running when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version"
+      ],
+      "reason": "Three of the five bottom navigation options (Reader, Me, Notifications) announce the 'My site' label, so TalkBack users can still activate them but must work out which option they are on, while the steps, device, and exact announcements are given.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version and device were you using, and which TalkBack gestures did you use to move focus to each bottom navigation item?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "Reader, Me, and Notifications are reachable but announce wrong or combined labels, such as the My site description, which adds confusion without blocking navigation, and a developer can reproduce this by focusing each bottom navigation item with TalkBack and comparing announcements.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which version of the WordPress for Android app were you running when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The Reader, Me, and Notifications options announce the wrong label (\"My site\" text), so users can still reach and activate them but must work out where they are, which slows the task rather than blocking it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device model were you using when you saw these announcements?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "Reader, Me, and Notifications are reachable but announce the wrong label (\"My site\"), which causes confusion without preventing the user from finishing tasks, and the listed steps are enough to start reproducing it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:12.807Z"
+}

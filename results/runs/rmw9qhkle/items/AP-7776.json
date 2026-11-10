@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which screen in AntennaPod becomes hard to use at a large system font size, and what happens there with TalkBack on (for example, text cut off, a control that can't be reached, or an unclear announcement)?",
+      "confidence": 0.9,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request that gives the app version but does not say which screen is affected, what breaks at large font sizes, or what TalkBack announces, so the task impact cannot be judged.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen in the app becomes hard to use at a large system font size, and what does TalkBack announce or fail to announce when you try to complete a task there?",
+      "confidence": 0.8,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about handling large system font sizes, with no reproduction steps, observed TalkBack behavior, or description of which task is affected.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which screen in the app becomes hard to use at a large system font size, and what does TalkBack announce or fail to announce when you try to complete a task there?",
+      "confidence": 0.8,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a truncated feature request about handling large system font sizes, with no reproduction steps, observed TalkBack behavior, or description of which task is affected.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:52:20.783Z"
+}

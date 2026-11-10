@@ -1,0 +1,59 @@
+{
+  "answers": {
+    "full": {
+      "ask": "What exact text did TalkBack announce when focusing the Visit button, and what Android version was the device running?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes buttons (Visit, Like, Comment, More) that are reachable but have labels lacking context, which adds confusion without stopping the user from finishing tasks, and the steps and expected behavior are concrete enough for a developer to start reproducing.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which Reader screen did you open, and what exactly did TalkBack announce when you focused the Visit button?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report names the unlabeled or under-described Visit, Likes, Comments, and More buttons in Reader, so a reachable but unclear label slows a TalkBack user without blocking them, and a developer can start by opening Reader with TalkBack.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What exactly did TalkBack announce when you focused the Visit button on a post?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report names specific reachable buttons (Visit, Like, Comment, More) that lack descriptive TalkBack labels, which a tester can check on a post in Reader, though the Android version is not given.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android device and OS version were you using when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes unlabeled or context-poor action buttons (Visit, Like, Comment, More) that are reachable but make it harder to tell what each does, and the steps to reproduce are specific enough to start testing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:46:44.613Z"
+}

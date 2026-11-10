@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "The navigate-up button is reachable and the user can still finish tasks, but TalkBack announces it as unlabeled, which adds confusion and effort.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and steps reach the back/navigate-up button, and what AntennaPod version and Android version or device are you using?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The navigate-up/back control is reachable but TalkBack announces it as an unlabeled button, which adds confusion but does not stop the user from finishing tasks, and the report names the control and the exact announcement, though it omits the steps, versions, and attachments.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is announced as an unlabeled button, so the user can still reach and activate it but has to work out what it does, which is extra effort rather than a blocked task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and which Android version and device were you using when you saw this?",
+      "confidence": 0.85,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back/navigate-up button is reachable by TalkBack but announced as unlabeled, which adds confusion without blocking the user from finishing tasks, and the listed steps and expected behaviour are enough for a developer to reproduce and add the label.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:18.831Z"
+}

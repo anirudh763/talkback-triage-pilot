@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "With TalkBack on, can you still reach and activate the 'Site Pages' button when the tooltip is showing, and which exact swipe sequence brings up the tooltip?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "talkback_steps"
+      ],
+      "reason": "The FAB announces an inaccurate label and the tooltip announces a misleading 'tap to activate' that does nothing, which adds confusion, but the report does not state that the user cannot reach or activate the Site Pages button.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device/version are you using, and can you reach the Site Pages button under the tooltip when TalkBack is on?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The Create button's spoken label is inaccurate and the tooltip announces an action that does nothing, which adds confusion, but the report does not say whether the Site Pages button is actually unreachable.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android device/version are you using, and can you reach the Site Pages button under the tooltip when TalkBack is on?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The Create button's spoken label is inaccurate and the tooltip announces an action that does nothing, which adds confusion, but the report does not say whether the Site Pages button is actually unreachable.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "With TalkBack on and the tooltip showing, can you still reach and activate the 'Site Pages' button under publishing, or does the tooltip block it?",
+      "confidence": 0.6,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The FAB's misleading 'Create a post' label and the non-functional 'tap to activate' tooltip add confusion, but the report does not say whether the tooltip stops TalkBack users from reaching the Site Pages button, so the impact could be higher.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:56.489Z"
+}

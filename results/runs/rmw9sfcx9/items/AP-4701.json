@@ -1,0 +1,45 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which screen and which text or buttons have the low contrast, and does this stop you from completing a task when using TalkBack?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a visual contrast problem on unnamed elements and does not say whether TalkBack users can reach or finish any task, and the steps do not identify a screen or control to check.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and which text elements have insufficient contrast, and what AntennaPod version and Android version/device are you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names no specific screen or elements and does not say whether low-contrast text stops or slows any task, and the referenced image cannot be assessed.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which screen and which text elements have insufficient contrast, and what AntennaPod version and Android version/device are you using?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "cannot_tell",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report names no specific screen or elements and does not say whether low-contrast text stops or slows any task, and the referenced image cannot be assessed.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:23.520Z"
+}

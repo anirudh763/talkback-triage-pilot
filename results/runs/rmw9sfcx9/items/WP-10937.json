@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "expected_vs_actual"
+      ],
+      "reason": "The report gives exact reproduction steps, app and device versions, and a recording, and the wrong content read aloud adds confusion without the report showing the user cannot finish the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What exact steps (taps and swipes) take you from the plans list to the plan details screen, and what are your app version, Android version, and device model?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual",
+        "what_talkback_said"
+      ],
+      "reason": "TalkBack reads the plan list behind the plan details screen, so users hear wrong information and must work out which content is current, but the report does not say whether they can still reach and finish the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which steps did you take to get from the Plans list to the plan details screen, and what exactly did TalkBack announce when you swiped on the details screen?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes wrong content being read aloud from the plan list while on the plan details screen, which adds confusion but doesn't stop the user from finishing, and the title, recording, app version, and device give a developer enough to start reproducing.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What Android version, device model, and WordPress for Android app version were you using when this happened?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "expected_vs_actual"
+      ],
+      "reason": "TalkBack keeps focus on the plans list behind the plan details screen, so the user hears the wrong content and must work around it, but the report does not say whether they can still complete the task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:45:34.497Z"
+}

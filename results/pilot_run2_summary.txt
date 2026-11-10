@@ -1,0 +1,36 @@
+Run rmw9sfcx9
+  created 2026-11-09T21:43:06.285Z, model setting: quick, reports: 53, answers: 187, errors: 0
+
+Both apps
+  version          n   needs-more-evidence  blocks-task  can't-tell  flags-missing-steps  flags-missing-version
+  full           53                  25%          11%         25%                  40%                    23%
+  no_steps       32                  38%          13%          6%                  78%                    34%
+  no_version     49                  31%          10%         31%                  43%                   100%
+  neither        53                  58%           9%         30%                  83%                   100%
+  no_steps    vs as filed: 12 of 32 switched to needs-more-evidence, 1 the other way (exact McNemar p = 0.003); task-impact answer changed on 6%
+  no_version  vs as filed: 2 of 49 switched to needs-more-evidence, 0 the other way (exact McNemar p = 0.500); task-impact answer changed on 8%
+  neither     vs as filed: 18 of 53 switched to needs-more-evidence, 0 the other way (exact McNemar p < 0.001); task-impact answer changed on 9%
+
+WordPress for Android
+  version          n   needs-more-evidence  blocks-task  can't-tell  flags-missing-steps  flags-missing-version
+  full           30                   7%          13%          3%                  10%                    40%
+  no_steps       28                  36%          11%          7%                  75%                    39%
+  no_version     26                   8%          15%          4%                  12%                   100%
+  neither        30                  50%          10%         10%                  73%                   100%
+  no_steps    vs as filed: 10 of 28 switched to needs-more-evidence, 1 the other way (exact McNemar p = 0.012); task-impact answer changed on 7%
+  no_version  vs as filed: 0 of 26 switched to needs-more-evidence, 0 the other way (exact McNemar p = 1.000); task-impact answer changed on 0%
+  neither     vs as filed: 13 of 30 switched to needs-more-evidence, 0 the other way (exact McNemar p < 0.001); task-impact answer changed on 7%
+
+AntennaPod
+  version          n   needs-more-evidence  blocks-task  can't-tell  flags-missing-steps  flags-missing-version
+  full           23                  48%           9%         52%                  78%                     0%
+  no_steps        4                  50%          25%          0%                 100%                     0%
+  no_version     23                  57%           4%         61%                  78%                   100%
+  neither        23                  70%           9%         57%                  96%                   100%
+  no_steps    vs as filed: 2 of 4 switched to needs-more-evidence, 0 the other way (exact McNemar p = 0.500); task-impact answer changed on 0%
+  no_version  vs as filed: 2 of 23 switched to needs-more-evidence, 0 the other way (exact McNemar p = 0.500); task-impact answer changed on 17%
+  neither     vs as filed: 5 of 23 switched to needs-more-evidence, 0 the other way (exact McNemar p = 0.063); task-impact answer changed on 13%
+
+Noticing what was removed:
+  TalkBack steps flagged missing: 1/32 as filed, 25/32 after removal
+  App version flagged missing:    0/41 as filed, 41/41 after removal

@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "TalkBack repeats the last menu item's announcement on a second swipe, which is confusing but does not stop the user from finishing the multi-select task, and the report gives enough detail (app version, Android version, device, steps, expected vs. actual) to start reproducing it.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Could you list the steps from opening AntennaPod to the Multi select action menu, and tell us your AntennaPod version, Android version, and device model?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes duplicate TalkBack announcements of menu items, which slows the task but doesn't block it, and it starts at step 3 with no steps to reach the Multi select action menu, and no app version, device, or Android version is given.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What were steps 1 and 2 for reaching the multi-select actions menu, and what exactly did TalkBack say on each announcement?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report gives a reproducible path (multi-select, actions menu, swipe left at the last item) and shows that TalkBack repeats each action, which slows but does not block the task, though steps 1 and 2 are absent and no attachment is present.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and Android version/device are you using when this happens?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The steps reproduce duplicate TalkBack announcements and an unlabeled actions button, but the user can still finish the task with extra effort, and the steps and expected results are clear enough to start reproducing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:37.214Z"
+}

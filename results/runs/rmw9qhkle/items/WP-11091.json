@@ -1,0 +1,54 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which exact WordPress for Android version or commit did you test, since the report only lists \"develop ()\" with no version number or hash?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version"
+      ],
+      "reason": "TalkBack announces an unneeded \"site icon\" label on the decorative element, adding a wrong announcement that users can hear and skip while still finishing the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which screen and exact steps in the app lead to the 'site icon' announcement, and what WordPress app version and Android version/device are you using?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "An extra 'site icon' announcement on a decorative element adds confusion but does not stop the user from reaching or using controls, and the report gives no steps, app version, or device to reproduce it.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which screen and exact steps in the app lead to the 'site icon' announcement, and what WordPress app version and Android version/device are you using?",
+      "confidence": 0.7,
+      "evidence": "needs_more_evidence",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "An extra 'site icon' announcement on a decorative element adds confusion but does not stop the user from reaching or using controls, and the report gives no steps, app version, or device to reproduce it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when this happened?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "TalkBack announces an extra \"site icon\" label on the Reader Discover item, which adds confusion but does not stop the user from finishing the task, and the steps and expected/actual behavior are enough to reproduce it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:50:05.273Z"
+}

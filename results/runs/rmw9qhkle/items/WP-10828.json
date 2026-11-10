@@ -1,0 +1,43 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which WordPress for Android app version were you testing, and what steps did you take with TalkBack on to reach the floating buttons on the My site view?",
+      "confidence": 0.75,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "talkback_steps"
+      ],
+      "reason": "The floating buttons are reachable but TalkBack announces only \"unlabeled button\", which adds confusion without stopping the user from finishing a task, and the device, Android version, announced text, and screenshots are given, so a developer can reproduce it.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android device and OS version did you test on, and what TalkBack steps did you use to reach the My site floating buttons?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The buttons are reachable but unlabeled, so TalkBack announces only \"unlabeled button\", which adds confusion but does not stop the user from completing a task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and Android device and OS version did you test on, and what TalkBack steps did you use to reach the My site floating buttons?",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The buttons are reachable but unlabeled, so TalkBack announces only \"unlabeled button\", which adds confusion but does not stop the user from completing a task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:51:18.782Z"
+}

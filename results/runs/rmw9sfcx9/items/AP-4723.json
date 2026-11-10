@@ -1,0 +1,49 @@
+{
+  "answers": {
+    "full": {
+      "ask": "When the mono and balance controls are disabled under ExoPlayer, can TalkBack reach them, and what does it announce for them?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report describes a missing feature (mono and L/R balance under the default ExoPlayer) rather than a screen-reader failure, and playback itself still works, so a developer can reproduce it by comparing the disabled setting under ExoPlayer with the working one under Sonic.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and Android version or device are you using when you see the disabled mono and balance settings in the ExoPlayer player screen?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for mono output and L/R balance in ExoPlayer, which does not describe a TalkBack or screen-reader problem, and playback still works while the setting is disabled.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and Android version or device are you using when you see the disabled mono and balance settings in the ExoPlayer player screen?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "minor",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report is a feature request for mono output and L/R balance in ExoPlayer, which does not describe a TalkBack or screen-reader problem, and playback still works while the setting is disabled.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:48:19.044Z"
+}

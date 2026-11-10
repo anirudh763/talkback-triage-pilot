@@ -1,0 +1,55 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable and activatable but TalkBack announces only the generic \"Button\" without its label, which adds confusion without blocking the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable and operable but is announced only as \"Button\" with no label, so users must guess what it does, which adds effort and confusion without blocking the task.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable by TalkBack but is announced only as \"Button\" without its label, which adds confusion but does not stop the user from finishing the task.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and Android device/OS version were you using when you saw this?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The back button is reachable by TalkBack focus but announces only 'Button' instead of a descriptive label, which adds confusion without blocking the user from navigating the Custom List submenu.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:43:42.901Z"
+}

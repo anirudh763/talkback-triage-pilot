@@ -1,0 +1,52 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [],
+      "reason": "The bars wrongly announce \"Double tap to activate\" when they are not selectable, which adds confusion, but the report does not say the user cannot complete a task, and the steps, device, Android version, expected and actual behavior, and a video attachment are all provided.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which WordPress for Android app version and Android version or device were you using when you heard the 'Double tap to activate' prompt on the Traffic chart bars?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps"
+      ],
+      "reason": "The misleading 'Double tap to activate' announcement on the Traffic chart bars adds confusion but does not stop a TalkBack user from finishing the task, and the expected and actual behavior are stated clearly enough to reproduce.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "Which WordPress for Android app version and Android version or device were you using when you heard the 'Double tap to activate' prompt on the Traffic chart bars?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps"
+      ],
+      "reason": "The misleading 'Double tap to activate' announcement on the Traffic chart bars adds confusion but does not stop a TalkBack user from finishing the task, and the expected and actual behavior are stated clearly enough to reproduce.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which Android version, device model, and WordPress for Android version were you using when this happened?",
+      "confidence": 0.75,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device"
+      ],
+      "reason": "The report gives clear reproduction steps, expected and actual behavior, and the exact TalkBack prompt, so a developer can reproduce it, but the extra \"Double tap to activate\" hint on non-selectable bars is misleading and adds confusion without blocking the user from finishing the task.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:49:15.980Z"
+}

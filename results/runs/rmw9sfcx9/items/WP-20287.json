@@ -1,0 +1,54 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "what_talkback_said"
+      ],
+      "reason": "The report gives specific reproduction steps, device and Android version, app build, and expected versus actual behavior, and says the app crashes on the Traffic tab with TalkBack enabled, so the user cannot complete the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What app version, Android version and device model were you using, and what were steps 1 through 5 you took before opening the Traffic tab?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the app crashes when opening the Traffic tab with TalkBack enabled, which blocks the task, but the steps are incomplete (only step 6 is given), and the app version and device are missing.",
+      "tier": "quick"
+    },
+    "no_steps": {
+      "ask": "What were steps 1 to 5 you took before opening the Traffic tab, including how you enabled TalkBack and how you navigated to the tab, and does the crash happen every time?",
+      "confidence": 0,
+      "evidence": "needs_more_evidence",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps"
+      ],
+      "reason": "The report says the app crashes when the Traffic tab is opened with TalkBack enabled, which blocks the task, but steps 1 to 5 are missing (only step 6 is listed) and the attached video cannot be viewed, so a developer would need the full steps before reproducing it.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which WordPress for Android app version and which Android version and device were you using when the crash occurred?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report describes a crash that prevents opening the Traffic tab with TalkBack enabled, with concrete reproduction steps and an attached video that a developer can use to start reproducing it.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:43:37.871Z"
+}

@@ -1,0 +1,47 @@
+{
+  "answers": {
+    "full": {
+      "ask": "",
+      "confidence": 0.8,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "what_talkback_said",
+        "recording_or_screenshot"
+      ],
+      "reason": "The cancel button is reachable but has no content description, so TalkBack users must guess what it does, which adds confusion without stopping them from finishing the task.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "What does TalkBack announce when it focuses the cancel download button, and which Android version and AntennaPod version are you using?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the cancel download button lacks a content description and is hard to use, which suggests an unlabeled but reachable control rather than one that blocks the task, and the fix is clear enough to act on even without version details.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "What does TalkBack announce when it focuses the cancel download button, and which Android version and AntennaPod version are you using?",
+      "confidence": 0.7,
+      "evidence": "actionable",
+      "impact": "slows_task",
+      "missing": [
+        "talkback_steps",
+        "app_version",
+        "android_version_or_device",
+        "what_talkback_said"
+      ],
+      "reason": "The report says the cancel download button lacks a content description and is hard to use, which suggests an unlabeled but reachable control rather than one that blocks the task, and the fix is clear enough to act on even without version details.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T20:53:25.689Z"
+}

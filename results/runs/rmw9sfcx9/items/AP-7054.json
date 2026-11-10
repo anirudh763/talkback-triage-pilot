@@ -1,0 +1,46 @@
+{
+  "answers": {
+    "full": {
+      "ask": "Which Android version and device model are you using, and which TalkBack version?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "talkback_steps",
+        "android_version_or_device",
+        "recording_or_screenshot"
+      ],
+      "reason": "The report says focus is lost when an episode is selected in multi-select, which the triage rules treat as blocking, and a developer can start reproducing it from the described multi-select action on the episode list.",
+      "tier": "quick"
+    },
+    "neither": {
+      "ask": "Which AntennaPod version and which Android version and device are you using, and what exact steps (starting screen, which gesture, and which episode) lead to the focus loss?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The first item reports that TalkBack focus is lost when selecting an episode in multi-select, which the triage rules treat as blocking, and the described view and action are specific enough to start reproducing.",
+      "tier": "quick"
+    },
+    "no_version": {
+      "ask": "Which AntennaPod version and which Android version and device are you using, and what exact steps (starting screen, which gesture, and which episode) lead to the focus loss?",
+      "confidence": 0,
+      "evidence": "actionable",
+      "impact": "blocks_task",
+      "missing": [
+        "app_version",
+        "android_version_or_device",
+        "talkback_steps",
+        "recording_or_screenshot"
+      ],
+      "reason": "The first item reports that TalkBack focus is lost when selecting an episode in multi-select, which the triage rules treat as blocking, and the described view and action are specific enough to start reproducing.",
+      "tier": "quick"
+    }
+  },
+  "at": "2026-11-09T21:47:29.077Z"
+}
