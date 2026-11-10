@@ -908,14 +908,23 @@ details > summary { cursor: pointer; font-weight: 700; }
     }
     return lines.join("\n");
   }
+  // Copy to the clipboard; if the browser refuses or doesn't answer, show the text selected in a box instead.
   async function copyText(text, btn, okMsg, stSel) {
     const st = $(stSel || "#copy-status");
-    try { await navigator.clipboard.writeText(text); if (st) st.textContent = okMsg; }
-    catch (e) {
-      const ta = h("textarea", { "aria-label": "Copy this text", style: "min-height:120px" });
-      ta.value = text; btn.after(ta); ta.focus(); ta.select();
-      if (st) st.textContent = "Select the text and copy it.";
-    }
+    let ok = false;
+    try {
+      ok = await Promise.race([
+        navigator.clipboard.writeText(text).then(() => true),
+        new Promise((r) => setTimeout(() => r(false), 1500)),
+      ]);
+    } catch (e) { ok = false; }
+    if (ok) { if (st) st.textContent = okMsg; return; }
+    const anchor = btn.closest(".row") || btn;
+    let ta = anchor.nextElementSibling && anchor.nextElementSibling.classList && anchor.nextElementSibling.classList.contains("copybox") ? anchor.nextElementSibling : null;
+    if (!ta) { ta = h("textarea", { class: "copybox", readonly: true, "aria-label": "Text to copy", style: "min-height:120px" }); anchor.after(ta); }
+    ta.value = text;
+    ta.focus(); ta.select();
+    if (st) st.textContent = "Your browser didn't allow automatic copying. The text is selected in the box below: press Cmd+C (Mac) or Ctrl+C to copy it.";
   }
 
   // ============ LABEL VIEW ============

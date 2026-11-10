@@ -20,6 +20,7 @@ Changes made after an outside review of the first run.
 - A 5-report starter set and a written rubric ([LABELING.md](LABELING.md)).
 - A checklist-rule baseline is scored alongside the AI.
 - Labels are always saved in the browser too, so a guest's labels survive a reload and can be copied.
+- If the browser blocks automatic copying, "Copy my labels" shows the labels selected in a box to copy by hand.
 
 **Scripts and project files**
 - New command-line scripts: `check`, `show-copy`, `pair-review`, `analyze`, `agreement`, `build`, and `run-triage.mjs` for rerunning with an API key.
