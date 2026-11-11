@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+Changes from a code audit. The saved runs and their numbers are unchanged.
+
+- An AI answer whose value is not on the list (for example `"not_actionable"`) is now recorded as an unreadable reply and left out. Before, it was counted as "needs more evidence" or "can't tell".
+- New `test/core.test.js` checks the answer parser, the exact McNemar test and Cohen's kappa against hand-worked values. CI runs it.
+- The browser test now fails when it finds an error, and CI runs it.
+- `analyze.js` and `agreement.js` pick the same default run: the newest clean run by date.
+- `run-triage.mjs` refuses to finish a run with a different model than it was started with.
+- The app says so when a pilot run's answers could not be saved with the page.
+- "Check a report" says so when a report is longer than the 6,000 characters sent to the AI.
+- Imported raters whose names have no Latin letters or digits no longer overwrite each other.
+- Removed the leftover confidence field from new answers, and duplicate and unreachable patterns from the removal rules. `results/pair_review.md` is unchanged.
+
 ## 0.2.0 – 2026-11-10
 
 Changes made after an outside review of the first run.

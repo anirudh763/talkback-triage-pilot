@@ -55,6 +55,7 @@ The saved run addresses RQ1. RQ2 and RQ3 need human labels, and the app and scri
 | `results/*.csv` | The runs as spreadsheets. |
 | `labels/` | Where human label files go. See [LABELING.md](LABELING.md). |
 | `scripts/` | Command-line tools (below). Node.js 18 or later, no dependencies. |
+| `test/core.test.js` | Checks the answer parser and the statistics against hand-worked values. No dependencies. |
 | `test/e2e.js` | Browser test of the built app with a fake AI. Uses Playwright. |
 | `assets/` | Screenshots for this README. |
 

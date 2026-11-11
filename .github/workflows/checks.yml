@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Answer parser and statistics
+        run: node test/core.test.js
       - name: Checklist and clean-copy check
         run: node scripts/check.js --quiet
       - name: Rebuild generated files
@@ -22,3 +24,8 @@ jobs:
         run: git diff --exit-code -- data/issues.json results/pair_review.md docs/index.html
       - name: Analysis runs
         run: node scripts/analyze.js
+      - name: Browser test
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+          npm run test:e2e

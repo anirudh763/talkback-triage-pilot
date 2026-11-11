@@ -54,6 +54,8 @@ fs.mkdirSync(itemsDir, { recursive: true });
 const metaPath = path.join(dir, "meta.json");
 const meta = fs.existsSync(metaPath) ? JSON.parse(fs.readFileSync(metaPath, "utf8")) :
   { created: new Date().toISOString(), method: 2, runner: "api", model, conds, scope, total: tasks.length, status: "running" };
+// finishing a run with another model would mix two models' answers under one name
+if (meta.model !== model) { console.error("Run " + id + " was made with " + (meta.model || "the web app (" + meta.tier + ")") + ", not " + model + ". Use a new --id."); process.exit(1); }
 fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + "\n");
 
 const itemPath = (rid) => path.join(itemsDir, rid + ".json");
@@ -81,7 +83,6 @@ async function triage(title, body, appName) {
     const text = (j.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
     const a = T.parseAnswer(text);
     if (!a) return { error: "invalid_json", raw: text.slice(0, 500) };
-    delete a.confidence;
     a.model = j.model || model;
     return a;
   }

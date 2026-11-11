@@ -42,4 +42,11 @@ function listRuns() {
   return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => fs.existsSync(path.join(dir, x, "meta.json"))).sort() : [];
 }
 
-module.exports = { ROOT, T, CONDITIONS, APPS, rel, read, loadReports, loadRun, listRuns };
+// The newest run made with the fixed removal rules (method 2), or undefined. Run names do not sort by date.
+function latestRun() {
+  const runs = listRuns().map(loadRun).filter((r) => r.meta.method === 2);
+  runs.sort((a, b) => (b.meta.created || "").localeCompare(a.meta.created || ""));
+  return runs.length ? runs[0].id : undefined;
+}
+
+module.exports = { ROOT, T, CONDITIONS, APPS, rel, read, loadReports, loadRun, listRuns, latestRun };

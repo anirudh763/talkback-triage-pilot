@@ -10,7 +10,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { T, CONDITIONS, loadReports, loadRun, listRuns } = require("./lib.js");
+const { T, CONDITIONS, loadReports, loadRun, latestRun } = require("./lib.js");
 
 const args = process.argv.slice(2);
 const runArg = args.indexOf("--run") >= 0 ? args[args.indexOf("--run") + 1] : null;
@@ -47,7 +47,7 @@ for (const key of new Set(raters.flatMap((r) => Object.keys(r.labels)))) {
   }
 }
 
-const id = runArg || listRuns().filter((x) => loadRun(x).meta.method === 2).pop();
+const id = runArg || latestRun();
 if (!id) process.exit(0);
 const run = loadRun(id);
 const reports = loadReports();

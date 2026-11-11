@@ -562,12 +562,13 @@ details > summary { cursor: pointer; font-weight: 700; }
     $("#btn-triage").disabled = $("#btn-compare").disabled = true;
     st.classList.remove("err");
     st.textContent = compare ? "Asking Claude about both versions… this takes a few seconds." : "Asking Claude… this takes a few seconds.";
+    const cutNote = r.body.length > T.MAX_BODY ? " Only the first " + T.MAX_BODY.toLocaleString("en-US") + " characters of this report were sent, so details after that point were not seen." : "";
     out.replaceChildren();
     try {
       if (!compare) {
         const a = await triage(r.title, r.body, app, "default", ctl.signal);
         out.replaceChildren(h("div", { class: "verdicts" }, verdictCard("Claude's triage", a, "Report as written")));
-        st.textContent = "Done. " + IMPACT[a.impact].t + ", " + EVID[a.evidence].t.toLowerCase() + ".";
+        st.textContent = "Done. " + IMPACT[a.impact].t + ", " + EVID[a.evidence].t.toLowerCase() + "." + cutNote;
       } else {
         const cut = T.strip(r, { steps: T.check(r).tbSteps, version: true });
         const same = cut.trim() === r.body.trim();
@@ -579,7 +580,7 @@ details > summary { cursor: pointer; font-weight: 700; }
           h("div", { class: "verdicts" }, cards),
           same ? h("p", { class: "notice" }, "This report has no TalkBack steps or version info to remove, so only one version was triaged.")
             : h("div", { class: "card pad stack" }, h("h3", null, "What was removed"), h("p", { class: "small muted" }, "Struck-through lines were left out of the second copy."), removedView(r.body, cut)));
-        st.textContent = same ? "Done." : changed ? "Done. Claude's call changed when the details were removed." : "Done. Claude's call stayed the same without the details.";
+        st.textContent = (same ? "Done." : changed ? "Done. Claude's call changed when the details were removed." : "Done. Claude's call stayed the same without the details.") + cutNote;
       }
     } catch (e) {
       st.textContent = errText(e);
@@ -690,7 +691,7 @@ details > summary { cursor: pointer; font-weight: 700; }
   async function execute(runId, tasks) {
     const run = RUNS[runId];
     const total = tasks.length;
-    let done = 0, failed = null;
+    let done = 0, failed = null, unsaved = 0;
     running = true; runningId = runId;
     runCtl = new AbortController();
     const signal = runCtl.signal;
@@ -705,7 +706,7 @@ details > summary { cursor: pointer; font-weight: 700; }
     let writes = Promise.resolve();
     const saveItem = (rid) => {
       const answers = run.items[rid];
-      if (db && !run.local) writes = writes.then(() => db.doc("runs/" + runId + "/items/" + rid).set({ answers, at: new Date().toISOString() }).catch(() => {}));
+      if (db && !run.local) writes = writes.then(() => db.doc("runs/" + runId + "/items/" + rid).set({ answers, at: new Date().toISOString() }).catch(() => { unsaved++; }));
       else { run.localItems = run.items; persistLocal(); }
     };
     const queue = tasks.slice();
@@ -743,6 +744,8 @@ details > summary { cursor: pointer; font-weight: 700; }
     if (failed) { st.textContent = errText(failed) + " " + done + " of " + total + " calls finished; use Finish this run to continue later."; st.classList.add("err"); }
     else if (signal.aborted) st.textContent = "Stopped after " + done + " of " + total + " calls. Use Finish this run to continue.";
     else st.textContent = "Finished: " + done + " calls.";
+    // shortcut: counts only saves that failed before the 8-second wait above ended
+    if (unsaved) { st.textContent += " Answers for " + unsaved + (unsaved === 1 ? " report were" : " reports were") + " not saved with this page and will be gone after a reload. Download the CSV now."; st.classList.add("err"); }
     renderResults();
   }
   function persistLocal() {
@@ -1118,7 +1121,8 @@ details > summary { cursor: pointer; font-weight: 700; }
       if (BY_ID[rid] && COND_ORDER.includes(cond) && labels[k] && IMPACT[labels[k].impact] && EVID[labels[k].evidence]) clean[k] = { impact: labels[k].impact, evidence: labels[k].evidence, at: labels[k].at || null };
     }
     if (!Object.keys(clean).length) { st.textContent = "No usable labels found in what was pasted."; return; }
-    const slug = "imported-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+    // a name with no Latin letters or digits would leave nothing, and two such raters would share one id
+    const slug = "imported-" + (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || Date.now().toString(36));
     let saved = false;
     if (db && user && (await user.isOwner())) {
       try { await db.doc("labels/" + slug).set({ imported: true, name, labels: clean }); saved = true; } catch (e) { saved = false; }

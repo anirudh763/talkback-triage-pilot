@@ -103,4 +103,5 @@ const server = http.createServer((req, res) => { const mode = (req.url.match(/mo
   }
   await browser.close(); server.close();
   console.log('\nERRORS:', errors.length ? errors.join('\n') : 'none');
+  process.exitCode = errors.length ? 1 : 0;
 })();

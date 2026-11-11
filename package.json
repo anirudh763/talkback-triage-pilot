@@ -20,7 +20,7 @@
     "analyze": "node scripts/analyze.js",
     "agreement": "node scripts/agreement.js",
     "triage": "node scripts/run-triage.mjs",
-    "test": "node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js",
+    "test": "node test/core.test.js && node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js",
     "test:e2e": "node test/e2e.js"
   },
   "devDependencies": {

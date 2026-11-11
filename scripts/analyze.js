@@ -6,13 +6,11 @@
 //   node scripts/analyze.js --csv         also write results/<run>.csv
 "use strict";
 const fs = require("fs");
-const { T, CONDITIONS, APPS, rel, loadReports, loadRun, listRuns } = require("./lib.js");
+const { T, CONDITIONS, APPS, rel, loadReports, loadRun, latestRun } = require("./lib.js");
 
 const args = process.argv.slice(2);
 const wantCsv = args.includes("--csv");
-const ids = listRuns();
-const id = args.find((a) => !a.startsWith("--")) ||
-  ids.filter((x) => loadRun(x).meta.method === 2).sort((a, b) => (loadRun(b).meta.created || "").localeCompare(loadRun(a).meta.created || ""))[0];
+const id = args.find((a) => !a.startsWith("--")) || latestRun();
 if (!id) { console.error("No runs in results/runs/."); process.exit(1); }
 const run = loadRun(id);
 const reports = loadReports();

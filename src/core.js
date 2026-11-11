@@ -135,7 +135,6 @@
   // Observed behaviour is a different part of a bug report from the steps, so it stays.
   const OBSERVED = /(⚠️|❌|\bnotice\b|\bnote that\b|\binstead\b|\bcrash\w*|\bskips?\b|\bcan'?t\b|\bcannot\b|\bunable\b|\bdoes(n'?t| not)\b|\bnothing\b|\bis (skipped|not)\b|\bgives the\b|\bis initially\b)/i;
   function keepInSteps(line) { return carriesOther(line) || OBSERVED.test(line); }
-  const LIST_ITEM = /^\s*(\d+[.)]|[-*•])\s+\S/;
   // The exact lines the "steps removed" copy drops: the steps heading, the list items under it
   // (or a steps paragraph when there is no list), and an unheaded numbered list of steps.
   // It stops at the first ordinary line after the list, so notes, recordings, workarounds
@@ -150,7 +149,7 @@
       for (let j = headed ? a + 1 : a; j < b; j++) {
         const line = L[j];
         if (!line.trim()) { if (para) break; continue; }
-        if (LIST_ITEM.test(line)) {
+        if (STEP_LINE.test(line)) {
           started = true;
           if (!keepInSteps(line)) drops.add(j);
           continue;
@@ -161,7 +160,7 @@
         }
         // before any list item: a setup line ("Talkback ON. An account with lists.") or a steps paragraph
         if (headed && line.length < 400 && !/^\s*#{1,6}\s/.test(line)) {
-          const hasListBelow = L.slice(j + 1, b).some((x) => LIST_ITEM.test(x));
+          const hasListBelow = L.slice(j + 1, b).some((x) => STEP_LINE.test(x));
           if (!hasListBelow) para = true;
           if (!keepInSteps(line)) drops.add(j);
           continue;
@@ -187,7 +186,7 @@
   }
 
   const ENV_HEADS = /^\s*#{1,6}\s*(app version|android version|device model|where did you get the app from)\s*$/i;
-  const ENV_LINE = /^\s*(#{1,6}\s*)?(<sup>)?\s*tested (on|with)\b|^\s*\*\*(app version|android version|device model|app source):?\*\*|^\s*\*\*(app version|android version|device model|app source):?\*\*:?|^\s*(-\s*)?(lg g\d|pixel \d)\b.*\b(api|sdk)\s*\d+|^\s*pixel \d+, sdk \d+\s*$|^\s*\*\s*tested on\b/i;
+  const ENV_LINE = /^\s*(#{1,6}\s*)?(<sup>)?\s*tested (on|with)\b|^\s*\*\*(app version|android version|device model|app source):?\*\*|^\s*(-\s*)?(lg g\d|pixel \d)\b.*\b(api|sdk)\s*\d+|^\s*pixel \d+, sdk \d+\s*$|^\s*\*\s*tested on\b/i;
   const INLINE_ENV = [
     /,?\s*(the audit was done using\s+)?develop\s*\([0-9a-f]{7,}\),?\s*(google\s+)?pixel \d( xl)?,?\s*android \d+\.?/gi,
     /\s*\(\s*from f-droid\s*\)/gi,
@@ -217,8 +216,6 @@
             let j = i + 1;
             while (j < L.length && L[j].trim() && !/^\s*#{1,6}\s/.test(L[j]) && !/^note:/i.test(L[j].trim())) { drop[j] = true; j++; }
           }
-        } else if (/^\s*\*\*(android version|device model|app source):?\*\*/i.test(L[i])) {
-          drop[i] = true;
         }
       }
     }
@@ -274,6 +271,7 @@
   }
 
   // ---------- the AI prompt ----------
+  const MAX_BODY = 6000; // characters of the report body sent to the AI
   const MISSING_KEYS = ["talkback_steps", "app_version", "android_version_or_device", "expected_vs_actual", "what_talkback_said", "recording_or_screenshot"];
 
   function prompt(title, body, appName) {
@@ -300,7 +298,7 @@
       "Report title: " + title,
       "Report body:",
       "<<<",
-      (body || "(empty)").slice(0, 6000),
+      (body || "(empty)").slice(0, MAX_BODY),
       ">>>",
     ].join("\n");
   }
@@ -314,10 +312,11 @@
     if (!v || typeof v !== "object") return null;
     const impacts = ["blocks_task", "slows_task", "minor", "cannot_tell"];
     const ev = ["actionable", "needs_more_evidence"];
+    // an answer that is not on the list is an unreadable reply; never guess a category for it
+    if (!impacts.includes(v.task_impact) || !ev.includes(v.evidence)) return null;
     return {
-      impact: impacts.includes(v.task_impact) ? v.task_impact : "cannot_tell",
-      evidence: ev.includes(v.evidence) ? v.evidence : "needs_more_evidence",
-      confidence: Math.max(0, Math.min(1, Number(v.confidence) || 0)),
+      impact: v.task_impact,
+      evidence: v.evidence,
       missing: Array.isArray(v.missing) ? v.missing.filter((x) => MISSING_KEYS.includes(x)) : [],
       reason: String(v.reason || "").slice(0, 400),
       ask: String(v.ask_reporter || "").slice(0, 300),
@@ -370,7 +369,6 @@
         cannotTell: pct((x) => x.impact === "cannot_tell"),
         flagsSteps: pct((x) => x.missing.includes("talkback_steps")),
         flagsVersion: pct((x) => x.missing.includes("app_version")),
-        confidence: n ? xs.reduce((s, x) => s + x.confidence, 0) / n : null,
       });
     }
     // paired comparisons against "full"
@@ -394,7 +392,7 @@
     return { rows, paired };
   }
 
-  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, prompt, parseAnswer, cohenKappa, mcnemar, summarize, stepBlocks };
+  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, prompt, parseAnswer, cohenKappa, mcnemar, summarize, stepBlocks };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBT = api;
 })(typeof window !== "undefined" ? window : globalThis);
