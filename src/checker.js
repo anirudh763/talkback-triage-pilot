@@ -160,17 +160,40 @@
   }
 
   const MAX_INPUT = 64000;
-  const INLINE_STEPS = /^[ \t]*(?:#{1,6}[ \t]*)?\**[ \t]*steps(?:[ \t]+to[ \t]+reproduce)?[ \t]*:?\**[ \t]*:?[ \t]*\S[^\n]{40,}$/im;
+  // Steps written on the label's own line. Returns what
+  //   body.match(/^[ \t]*(?:#{1,6}[ \t]*)?\**[ \t]*steps(?:[ \t]+to[ \t]+reproduce)?[ \t]*:?\**[ \t]*:?[ \t]*\S[^\n]{40,}$/im)
+  // returned (the first such line, or null), in linear time. That regex backtracked over every split of a run of
+  // spaces or stars, on every line: a 64k paste of "Steps" lines stalled the page for seconds.
+  // Why this is the same test: before "steps" only [ \t#*] can appear, so the label start is fixed. After it, the
+  // earliest place the text can start is the first character that is not a space or tab; any later start (after
+  // "to reproduce", a colon or stars) leaves less text, and [^\n]{40,}$ only needs enough text before the next "\n".
+  // So the line matches when that character is \S and it starts at least 41 characters before the next "\n".
+  // test/redos.test.js checks this against the regex on random text.
+  const INLINE_LABEL = /(?=([ \t]*))\1(?:#{1,6}(?=([ \t]*))\2)?(?=(\**))\3(?=([ \t]*))\4steps(?=([ \t]*))\5/iy;
+  function inlineSteps(body) {
+    let nl = -1;   // index of the next "\n" at or after the current line start (-1: not looked up yet)
+    for (let i = 0; i <= body.length; i++) {
+      // ^ in a multiline regex matches at the start and after \n, \r, \u2028 and \u2029
+      if (i > 0 && !/[\n\r\u2028\u2029]/.test(body[i - 1])) continue;
+      INLINE_LABEL.lastIndex = i;
+      if (!INLINE_LABEL.test(body)) continue;
+      const q = INLINE_LABEL.lastIndex;
+      if (nl < q) { nl = body.indexOf("\n", q); if (nl < 0) nl = body.length; }
+      if (q < body.length && /\S/.test(body[q]) && nl - q >= 41) return [body.slice(i, nl)];
+    }
+    return null;
+  }
   function analyze(report) {
     const title = String((report && report.title) || "");
     const raw = String((report && report.body) || "");
-    // the rules read at most MAX_INPUT characters, so a huge paste can't stall the page; the rewrite quotes it all
+    // the rules read at most MAX_INPUT characters and run in time linear in it (test/redos.test.js), so a huge
+    // paste can't stall the page; the rewrite quotes it all
     const truncated = raw.length > MAX_INPUT;
     const body = clean(truncated ? raw.slice(0, MAX_INPUT) : raw);   // what the rules read
     const all = title.slice(0, 1000) + "\n" + body;
     const c = Object.assign({}, T.check({ title, body, labels: [] }));
     // steps written on the label's own line: "**Steps to reproduce:** Open the app, swipe right twice, ..."
-    const inline = !c.hasSteps && body.match(INLINE_STEPS);
+    const inline = !c.hasSteps && inlineSteps(body);
     if (inline) c.hasSteps = true;
     const items = [];
     const add = (key, name, status, found, hint, required) => items.push({ key, name, status, found: found ? clip(found, 70) : null, hint, required: required !== false });
@@ -310,7 +333,7 @@
     } catch (e) { return null; }
   }
 
-  const api = { analyze, encodeState, decodeState, MAX_LINK_CHARS, MAX_INPUT };
+  const api = { analyze, encodeState, decodeState, inlineSteps, MAX_LINK_CHARS, MAX_INPUT };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBC = api;
 })(typeof window !== "undefined" ? window : globalThis);

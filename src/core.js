@@ -39,7 +39,16 @@
   const TB = /\b(talk ?back|screen ?readers?|screenreaders?)\b/i;
   const GESTURE = /\b(swip\w*|double[- ]?tap\w*|focus\w*|explore by touch|read from top|four fingers|hover\w*|announc\w*|read aloud|reads?\b|spoken|selection)\b/i;
   const STEP_LINE = /^\s*(\d+[.)]|[-*•])\s+\S/;
-  const STEPS_HEAD = /^\s*(#{1,6}\s*|\*\*)?\s*steps(\s+to\s+reproduce(\s+the\s+behaviou?r)?)?\s*:?\**\s*:?\s*$/i;
+  // A "Steps" heading line. Same strings as the original
+  //   /^\s*(#{1,6}\s*|\*\*)?\s*steps(\s+to\s+reproduce(\s+the\s+behaviou?r)?)?\s*:?\**\s*:?\s*$/i
+  // but each run of spaces or stars is matched once: (?=(\s*))\1 takes the whole run and never gives part of it
+  // back. Every token after a run is optional, so taking the whole run never loses a match; the original's
+  // adjacent \s* runs backtracked over every split ("Steps" + 2,000 spaces + "x" took seconds).
+  // test/redos.test.js checks both regexes agree on random lines.
+  const STEPS_HEAD = /^(?=(\s*))\1(?:(?:#{1,6}|\*\*)(?=(\s*))\2)?steps(?:\s+to\s+reproduce(?:\s+the\s+behaviou?r)?)?(?=(\s*))\3:?(?=(\**))\4(?=(\s*))\5:?\s*$/i;
+  // A heading is a short line; a longer one is never tested as a heading (a second guard against slow input).
+  const MAX_HEAD_LINE = 500;
+  const isStepsHead = (line) => line.length <= MAX_HEAD_LINE && STEPS_HEAD.test(line);
   const HEAD = /^\s*(#{1,6}\s+\S|\*\*[^*]+\*\*:?\s*$)/;
 
   const APP_VERSION = [
@@ -69,7 +78,7 @@
     const L = lines(body);
     const blocks = [];
     for (let i = 0; i < L.length; i++) {
-      if (STEPS_HEAD.test(L[i])) {
+      if (isStepsHead(L[i])) {
         let j = i + 1;
         while (j < L.length && !(HEAD.test(L[j]) && !STEP_LINE.test(L[j]))) {
           if (/^\s*(\*\*result|#{1,6}\s|<sup>|\[image\]|\[video\]|\*\*expected|\*\*current)/i.test(L[j])) break;
@@ -143,7 +152,7 @@
     const L = lines(body);
     const drops = new Set();
     for (const [a, b] of stepBlocks(body)) {
-      const headed = STEPS_HEAD.test(L[a]);
+      const headed = isStepsHead(L[a]);
       if (headed) drops.add(a);
       let started = false, para = false;
       for (let j = headed ? a + 1 : a; j < b; j++) {
@@ -404,7 +413,7 @@
     return { rows, paired };
   }
 
-  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, prompt, parseAnswer, cohenKappa, formatKappa, runProgress, mcnemar, summarize, stepBlocks };
+  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, STEPS_HEAD, isStepsHead, prompt, parseAnswer, cohenKappa, formatKappa, runProgress, mcnemar, summarize, stepBlocks };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBT = api;
 })(typeof window !== "undefined" ? window : globalThis);
