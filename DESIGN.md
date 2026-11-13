@@ -36,7 +36,7 @@ controls: 44px minimum target, 7px radius, 1px boundary
 # talkback-triage-pilot design
 
 ## Overview
-A report-preparation tool for Android accessibility bug reports. Its signature is the **report composer** on Check: the editor beside a live preview of the report as a maintainer reads it on GitHub. Text the checker matched is highlighted in place; each detail it did not find is a gap prompt where the reporter adds it in their own words. Nothing is filled in automatically. The draft is reviewed, copied or downloaded on its own screen. The study (results, labels, methods) sits under Learn.
+A report-preparation tool for Android accessibility bug reports. Its signature is the **report composer** on Check: the editor beside a plain Markdown preview of the issue body. Text the checker matched is highlighted in place; each detail it did not find is a gap prompt where the reporter adds it in their own words. Nothing is filled in automatically. The draft is reviewed, copied or downloaded on its own screen. The study (results, labels, methods) sits under Learn.
 
 ## Layout
 - Desktop (1000px and wider): 216px left rail (text wordmark, one-line purpose, a "Work" group: Check a report, Draft, Examples; a "Learn" group: Research; theme toggle, version and source link at the foot) + a white location header (breadcrumb "TalkBack Triage / Screen", "← Back" on Draft) + workspace with a 32px gutter, content max 1100px.

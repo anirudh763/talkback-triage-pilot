@@ -79,6 +79,13 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
         ok(cur.length === 1 && cur[0] === nav, hash + ": rail marks \"" + nav + "\" with aria-current=page (" + cur.join(", ") + ")");
       }
       const over = await overflow(page);
+      // captions and table legends must not be clipped by the table's own scroll region
+      const clipped = await page.$$eval("main caption, main .legendline", (els) => els.filter((e) => e.getClientRects().length && !e.closest("th, td")).filter((e) => {
+        const r = e.getBoundingClientRect(), box = e.closest(".tablewrap");
+        const edge = Math.min(window.innerWidth, box ? box.getBoundingClientRect().right : window.innerWidth);
+        return r.right > edge + 1 || e.scrollWidth > e.clientWidth + 1;
+      }).map((e) => (e.id || e.tagName) + " " + Math.round(e.getBoundingClientRect().width) + "px"));
+      ok(!clipped.length, width + "px " + hash + ": table captions and legends fit their region" + (clipped.length ? " (" + clipped.join(", ") + ")" : ""));
       ok(over <= 0, width + "px " + hash + ": no page horizontal overflow (" + over + "px)");
     }
     await goHash(page, "#/no-such-screen");
@@ -97,6 +104,30 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok(await page.evaluate(() => document.activeElement.getAttribute("tabindex") === "-1" && document.activeElement.id !== "main"), "the H1 (tabindex=-1), not the whole workspace, takes focus");
     await page.goBack(); await page.waitForTimeout(80);
     ok(await page.evaluate(() => document.activeElement.tagName === "H1" && /Check a TalkBack report/.test(document.activeElement.textContent)), "browser Back also focuses the H1");
+    await ctx.close();
+  });
+
+  console.log("H1 focus on every route, reached through the navigation");
+  // each target is opened from a different screen: rail links for the Work/Learn screens, the Research section nav
+  // for Labels and Methods, and an address change for Not found (it has no nav link)
+  const VIA = {
+    "#/check": ["#/examples", (p) => p.locator("#rail").getByRole("link", { name: "Check a report" }).click()],
+    "#/draft": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Draft" }).click()],
+    "#/examples": ["#/draft", (p) => p.locator("#rail").getByRole("link", { name: "Examples" }).click()],
+    "#/research": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Research" }).click()],
+    "#/research/labels": ["#/research", (p) => p.locator("#pilot nav.subnav").getByRole("link", { name: "Labels" }).click()],
+    "#/research/methods": ["#/research/labels", (p) => p.locator("#label nav.subnav").getByRole("link", { name: "Methods" }).click()],
+    "#/no-such-screen": ["#/examples", (p) => p.evaluate(() => { location.hash = "#/no-such-screen"; })],
+  };
+  await guard("H1 focus on every route", async () => {
+    const { ctx, page } = await open({}, "#/check");
+    for (const [hash, h1] of SCREENS.map((x) => [x[0], x[1]]).concat([["#/no-such-screen", "Page not found"]])) {
+      const [from, nav] = VIA[hash];
+      await goHash(page, from);
+      await nav(page); await page.waitForTimeout(80);
+      const got = await page.evaluate(() => ({ tag: document.activeElement.tagName, text: document.activeElement.textContent.trim(), hash: location.hash.split("?")[0] }));
+      ok(got.tag === "H1" && got.text === h1 && got.hash === hash, from + " -> " + hash + ": focus is on the H1 \"" + h1 + "\" (" + got.tag + " \"" + got.text.slice(0, 40) + "\")");
+    }
     await ctx.close();
   });
 
@@ -165,6 +196,43 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   await guard("block at line 164", async () => {
     const { ctx, page } = await open({}, "#/examples?app=WP");
     ok((await h1Text(page)) === "Examples" && (await page.locator("#ex-table tbody tr").count()) === 51, "deep link #/examples?app=WP opens with the filter applied (51 rows)");
+    await ctx.close();
+  });
+
+  console.log("primary action in view, unknown report links");
+  await guard("Review draft in view", async () => {
+    const { ctx, page } = await open({ viewport: { width: 1440, height: 900 } }, "#/check?report=AP-3563");
+    const box = await page.getByRole("link", { name: "Review draft" }).boundingBox();
+    ok(box && box.y >= 0 && box.y + box.height <= 900 && box.x + box.width <= 1440, "1440x900: Review draft is inside the viewport without scrolling (y=" + (box && Math.round(box.y)) + ")");
+    await ctx.close();
+  });
+  await guard("unknown report", async () => {
+    const { ctx, page } = await open({}, "#check?report=AP-999999");
+    ok(/Report not found/.test(await page.textContent("#ex-source")) && /AP-999999/.test(await page.textContent("#ex-source")), "an unknown report ID says so instead of silently showing a sample: " + (await page.textContent("#ex-source")).slice(0, 80));
+    ok(!/AP-999999/.test(await page.evaluate(() => location.hash)), "the address no longer points at the missing report");
+    await ctx.close();
+  });
+
+  await guard("focus not obscured", async () => {
+    // WCAG 2.4.11: a focused control stays at least partly visible past the sticky header and the sticky action row
+    const { ctx, page } = await open({ viewport: { width: 375, height: 640 } }, "#/check?report=AP-3563");
+    const hidden = [];
+    for (let i = 0; i < 30; i++) {
+      await page.keyboard.press("Tab");
+      const r = await page.evaluate(() => {
+        const a = document.activeElement, b = a.getBoundingClientRect();
+        const head = document.querySelector(".loc").getBoundingClientRect();
+        const bar = document.querySelector("#check .focal");
+        if (a === document.body || a.closest(".loc") || a.id === "skip") return { visible: true };
+        // the action row covers only what is below its top edge while it is pinned there
+        let barTop = window.innerHeight;
+        if (bar && !bar.contains(a) && bar.getClientRects().length) { const t = bar.getBoundingClientRect().top; if (t > b.top) barTop = t; }
+        const top = Math.max(b.top, head.bottom), bottom = Math.min(b.bottom, barTop, window.innerHeight);
+        return { id: a.id || a.textContent.trim().slice(0, 24), visible: bottom > top };
+      });
+      if (!r.visible) hidden.push(r.id);
+    }
+    ok(!hidden.length, "375px: no focused control is hidden under the sticky header or action row" + (hidden.length ? " (" + hidden.join(", ") + ")" : ""));
     await ctx.close();
   });
 
@@ -241,6 +309,18 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok((await page.getAttribute('#checklist li[data-key="device"]', "data-status")) === "present" && (await page.locator('#gaps .gap[data-key="device"]').count()) === 0, "the report is re-checked: the device is now found and its prompt is gone");
     ok(/now finds it/.test(await page.textContent("#gap-status")), "the result is announced: " + (await page.textContent("#gap-status")));
     ok((await page.evaluate(() => location.hash)) === "#/check", "the edited report is no longer the dataset report in the URL");
+    await ctx.close();
+  });
+
+  await guard("highlight offsets", async () => {
+    const { ctx, page } = await open({}, "#/check");
+    // "İ" becomes two code units when lower-cased, which shifted offsets taken from a lower-cased copy
+    await page.fill("#in-title", "İİİİ Istanbul list");
+    await page.fill("#in-body", "İİİİ İstanbul İzmir screen.\nApp version: 3.1.0\nTalkBack says Button.");
+    await page.waitForTimeout(300);
+    const hit = page.locator('#preview mark.hit[data-key="appVersion"]');
+    const t = (await hit.count()) ? (await hit.textContent()).replace(/ \(matched:.*$/, "") : "";
+    ok(t === "3.1.0", "with İ before it, the app version highlight covers exactly \"3.1.0\" (" + JSON.stringify(t) + ")");
     await ctx.close();
   });
 

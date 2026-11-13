@@ -93,7 +93,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </section>
 
     <section class="box preview" aria-labelledby="pv-h">
-      <div class="box-header"><h2 id="pv-h">Live preview</h2><span class="step">As a maintainer reads it</span></div>
+      <div class="box-header"><h2 id="pv-h">Live preview</h2><span class="step">Plain Markdown preview</span></div>
       <div class="box-body stack">
         <p class="summary" id="chk-score" role="status" aria-live="polite"></p>
         <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> text is what the checker matched for a detail. Details it did not find are listed after the report, with a box to add them in your own words.</p>
@@ -178,9 +178,10 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </div>
   </div>
   <p class="small muted" id="ex-count" role="status" aria-live="polite"></p>
+  <p class="legendline" id="ex-legend">Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot.</p>
   <div class="tablewrap" tabindex="0" role="region" aria-label="Example reports">
-    <table id="ex-table">
-      <caption>Example reports<br><span class="legendline">Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot.</span></caption>
+    <table id="ex-table" aria-describedby="ex-legend">
+      <caption>Example reports</caption>
       <thead><tr><th scope="col">Report</th><th scope="col">Details in report</th><th scope="col">GitHub outcome</th></tr></thead>
       <tbody></tbody>
     </table>
@@ -580,20 +581,22 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const STATE_TEXT = { present: "Found", partial: "Incomplete", notfound: "Not found", optional: "Optional", na: "Not needed" };
 
   // ---------- the composer: live preview with matched spans and inline gap prompts ----------
-  // The preview shows the report the way a maintainer reads it on GitHub (headings, lists, quotes, code), built
+  // The preview is a plain Markdown preview of the issue body (headings, lists, quotes, code, bold), built
   // with DOM nodes only, so pasted HTML stays text. For each detail the checker found, the text it matched is
   // highlighted where it appears in the report (when that text can be placed exactly). Details it did not find
   // become gap prompts: the reporter types the detail and "Add to report" appends it, in their words, to the
   // report text. The checker itself (src/checker.js) is unchanged; nothing is filled in for the reporter.
   const lc = (x) => String(x || "").toLowerCase();
   function spansFor(body, a) {
-    const out = [], low = lc(body);
+    const out = [];
     const by = Object.fromEntries(a.items.map((i) => [i.key, i]));
     const lit = (txt, it) => {
       const t = String(txt || "").replace(/…$/, "").trim();
       if (t.length < 2) return;
-      const i = low.indexOf(lc(t));
-      if (i >= 0) out.push({ start: i, end: i + t.length, key: it.key, name: it.name });
+      // match on the original text (case-insensitive regex), so offsets stay right when lower-casing would
+      // change a string's length (for example "İ" becomes two code units)
+      const m = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").exec(body);
+      if (m) out.push({ start: m.index, end: m.index + m[0].length, key: it.key, name: it.name });
     };
     const lines = (re, it) => { re.lastIndex = 0; let m; while ((m = re.exec(body))) { const lead = m[0].length - m[0].replace(/^[ \t>]*/, "").length; out.push({ start: m.index + lead, end: m.index + m[0].length, key: it.key, name: it.name }); if (!m[0].length) re.lastIndex++; } };
     const ok = (it) => it && (it.status === "present" || it.status === "partial") && it.found;
@@ -828,6 +831,11 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   function applyCheckParams(params) {
     const id = params.get("report"), code = params.get("text");
     if (id && BY_ID[id]) { if (id !== shownId) loadExample(id); }
+    else if (id) {
+      ensureReport();
+      setHash("check", checkParams());
+      $("#ex-source").replaceChildren(h("strong", null, "Report not found. "), "The link asked for \u201c" + id.slice(0, 40) + "\u201d, which is not one of the " + REPORTS.length + " dataset reports. Showing the report already in this tab instead; see Examples for the list.");
+    }
     else if (code != null) {
       const st = C.decodeState(code);
       if (st) {
@@ -1239,8 +1247,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
         h("td", null, h("button", { class: "btn link", "aria-label": "Details for " + r.app + " #" + r.number, onclick: () => { detailId = r.id; renderResults(); const d = $("#detail"); if (d) d.focus(); } }, "Details")));
       return tr;
     });
-    const rt = h("table", null,
-      h("caption", null, "Every report in this run", h("br"), h("span", { class: "legendline" }, "Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot.")),
+    const rt = h("table", { "aria-describedby": "run-legend" },
+      h("caption", null, "Every report in this run"),
       h("thead", null, h("tr", null, h("th", { scope: "col" }, "Report"), h("th", { scope: "col" }, "Details in report"), h("th", { scope: "col" }, "GitHub outcome"), conds.map((c) => h("th", { scope: "col" }, T.CONDITIONS[c].short)), h("th", { scope: "col" }, h("span", { class: "sr-only" }, "Open")))),
       h("tbody", null, rowsEl));
 
@@ -1257,6 +1265,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       Object.keys(S.paired).length ? h("div", { class: "box pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
       human,
       detailId ? detailPanel(BY_ID[detailId], run, conds) : null,
+      h("p", { class: "legendline", id: "run-legend" }, "Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot."),
       h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "Every report in this run" }, rt),
       exportRow].filter(Boolean));
   }

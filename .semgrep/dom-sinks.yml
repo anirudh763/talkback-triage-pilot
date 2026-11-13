@@ -1,0 +1,16 @@
+# HTML-string sinks that would turn pasted report text into markup. Run (see README, Security):
+#   node scripts/inline-scripts.js /tmp/app-inline.js && semgrep --metrics=off --config .semgrep/dom-sinks.yml /tmp/app-inline.js src scripts
+rules:
+  - id: dom-html-sink
+    languages: [javascript]
+    severity: ERROR
+    message: HTML string sink
+    pattern-either:
+      - pattern: $X.innerHTML = $Y
+      - pattern: $X.outerHTML = $Y
+      - pattern: $X.insertAdjacentHTML(...)
+      - pattern: document.write(...)
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: setTimeout("...", ...)
+      - pattern: $R.createContextualFragment(...)
