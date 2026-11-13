@@ -27,7 +27,11 @@ window.claude={use:async(n)=>{
  return null}};}
 </script>`;
 const wrap = (mode) => built.replace('<head>', '<head>' + mock(mode));
-const server = http.createServer((req, res) => { const mode = (req.url.match(/mode=(\w+)/) || [, 'owner'])[1]; res.writeHead(200, { 'content-type': 'text/html' }); res.end(wrap(mode)); });
+const server = http.createServer((req, res) => {
+  // the page's font files, served as GitHub Pages would
+  const font = req.url.match(/^\/([\w-]+\.woff2)$/);
+  if (font && fs.existsSync(path.join(__dirname, '../docs', font[1]))) { res.writeHead(200, { 'content-type': 'font/woff2' }); res.end(fs.readFileSync(path.join(__dirname, '../docs', font[1]))); return; }
+  const mode = (req.url.match(/mode=(\w+)/) || [, 'owner'])[1]; res.writeHead(200, { 'content-type': 'text/html' }); res.end(wrap(mode)); });
 (async () => {
   await new Promise((r) => server.listen(0, r));
   const base = 'http://127.0.0.1:' + server.address().port + '/?mode=';

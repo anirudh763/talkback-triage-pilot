@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-// Build the single-file web app: src/app.html + src/core.js + data + saved runs -> docs/index.html
-// docs/ is what GitHub Pages serves.
+// Build the web app: src/app.html + src/ui.css + src/app.css + src/core.js + src/checker.js + data + saved runs
+// -> docs/index.html (one file), plus the two font files it uses. docs/ is what GitHub Pages serves.
 "use strict";
 const fs = require("fs");
-const { rel, loadReports, loadRun, listRuns } = require("./lib.js");
+const crypto = require("crypto");
+const { rel, safeJson, loadReports, loadRun, listRuns } = require("./lib.js");
 
-const core = fs.readFileSync(rel("src", "core.js"), "utf8");
-const tpl = fs.readFileSync(rel("src", "app.html"), "utf8");
+const src = (f) => fs.readFileSync(rel("src", f), "utf8");
+const script = (code) => code.replace(/<\/script/gi, "<\\/script");
+const style = (css) => css.replace(/<\/style/gi, "<\\/style");
+const core = src("core.js");
+const checker = src("checker.js");
+const tpl = src("app.html");
+const FONTS = ["atkinson-hyperlegible-latin-400-normal.woff2", "atkinson-hyperlegible-latin-700-normal.woff2"];
 const reports = loadReports();
 
 // Only runs made with the fixed removal rules (method 2) are shown in the app.
@@ -19,17 +25,26 @@ for (const id of listRuns()) {
   archive[id] = { meta, items: run.items };
 }
 
-const json = (o) => JSON.stringify(o).replace(/<\//g, "<\\/");
 const page = tpl
-  .replace("/*CORE*/", () => core.replace(/<\/script/g, "<\\/script"))
-  .replace("/*DATA*/", () => json(reports))
-  .replace("/*ARCHIVE*/", () => json(archive));
+  .replace("/*UICSS*/", () => style(src("ui.css")))
+  .replace("/*APPCSS*/", () => style(src("app.css")))
+  .replace("/*CORE*/", () => script(core) + "\n" + script(checker))
+  .replace("/*DATA*/", () => safeJson(reports))
+  .replace("/*ARCHIVE*/", () => safeJson(archive));
+
+// Content Security Policy: the page may load only its own files (the fonts) and run only its own inline
+// scripts, listed by hash; it can't send requests anywhere. Inline styles stay allowed (style attributes).
+const hashes = [...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + crypto.createHash("sha256").update(m[1], "utf8").digest("base64") + "'");
+const csp = ["default-src 'self'", "script-src " + hashes.join(" "), "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data:",
+  "connect-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'none'"].join("; ");
 
 // The template has no <html>/<head>/<body>: wrap it so it is a complete page on GitHub Pages.
 const doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
-  '<meta name="description" content="Checks Android accessibility bug reports for TalkBack reproduction steps and the app version, and measures how an AI\'s triage changes when those details are removed.">\n' +
-  "<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n" + page + "\n</body>\n</html>\n";
+  '<meta http-equiv="Content-Security-Policy" content="' + csp + '">\n' +
+  '<meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">\n' +
+  "<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n" + page + "\n</body>\n</html>\n";
 fs.mkdirSync(rel("docs"), { recursive: true });
 fs.writeFileSync(rel("docs", "index.html"), doc);
 fs.writeFileSync(rel("docs", ".nojekyll"), "");
+for (const f of FONTS) fs.copyFileSync(rel("src", f), rel("docs", f));
 console.log("Wrote docs/index.html (" + Math.round(doc.length / 1024) + " KB, " + reports.length + " reports, " + Object.keys(archive).length + " saved run(s))");
