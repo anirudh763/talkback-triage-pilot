@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### Report checker as the front page
+
+The study's data, saved runs, `results/` and analysis outputs are unchanged.
+
+- "Check a report" is now the first thing on the site: paste a report on the left; on the right, a checklist of seven details a developer needs (steps, TalkBack or screen-reader steps, app version, device and Android version, expected vs. actual, the screen or element, and screen-reader settings when relevant), each marked Found, Incomplete, Missing, Optional or Not needed in text and with an icon, then a rewritten report with `[MISSING: ...]` placeholders and a Copy button.
+- "Try a sample report" steps through three real, incomplete reports from the dataset (WordPress-Android #21127, AntennaPod #3563, WordPress-Android #19452).
+- The checker is labelled "heuristic completeness check (rules, not AI)". It runs in the browser and makes no network calls. Its rules are in `src/checker.js`; they reuse the study's checklist (`check()` in `src/core.js`, unchanged) and add rules for reports from other apps.
+- Links are shareable: `#check?report=WP-21127` opens a dataset report, and "Copy link to this check" puts pasted text in the URL fragment (`#check?text=...`), which browsers don't send to a server.
+- The study's tabs keep their wording. The AI triage card appears only when the page runs inside the Claude app.
+- New look based on a shared base stylesheet (`src/ui.css`): system-style type in Atkinson Hyperlegible served from `docs/` (no Google Fonts), 1px borders, light and dark from the system setting.
+- New tests: `test/checker.test.js` (rules, template, link encoding, safe data embedding), `test/workflow.test.js`, and `test/checker.e2e.js` (sample, template, copy, URL state, pasted HTML stays inert, axe-core in light and dark on every tab, no page scroll at 320px and 390px, 24px targets, no requests off the page's origin).
+
+### Security and CI
+
+- The data embedded in `docs/index.html` now escapes every `<`, so issue text such as `</script>` or `<!--` can't end or change the `<script>` element it sits in (before, only `</` was escaped).
+- The workflow runs with a read-only token (`permissions: contents: read`), doesn't keep the checkout credentials, and pins `actions/checkout` and `actions/setup-node` to commit SHAs.
+- `package-lock.json` is committed and CI uses `npm ci`. `npm audit`: 0 vulnerabilities.
+
+### Earlier audit fixes
+
 Changes from a code audit. The saved runs and their numbers are unchanged.
 
 - An AI answer whose value is not on the list (for example `"not_actionable"`) is now recorded as an unreadable reply and left out. Before, it was counted as "needs more evidence" or "can't tell".

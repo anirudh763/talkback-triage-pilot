@@ -49,4 +49,8 @@ function latestRun() {
   return runs.length ? runs[0].id : undefined;
 }
 
-module.exports = { ROOT, T, CONDITIONS, APPS, rel, read, loadReports, loadRun, listRuns, latestRun };
+// JSON for a <script type="application/json"> block. Every "<" is escaped, so text in the data
+// (for example "</script>" or "<!--" in an issue body) can't end or change the element it sits in.
+const safeJson = (o) => JSON.stringify(o).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+
+module.exports = { ROOT, safeJson, T, CONDITIONS, APPS, rel, read, loadReports, loadRun, listRuns, latestRun };

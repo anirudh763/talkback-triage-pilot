@@ -4,16 +4,27 @@ on:
   push:
   pull_request:
 
+# The checks only read the repository.
+permissions:
+  contents: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # Actions are pinned to full commit SHAs (tag in the comment) so a moved tag can't change what runs.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
       - name: Answer parser and statistics
         run: node test/core.test.js
+      - name: Report checker and workflow guards
+        run: |
+          node test/checker.test.js
+          node test/workflow.test.js
       - name: Checklist and clean-copy check
         run: node scripts/check.js --quiet
       - name: Rebuild generated files
@@ -24,8 +35,8 @@ jobs:
         run: git diff --exit-code -- data/issues.json results/pair_review.md docs/index.html
       - name: Analysis runs
         run: node scripts/analyze.js
-      - name: Browser test
+      - name: Browser tests (study flows, report checker, axe-core, 320px)
         run: |
-          npm install
+          npm ci
           npx playwright install --with-deps chromium
           npm run test:e2e

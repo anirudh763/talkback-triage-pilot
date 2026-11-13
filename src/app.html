@@ -1,249 +1,95 @@
-<title>TalkBack Triage Pilot</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
-<style>
-/* Layout: a triage desk. A sticky tab bar over one wide working column; reports read like GitHub issues (mono), verdicts sit beside them as status cards. */
-:root {
-  --bg: #f4f6f8;
-  --surface: #ffffff;
-  --surface-2: #eceff3;
-  --ink: #141a23;
-  --ink-2: #435063;
-  --ink-3: #5f6a7c;
-  --line: #d5dae3;
-  --accent: #17734a;        /* TalkBack-style focus green, deepened for text contrast */
-  --accent-ink: #ffffff;
-  --accent-soft: #e2f2e9;
-  --focus: #1f9d5a;
-  --crit: #a8231a;  --crit-bg: #fbe7e4;
-  --warn: #8f5200;  --warn-bg: #fbefd9;
-  --ok: #24663a;    --ok-bg: #e3f2e7;
-  --info: #2b579a;  --info-bg: #e5edf9;
-  --none: #566173;  --none-bg: #e9ecf1;
-  --bar: #3a69b0;
-  --removed-bg: #fbe2de; --removed-ink: #86190f;
-  --shadow: 0 1px 2px rgba(20, 26, 35, .06), 0 4px 16px rgba(20, 26, 35, .05);
-  --f-display: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  --f-body: "Atkinson Hyperlegible", "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --r: 10px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1218; --surface: #151b24; --surface-2: #1c2430; --ink: #e9edf3; --ink-2: #b6bfcd; --ink-3: #8f99ab; --line: #2b3443;
-    --accent: #4fc487; --accent-ink: #08170f; --accent-soft: #15301f; --focus: #62d697;
-    --crit: #ff9284; --crit-bg: #3a1613; --warn: #f3b860; --warn-bg: #352611; --ok: #82d69d; --ok-bg: #142e1c;
-    --info: #95b7f2; --info-bg: #16233a; --none: #a3acbb; --none-bg: #222a36; --bar: #7ea5ea;
-    --removed-bg: #3d1916; --removed-ink: #ffb7ab; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e1218; --surface: #151b24; --surface-2: #1c2430; --ink: #e9edf3; --ink-2: #b6bfcd; --ink-3: #8f99ab; --line: #2b3443;
-  --accent: #4fc487; --accent-ink: #08170f; --accent-soft: #15301f; --focus: #62d697;
-  --crit: #ff9284; --crit-bg: #3a1613; --warn: #f3b860; --warn-bg: #352611; --ok: #82d69d; --ok-bg: #142e1c;
-  --info: #95b7f2; --info-bg: #16233a; --none: #a3acbb; --none-bg: #222a36; --bar: #7ea5ea;
-  --removed-bg: #3d1916; --removed-ink: #ffb7ab; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
-a { color: var(--info); text-underline-offset: 2px; }
-:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
-.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-h1, h2, h3 { font-family: var(--f-display); line-height: 1.2; text-wrap: balance; margin: 0; }
-h2 { font-size: 1.35rem; font-weight: 800; }
-h3 { font-size: 1.05rem; font-weight: 700; }
-p { margin: 0; }
-.muted { color: var(--ink-2); }
-.small { font-size: .875rem; }
-.eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
-code, .mono { font-family: var(--f-mono); font-size: .86em; }
+<title>TalkBack Triage Pilot: check an accessibility bug report</title>
+<style>/*UICSS*/</style>
+<style>/*APPCSS*/</style>
 
-/* header */
-.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
-.masthead .wrap { padding-block: 22px 18px; display: grid; gap: 14px; }
-.brand { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.brand h1 { font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 800; letter-spacing: -.01em; padding: 2px 10px; border: 3px solid var(--focus); border-radius: 8px; }
-.brand p { max-width: 62ch; color: var(--ink-2); }
-.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
-.tab { appearance: none; border: 0; background: none; color: var(--ink-2); font: 700 .95rem var(--f-body); padding: 12px 14px 11px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
-.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
-.tab:hover { color: var(--ink); }
-
-main { padding-block: 26px 64px; }
-.view { display: grid; gap: 22px; }
-.lede { display: grid; gap: 6px; max-width: 76ch; }
-
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
-.pad { padding: 18px; }
-.stack { display: grid; gap: 12px; }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.grid2 { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
-@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
-
-/* form controls */
-label.field { display: grid; gap: 6px; font-weight: 700; font-size: .92rem; }
-input[type="text"], textarea, select { font: inherit; font-weight: 400; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0; }
-textarea { font-family: var(--f-mono); font-size: .84rem; line-height: 1.55; min-height: 300px; resize: vertical; }
-select { width: auto; max-width: 100%; }
-.btn { appearance: none; font: 700 .95rem var(--f-body); border-radius: 8px; padding: 10px 16px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-.btn:hover { background: var(--surface-2); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn.primary:hover { filter: brightness(1.06); }
-.btn[disabled] { opacity: .55; cursor: not-allowed; }
-.btn.link { border: 0; background: none; padding: 4px 2px; color: var(--info); text-decoration: underline; text-underline-offset: 2px; font-weight: 700; }
-fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 0; min-width: 0; }
-legend { font-weight: 700; padding: 0 4px; }
-.opts { display: flex; flex-wrap: wrap; gap: 8px 16px; }
-.opts label { display: inline-flex; gap: 7px; align-items: center; font-weight: 400; }
-input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
-
-/* checklist */
-.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.checklist li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; }
-.tick { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .9rem; }
-.tick.yes { background: var(--ok-bg); color: var(--ok); }
-.tick.no { background: var(--none-bg); color: var(--none); }
-.checklist strong { display: block; }
-.checklist .why { font-size: .85rem; color: var(--ink-2); }
-.meter { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
-.meter > i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
-
-/* verdicts */
-.verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-.verdict { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--surface); align-content: start; }
-.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px; font-weight: 700; font-size: .85rem; line-height: 1.4; }
-.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.b-blocks { background: var(--crit-bg); color: var(--crit); }
-.b-slows { background: var(--warn-bg); color: var(--warn); }
-.b-minor { background: var(--ok-bg); color: var(--ok); }
-.b-cant { background: var(--none-bg); color: var(--none); }
-.b-act { background: var(--info-bg); color: var(--info); }
-.b-need { background: var(--warn-bg); color: var(--warn); }
-.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: .92rem; }
-.kv dt { color: var(--ink-3); }
-.kv dd { margin: 0; }
-.status { min-height: 1.4em; color: var(--ink-2); font-size: .92rem; }
-.status.err { color: var(--crit); }
-.notice { border: 1px dashed var(--line); border-radius: var(--r); padding: 12px 14px; color: var(--ink-2); background: var(--surface-2); }
-
-/* report text */
-.report { font-family: var(--f-mono); font-size: .8rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface-2); border-radius: 8px; padding: 12px; max-height: 420px; overflow: auto; margin: 0; }
-.report.tall { max-height: none; }
-.report .gone { background: var(--removed-bg); color: var(--removed-ink); text-decoration: line-through; text-decoration-thickness: 1px; display: block; }
-
-/* tables */
-.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
-table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
-caption { text-align: left; padding: 12px 14px 4px; font-weight: 700; font-family: var(--f-display); }
-th, td { text-align: left; padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top; }
-thead th { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); border-top: 0; }
-td.num, th.num { text-align: right; }
-.cellbar { display: grid; gap: 4px; min-width: 96px; }
-.cellbar .v { font-weight: 700; }
-.cellbar .v small { font-weight: 400; color: var(--ink-3); }
-.hbar { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
-.hbar > i { display: block; height: 100%; background: var(--bar); border-radius: 3px; }
-.chips { display: flex; gap: 4px; flex-wrap: wrap; }
-.chip { font: 500 .72rem var(--f-mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink-3); }
-.chip.on { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
-.flip { color: var(--warn); font-weight: 700; }
-.pill { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
-tr.sel td { background: var(--accent-soft); }
-
-.progress { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
-.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
-@media (prefers-reduced-motion: reduce) { .progress > i { transition: none; } }
-
-.finding { font-family: var(--f-display); font-size: 1.12rem; font-weight: 700; line-height: 1.4; max-width: 70ch; }
-.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
-.steps li::before { content: counter(s); width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--focus); display: grid; place-items: center; font-weight: 800; color: var(--accent); }
-.prose { display: grid; gap: 12px; max-width: 72ch; }
-.prose ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
-details > summary { cursor: pointer; font-weight: 700; }
-.sitefoot { padding-block: 0 40px; border-top: 1px solid var(--line); padding-top: 18px; }
-.legendline { font-size: .82rem; color: var(--ink-3); }
-</style>
-
-<header class="masthead">
-  <div class="wrap">
-    <div class="brand">
-      <h1>TalkBack Triage Pilot</h1>
-      <p>Checks accessibility bug reports for TalkBack steps and the app version, asks Claude to triage them, and measures what changes when those details are taken out.</p>
+<a class="skip" href="#main">Skip to content</a>
+<header class="app-header">
+  <h1>TalkBack Triage Pilot</h1>
+  <nav aria-label="Sections">
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-check" aria-controls="check" aria-selected="true">Check a report</button>
+      <button class="tab" role="tab" id="tab-pilot" aria-controls="pilot" aria-selected="false" tabindex="-1">Study: pilot results</button>
+      <button class="tab" role="tab" id="tab-label" aria-controls="label" aria-selected="false" tabindex="-1">Study: label reports</button>
+      <button class="tab" role="tab" id="tab-about" aria-controls="about" aria-selected="false" tabindex="-1">How the study works</button>
     </div>
-  </div>
+  </nav>
+  <a class="repo" href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a>
 </header>
-<nav class="tabbar" aria-label="Sections">
-    <div class="wrap">
-      <div class="tabs" role="tablist" aria-label="Sections">
-        <button class="tab" role="tab" id="tab-check" aria-controls="check" aria-selected="true">Check a report</button>
-        <button class="tab" role="tab" id="tab-pilot" aria-controls="pilot" aria-selected="false" tabindex="-1">Pilot: 2 apps</button>
-        <button class="tab" role="tab" id="tab-label" aria-controls="label" aria-selected="false" tabindex="-1">Label reports</button>
-        <button class="tab" role="tab" id="tab-about" aria-controls="about" aria-selected="false" tabindex="-1">How it works</button>
-      </div>
-    </div>
-</nav>
 
-<main class="wrap">
+<main class="wrap" id="main" tabindex="-1">
 
 <!-- ============ CHECK ============ -->
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
   <div class="lede">
-    <h2>Check one bug report</h2>
-    <p class="muted">Paste a report or load a real one from the pilot data. The checklist updates as you type. Triage asks Claude whether the issue blocks a TalkBack user's task and whether there is enough evidence to act.</p>
+    <h2>Check an Android accessibility bug report</h2>
+    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span> It runs in your browser; the text is not sent anywhere.</p>
   </div>
-  <div class="grid2">
-    <div class="card pad stack">
-      <div class="row">
-        <label class="field" for="ex-select" style="flex:1 1 260px">Load a real report
-          <select id="ex-select"></select>
-        </label>
-        <label class="field" for="ex-app">App
-          <select id="ex-app">
-            <option value="WordPress for Android">WordPress for Android</option>
-            <option value="AntennaPod">AntennaPod</option>
-            <option value="">Another Android app</option>
-          </select>
-        </label>
-      </div>
-      <label class="field" for="in-title">Title
-        <input type="text" id="in-title" autocomplete="off">
-      </label>
-      <label class="field" for="in-body">Report
-        <textarea id="in-body" spellcheck="false"></textarea>
-      </label>
-      <p class="small muted" id="ex-source"></p>
-    </div>
-    <div class="stack">
-      <div class="card pad stack" aria-labelledby="chk-h">
-        <div class="row" style="justify-content:space-between">
-          <h3 id="chk-h">Report checklist</h3>
-          <span class="pill" id="chk-score" aria-live="polite"></span>
+
+  <div class="toolbar">
+    <button class="btn primary" id="btn-sample" type="button">Try a sample report</button>
+    <button class="btn" id="btn-clear" type="button">Clear</button>
+    <button class="btn" id="btn-link" type="button">Copy link to this check</button>
+    <p class="src" id="ex-source" aria-live="polite"></p>
+  </div>
+  <p class="small muted" id="link-status" role="status"></p>
+
+  <div class="split">
+    <div class="pane">
+      <div class="box">
+        <div class="box-header"><h3 id="paste-h">Bug report</h3></div>
+        <div class="box-body form">
+          <label class="field" for="in-title">Title
+            <input type="text" id="in-title" autocomplete="off" spellcheck="false">
+          </label>
+          <label class="field" for="in-body">Report text (Markdown or plain text)
+            <textarea id="in-body" spellcheck="false" aria-describedby="body-hint"></textarea>
+          </label>
+          <p class="small muted" id="body-hint">Paste the whole issue body. The checklist updates as you type.</p>
+          <details class="more">
+            <summary>Load a specific report from the study's dataset</summary>
+            <label class="field" for="ex-select">Report (75 public GitHub issues)
+              <select id="ex-select"></select>
+            </label>
+          </details>
         </div>
-        <div class="meter" aria-hidden="true"><i id="chk-meter" style="width:0"></i></div>
-        <ul class="checklist" id="checklist"></ul>
-        <p class="small muted">The checklist is plain pattern matching, no AI. It is the same code that removes these details in the pilot.</p>
-      </div>
-      <div class="card pad stack">
-        <h3>AI triage</h3>
-        <div class="row">
-          <button class="btn primary" id="btn-triage">Triage with Claude</button>
-          <button class="btn" id="btn-compare">Compare without steps &amp; version</button>
-        </div>
-        <p class="status" id="triage-status" role="status" aria-live="polite"></p>
-        <div class="notice" id="sample-off" hidden>AI triage isn't available in this copy of the page. The checklist works here, and the Pilot tab shows the saved results. To run the triage yourself, see <code>scripts/run-triage.mjs</code> in the project's README.</div>
       </div>
     </div>
+
+    <div class="pane">
+      <section class="box" aria-labelledby="chk-h">
+        <div class="box-header"><h3 id="chk-h">What a developer needs</h3><span class="summary" id="chk-score" role="status" aria-live="polite"></span></div>
+        <ul class="lint" id="checklist" aria-labelledby="chk-h"></ul>
+        <p class="boxfoot">Pattern rules can miss or over-match. Steps, version and device use the same rules as the study's checklist, plus extra rules for other apps.</p>
+      </section>
+      <section class="box" aria-labelledby="tpl-h">
+        <div class="box-header"><h3 id="tpl-h">Rewritten report</h3>
+          <div class="row"><span class="small muted" id="copy-tpl-status" role="status"></span><button class="btn" id="btn-copy-tpl" type="button">Copy report</button></div>
+        </div>
+        <pre class="tpl" id="tpl" tabindex="0" aria-label="Rewritten report, with missing details marked [MISSING]"></pre>
+      </section>
+    </div>
   </div>
-  <div id="triage-out" class="stack" aria-live="polite"></div>
+
+  <section class="card pad stack" id="ai-card" aria-labelledby="ai-h" hidden>
+    <h3 id="ai-h">Study tool: ask Claude to triage this report</h3>
+    <p class="small muted">Part of the study, separate from the checker above. It works only when this page runs inside the Claude app. Exploratory: one AI run, no human labels yet.</p>
+    <div class="row">
+      <label class="field" for="ex-app">App
+        <select id="ex-app">
+          <option value="WordPress for Android">WordPress for Android</option>
+          <option value="AntennaPod">AntennaPod</option>
+          <option value="">Another Android app</option>
+        </select>
+      </label>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="btn-triage" type="button">Triage with Claude</button>
+      <button class="btn" id="btn-compare" type="button">Compare without steps &amp; version</button>
+    </div>
+    <p class="status" id="triage-status" role="status" aria-live="polite"></p>
+    <div class="notice" id="sample-off" hidden>Claude access isn't available, so AI triage is off. The checker above still works.</div>
+    <div id="triage-out" class="stack" aria-live="polite"></div>
+  </section>
 </section>
 
 <!-- ============ PILOT ============ -->
@@ -437,15 +283,20 @@ details > summary { cursor: pointer; font-weight: 700; }
     const use = (n) => (window.claude && window.claude.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null));
     [sample, db, user, downloads] = await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
     if (user) { try { me = await user.me(); } catch (e) { me = null; } }
-    $("#sample-off").hidden = !!sample;
+    $("#ai-card").hidden = !sample;
     if (!sample) { aiOff = true; $("#run-status").textContent = NO_AI_RUN; updateCallCount(); }
     startDb();
     renderLabelView();
     renderResults();
   })();
 
-  // ---------- tabs ----------
+  // ---------- tabs and URL state ----------
+  // The URL fragment holds the view and, for the checker, which report is shown: #check?report=WP-21127
+  // or #check?text=<code> for pasted text (the fragment is never sent to a server).
   const VIEWS = ["check", "pilot", "label", "about"];
+  const parseHash = () => { const raw = location.hash.slice(1); const q = raw.indexOf("?"); return { view: q < 0 ? raw : raw.slice(0, q), params: new URLSearchParams(q < 0 ? "" : raw.slice(q + 1)) }; };
+  const hashFor = (view, params) => { const q = params ? params.toString() : ""; return "#" + view + (q ? "?" + q : ""); };
+  const setHash = (view, params) => { const want = hashFor(view, params); if (location.hash !== want) history.replaceState(null, "", want); };
   function show(view, focus) {
     if (!VIEWS.includes(view)) view = "check";
     for (const v of VIEWS) {
@@ -457,51 +308,145 @@ details > summary { cursor: pointer; font-weight: 700; }
     }
     if (focus) $("#tab-" + view).focus();
   }
+  const go = (v, focus) => { setHash(v, v === "check" ? checkParams() : null); show(v, focus); };
   $$(".tab").forEach((tab, i, all) => {
-    tab.addEventListener("click", () => { const v = tab.getAttribute("aria-controls"); history.replaceState(null, "", "#" + v); show(v); });
+    tab.addEventListener("click", () => go(tab.getAttribute("aria-controls")));
     tab.addEventListener("keydown", (e) => {
       let j = null;
       if (e.key === "ArrowRight") j = (i + 1) % all.length;
       if (e.key === "ArrowLeft") j = (i - 1 + all.length) % all.length;
       if (e.key === "Home") j = 0;
       if (e.key === "End") j = all.length - 1;
-      if (j != null) { e.preventDefault(); const v = all[j].getAttribute("aria-controls"); history.replaceState(null, "", "#" + v); show(v, true); }
+      if (j != null) { e.preventDefault(); go(all[j].getAttribute("aria-controls"), true); }
     });
   });
-  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
-  show(location.hash.slice(1));
 
   // ============ CHECK VIEW ============
+  const C = window.TBC;
+  // Real, incomplete reports from the dataset; "Try a sample report" steps through them.
+  const SAMPLES = ["WP-21127", "AP-3563", "WP-19452"].filter((id) => BY_ID[id]);
+  let shownId = null;      // the dataset report in the fields, while unedited
+  let lastResult = null;
   const exSel = $("#ex-select");
-  exSel.append(h("option", { value: "" }, "Paste your own…"));
+  exSel.append(h("option", { value: "" }, "Choose a report…"));
   for (const app of ["WP", "AP"]) {
     const g = h("optgroup", { label: APPS[app].name });
     for (const r of REPORTS.filter((x) => x.app === app)) g.append(h("option", { value: r.id }, "#" + r.number + " " + r.title.slice(0, 70)));
     exSel.append(g);
   }
+  function checkParams() {
+    if (shownId) return new URLSearchParams({ report: shownId });
+    return null;
+  }
   function loadExample(id) {
     const r = BY_ID[id];
-    if (!r) { $("#ex-source").textContent = ""; return; }
+    if (!r) return false;
+    shownId = id;
     $("#in-title").value = r.title;
     $("#in-body").value = r.body;
     $("#ex-app").value = APPS[r.app].name;
-    $("#ex-source").replaceChildren("From ", h("a", { href: gh(r), target: "_blank", rel: "noopener" }, APPS[r.app].repo + " #" + r.number), " · " + outcome(r) + (r.created ? " · filed " + r.created : ""));
-    updateChecklist();
+    exSel.value = id;
+    const si = SAMPLES.indexOf(id);
+    $("#ex-source").replaceChildren(si >= 0 ? "Sample " + (si + 1) + " of " + SAMPLES.length + ": " : "From the dataset: ",
+      h("a", { href: gh(r), target: "_blank", rel: "noopener" }, APPS[r.app].repo + " #" + r.number),
+      ", a real public issue (shortened in the dataset).");
+    updateChecklist(true);
+    $("#triage-out").replaceChildren(); $("#triage-status").textContent = "";
+    if (!$("#check").hidden) setHash("check", checkParams());
+    return true;
   }
-  exSel.addEventListener("change", () => { loadExample(exSel.value); $("#triage-out").replaceChildren(); $("#triage-status").textContent = ""; });
+  exSel.addEventListener("change", () => { if (exSel.value) loadExample(exSel.value); });
   function currentReport() { return { title: $("#in-title").value, body: $("#in-body").value, labels: [] }; }
-  function updateChecklist() {
-    const c = T.check(currentReport());
-    const ul = $("#checklist");
-    ul.replaceChildren(...FIELDS.map((f) => h("li", null,
-      h("span", { class: "tick " + (c[f.k] ? "yes" : "no"), "aria-hidden": "true" }, c[f.k] ? "✓" : "–"),
-      h("div", null, h("strong", null, f.name, h("span", { class: "sr" }, c[f.k] ? ": present" : ": missing")), h("span", { class: "why" }, (c[f.k] ? "Present. " : "Missing. ") + f.why)))));
-    const n = FIELDS.filter((f) => c[f.k]).length;
-    $("#chk-score").textContent = n + " of 6 present";
-    $("#chk-meter").style.width = (n / 6) * 100 + "%";
+
+  // status icons: inline SVG, hidden from assistive technology (the status is also given in text)
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const svg = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  function icon(status) {
+    const s = svg("svg", { class: "ico", viewBox: "0 0 20 20", width: "20", height: "20", "aria-hidden": "true", focusable: "false" });
+    const ring = { cx: "10", cy: "10", r: "8.25", fill: "none", stroke: "currentColor", "stroke-width": "1.5" };
+    if (status === "present") { s.append(svg("circle", Object.assign({}, ring, { fill: "currentColor" })), svg("path", { d: "M6 10.2l2.6 2.6L14.2 7.2", fill: "none", stroke: "var(--bg)", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" })); }
+    else if (status === "missing") { s.append(svg("circle", ring), svg("path", { d: "M7 7l6 6M13 7l-6 6", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
+    else if (status === "partial") { s.append(svg("circle", ring), svg("path", { d: "M10 1.75a8.25 8.25 0 0 1 0 16.5z", fill: "currentColor" })); }
+    else if (status === "optional") { s.append(svg("circle", Object.assign({}, ring, { "stroke-dasharray": "3 2.6" }))); }
+    else { s.append(svg("circle", ring), svg("path", { d: "M6.5 10h7", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
+    return s;
+  }
+  const STATE_TEXT = { present: "Found", partial: "Incomplete", missing: "Missing", optional: "Optional", na: "Not needed" };
+
+  let summaryTimer = null;
+  function updateChecklist(now) {
+    const rep = currentReport();
+    const a = (lastResult = C.analyze(rep));
+    $("#checklist").replaceChildren(...a.items.map((it) => h("li", { "data-status": it.status, "data-key": it.key },
+      icon(it.status),
+      h("span", { class: "name" }, it.name),
+      h("span", { class: "state" }, STATE_TEXT[it.status]),
+      h("p", { class: "detail" },
+        it.status === "na" ? it.found
+          : it.found && it.status !== "missing" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
+          : it.hint))));
+    $("#tpl").replaceChildren(...a.template.map((s) => (s.mark ? h("mark", { class: s.mark }, s.text) : s.text)));
+    const empty = !rep.title.trim() && !rep.body.trim();
+    const S = a.summary;
+    const text = empty ? "Nothing to check yet. Paste a report, or try a sample."
+      : S.present + " of " + S.required + " found" + (S.missing ? ", " + S.missing + " missing" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
+    clearTimeout(summaryTimer);
+    // the summary is a live region: while someone types, announce it only after a pause
+    if (now) $("#chk-score").textContent = text;
+    else summaryTimer = setTimeout(() => { $("#chk-score").textContent = text; }, 700);
   }
   let inputTimer = null;
-  ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => { clearTimeout(inputTimer); inputTimer = setTimeout(updateChecklist, 150); if (exSel.value) { exSel.value = ""; $("#ex-source").textContent = "Edited copy"; } }));
+  ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => {
+    clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
+    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text."; setHash("check"); }
+  }));
+  $("#btn-sample").addEventListener("click", () => {
+    const i = SAMPLES.indexOf(shownId);
+    loadExample(SAMPLES[(i + 1) % SAMPLES.length]);
+  });
+  $("#btn-clear").addEventListener("click", () => {
+    shownId = null; exSel.value = "";
+    $("#in-title").value = ""; $("#in-body").value = "";
+    $("#ex-source").textContent = "Cleared. Paste a report to check it.";
+    $("#link-status").textContent = "";
+    updateChecklist(true); setHash("check");
+    $("#in-body").focus();
+  });
+  $("#btn-link").addEventListener("click", (e) => {
+    const r = currentReport();
+    let params = checkParams();
+    if (!params) {
+      const code = C.encodeState(r.title, r.body);
+      if (!code) { $("#link-status").textContent = "This report is too long to put in a link (over " + C.MAX_LINK_CHARS.toLocaleString("en-US") + " characters). Copy the rewritten report instead."; return; }
+      params = new URLSearchParams({ text: code });
+    }
+    setHash("check", params);
+    copyText(location.href, e.currentTarget, shownId ? "Link copied." : "Link copied. The report text is in the part of the link after #, which browsers don't send to any server.", "#link-status");
+  });
+  $("#btn-copy-tpl").addEventListener("click", (e) => copyText(lastResult ? lastResult.text : "", e.currentTarget, "Copied.", "#copy-tpl-status"));
+
+  // Open whatever the URL asks for; with nothing asked, show the first sample so the page is never empty.
+  function applyHash() {
+    const { view, params } = parseHash();
+    show(view);
+    const id = params.get("report"), code = params.get("text");
+    if (id && BY_ID[id]) { if (id !== shownId) loadExample(id); }
+    else if (code != null) {
+      const st = C.decodeState(code);
+      if (st) {
+        shownId = null; exSel.value = "";
+        $("#in-title").value = st.title; $("#in-body").value = st.body;
+        $("#ex-source").textContent = "Opened from a shared link.";
+        updateChecklist(true);
+      } else {
+        shownId = null; exSel.value = "";
+        $("#in-title").value = ""; $("#in-body").value = "";
+        updateChecklist(true);
+        $("#ex-source").textContent = "That link's report couldn't be read. Paste the report, or try a sample.";
+      }
+    } else if (!lastResult) loadExample(SAMPLES[0]);
+  }
+  window.addEventListener("hashchange", applyHash);
 
   function errText(e) {
     const code = e && e.code;
@@ -592,8 +537,7 @@ details > summary { cursor: pointer; font-weight: 700; }
   }
   $("#btn-triage").addEventListener("click", () => runCheck(false));
   $("#btn-compare").addEventListener("click", () => runCheck(true));
-  exSel.value = "WP-20770";
-  loadExample("WP-20770");
+  applyHash();
 
   // ============ PILOT VIEW ============
   const nWP = REPORTS.filter((r) => r.app === "WP").length, nAP = REPORTS.filter((r) => r.app === "AP").length;
