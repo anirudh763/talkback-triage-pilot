@@ -33,7 +33,8 @@ const page = tpl
   .replace("/*APPCSS*/", () => style(src("app.css")))
   .replace("/*CORE*/", () => script(core) + "\n" + script(checker))
   .replace("/*DATA*/", () => safeJson(reports))
-  .replace("/*ARCHIVE*/", () => safeJson(archive));
+  .replace("/*ARCHIVE*/", () => safeJson(archive))
+  .replace("/*VERSION*/", () => VERSION);
 
 // Content Security Policy: the page may load only its own files (the fonts) and run only its own inline
 // scripts, listed by hash; it can't send requests anywhere. Inline styles stay allowed (style attributes).
@@ -45,7 +46,7 @@ const csp = ["default-src 'self'", "script-src " + hashes.join(" "), "style-src 
 const doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
   '<meta http-equiv="Content-Security-Policy" content="' + csp + '">\n' +
   '<meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">\n' +
-  '<meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="#151b23" media="(prefers-color-scheme: dark)">\n' +
+  '<meta name="theme-color" content="#f7f8fa">\n' +
   '<link rel="icon" href="icon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="icon-192.png">\n<link rel="manifest" href="manifest.webmanifest">\n' +
   "<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n" + page + "\n</body>\n</html>\n";
 fs.mkdirSync(rel("docs"), { recursive: true });

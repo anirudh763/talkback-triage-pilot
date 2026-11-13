@@ -96,6 +96,8 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   await page.fill("#in-body", "1. Turn on TalkBack\n2. Open the Post list screen\nApp version: 24.8\nPixel 8, Android 14").catch(() => null);
   await page.waitForTimeout(300);
   ok((await page.getAttribute('#checklist li[data-key="appVersion"]', "data-status").catch(() => null)) === "present", "offline: pasted text is checked");
+  await page.evaluate(() => { location.hash = "#/draft"; }); await page.waitForTimeout(150);
+  ok((await page.textContent("main h1:visible").catch(() => "")) === "Review draft" && /App version: 24\.8/.test(await page.textContent("#tpl").catch(() => "")), "offline: the Draft screen opens with the pasted report");
   const font = await page.evaluate(() => document.fonts.check('16px "Atkinson Hyperlegible"') && [...document.fonts].some((f) => f.family.includes("Atkinson") && f.status === "loaded"));
   ok(font, "offline: the page's own font loads from the cache");
   await ctx.setOffline(false);

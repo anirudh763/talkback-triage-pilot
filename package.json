@@ -1,6 +1,6 @@
 {
   "name": "talkback-triage-pilot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Check an Android accessibility bug report for the details a developer needs (offline, rule-based), plus an exploratory pilot on whether TalkBack steps and the app version change how an AI triages reports.",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "agreement": "node scripts/agreement.js",
     "triage": "node scripts/run-triage.mjs",
     "test": "node test/core.test.js && node test/checker.test.js && node test/workflow.test.js && node test/copy.test.js && node test/issue-form.test.js && node test/version.test.js && node test/redos.test.js && node test/triage-call.test.js && node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js",
-    "test:e2e": "node test/e2e.js && node test/checker.e2e.js && node test/offline.e2e.js && node test/noscript.e2e.js",
+    "test:e2e": "node test/e2e.js && node test/checker.e2e.js && node test/offline.e2e.js && node test/noscript.e2e.js && node test/routes.e2e.js",
     "screenshots": "node test/checker.e2e.js --shots",
     "icons": "node scripts/icons.js"
   },

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0 – 2026-11-13
+
+### Light-first, routed UI with a report composer
+
+The checker's rules (`src/checker.js`, `src/core.js`), `data/` and `results/` are unchanged.
+
+- Each task is its own screen on a hash route: `#/check` (default), `#/draft`, `#/examples`, and under Learn `#/research`, `#/research/labels`, `#/research/methods`. Unknown routes show a Not found screen. Every route change updates the page title and moves focus to the screen's H1.
+- Old links keep working: `#check?report=…` and `#check?text=…` open `#/check` with the same report; `#pilot`, `#label` and `#about` open the matching research screen.
+- Check is a report composer: editor beside a plain Markdown preview of the issue body. Text the checker matched is highlighted where it appears; each detail it did not find is a prompt where the reporter types it in their own words and adds it to the report. Nothing is filled in automatically.
+- Draft is its own screen with Copy draft and Download as Markdown. Title and body stay in the tab (sessionStorage) across Draft, Back/Forward and reloads.
+- Examples lists the 75 dataset reports with filters (app, a detail not found, title text) kept in the URL; each row opens in Check and links to the GitHub issue.
+- Light by default, also when the OS prefers dark. Dark is an explicit, remembered "Dark theme" toggle. New tokens, 16px type, 44px targets; a 216px rail on wide screens and a Menu sheet (Escape closes it and returns focus) below 1000px.
+- Review draft stays in view: its row is pinned to the bottom of the screen while the report editor is visible, and `scroll-padding` keeps keyboard focus from landing under it or under the sticky header on narrow screens.
+- Highlights are placed on the original text with a case-insensitive match, so characters that change length when lower-cased (such as "İ") no longer shift them.
+- A link to a report ID that is not in the dataset says "Report not found" instead of quietly showing another report.
+- Table legends sit above their scrolling region, and captions stay inside the visible part of it on narrow screens.
+- `.semgrep/dom-sinks.yml` and `scripts/inline-scripts.js`: the local semgrep check for HTML-string sinks, with the command in the README.
+- The offline cache name moves to v0.3.0.
+- `test/routes.e2e.js` covers the routes, focus, Menu sheet, Back/Forward state, old links, light default and axe-core in light and dark at 1280 and 320 px.
+
 ## 0.2.0 – 2026-11-13
 
 0.2.0 was never tagged before this date, so this entry covers every change since 0.1.0, newest first.
