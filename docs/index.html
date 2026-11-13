@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-hSYYXFYoNJ/EwyFF3zzqIm+AIDWvKHlXABFYJqOD3gI=' 'sha256-O9by1vSC59xYdieDoIuNIfRhQBJ68IMFfvxh01PskaM='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-YvkEYF+Fer++cTKet4ifl6Sye2jOaJrsVRuY2lO7Fqc=' 'sha256-O9by1vSC59xYdieDoIuNIfRhQBJ68IMFfvxh01PskaM='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -933,12 +933,20 @@ details > summary { cursor: pointer; font-weight: 700; }
     }
     return keep.join("\n");
   }
+  // a device value names something: not only punctuation, a field label ("model:") or a placeholder ("[device]")
+  const isDeviceValue = (v) => {
+    const t = v.replace(/[*_#:`\[\]()<>.,;-]+/g, " ").trim();
+    return /[a-z0-9]/i.test(t) && !/^(?:device|model|device model|phone|name|no response|n\/?a|none|unknown)$/i.test(t);
+  };
   function appVersion(body) {
     for (const r of APP_VERSION) {
       for (const m of body.matchAll(new RegExp(r.source, r.flags.replace("g", "") + "g"))) {
         const v = (m[1] || m[0]).trim();
-        const before = body.slice(Math.max(0, m.index - 40), m.index + m[0].indexOf(m[1] || m[0]));
-        if (!NOT_APP.test(before.replace(/\b(?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*$/i, "").trim()) || /\bapp\s+version\b/i.test(m[0])) return v;
+        // what comes before the version on the same line: "TalkBack app version: 15.1" belongs to TalkBack,
+        // even with the words "app version"; "WordPress app version 24.3" and "App version: 42" are the app's
+        const start = m.index + m[0].indexOf(m[1] || m[0]);
+        const before = body.slice(Math.max(0, body.lastIndexOf("\n", start - 1) + 1, start - 40), start);
+        if (!NOT_APP.test(before.replace(/\b(?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*$/i, "").trim())) return v;
       }
     }
     return null;
@@ -1013,7 +1021,7 @@ details > summary { cursor: pointer; font-weight: 700; }
       "Copy it from the app's Settings > About screen, e.g. 24.8 or 3.1.0.");
 
     // 4. device and Android version
-    const andV = androidLabel(first(ANDROID, body)), dev = first(DEVICE, body);
+    const andV = androidLabel(first(ANDROID, body)), dev = firstOfAll(DEVICE, body, isDeviceValue);
     add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "notfound",
       [dev, andV].filter(Boolean).join(", ") || null,
       andV && !dev ? "Add the device model, e.g. Pixel 8." : dev && !andV ? "Add the Android version, e.g. Android 14." : "Add the device model and Android version, e.g. Pixel 8, Android 14.");

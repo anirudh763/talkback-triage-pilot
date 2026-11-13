@@ -101,12 +101,20 @@
     }
     return keep.join("\n");
   }
+  // a device value names something: not only punctuation, a field label ("model:") or a placeholder ("[device]")
+  const isDeviceValue = (v) => {
+    const t = v.replace(/[*_#:`\[\]()<>.,;-]+/g, " ").trim();
+    return /[a-z0-9]/i.test(t) && !/^(?:device|model|device model|phone|name|no response|n\/?a|none|unknown)$/i.test(t);
+  };
   function appVersion(body) {
     for (const r of APP_VERSION) {
       for (const m of body.matchAll(new RegExp(r.source, r.flags.replace("g", "") + "g"))) {
         const v = (m[1] || m[0]).trim();
-        const before = body.slice(Math.max(0, m.index - 40), m.index + m[0].indexOf(m[1] || m[0]));
-        if (!NOT_APP.test(before.replace(/\b(?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*$/i, "").trim()) || /\bapp\s+version\b/i.test(m[0])) return v;
+        // what comes before the version on the same line: "TalkBack app version: 15.1" belongs to TalkBack,
+        // even with the words "app version"; "WordPress app version 24.3" and "App version: 42" are the app's
+        const start = m.index + m[0].indexOf(m[1] || m[0]);
+        const before = body.slice(Math.max(0, body.lastIndexOf("\n", start - 1) + 1, start - 40), start);
+        if (!NOT_APP.test(before.replace(/\b(?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*$/i, "").trim())) return v;
       }
     }
     return null;
@@ -181,7 +189,7 @@
       "Copy it from the app's Settings > About screen, e.g. 24.8 or 3.1.0.");
 
     // 4. device and Android version
-    const andV = androidLabel(first(ANDROID, body)), dev = first(DEVICE, body);
+    const andV = androidLabel(first(ANDROID, body)), dev = firstOfAll(DEVICE, body, isDeviceValue);
     add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "notfound",
       [dev, andV].filter(Boolean).join(", ") || null,
       andV && !dev ? "Add the device model, e.g. Pixel 8." : dev && !andV ? "Add the Android version, e.g. Android 14." : "Add the device model and Android version, e.g. Pixel 8, Android 14.");

@@ -123,6 +123,19 @@ assert.strictEqual(found(C.analyze({ title: "x", body: "### App version\n\n1024"
 assert.strictEqual(found(C.analyze({ title: "x", body: "**App version**: 7" }), "appVersion"), "7");
 assert.strictEqual(found(C.analyze({ title: "x", body: "TalkBack 15.1, app version 3.2.0" }), "appVersion"), "app version 3.2.0");
 
+// A bare field label or placeholder is not a device; a version named for a component is never the app's (review 3).
+for (const b of ["Device model:", "Device: [device]", "Device:", "**Device:** _No response_"]) {
+  const a = C.analyze({ title: "x", body: b });
+  assert.strictEqual(status(a, "device"), "notfound", JSON.stringify(b) + " -> " + JSON.stringify(found(a, "device")));
+}
+for (const b of ["TalkBack app version: 15.1", "Android Accessibility Suite app version: 15.1", "Chrome app version 120.0.6099"]) {
+  const a = C.analyze({ title: "x", body: b });
+  assert.strictEqual(status(a, "appVersion"), "notfound", JSON.stringify(b) + " -> " + JSON.stringify(found(a, "appVersion")));
+}
+assert.strictEqual(status(C.analyze({ title: "x", body: "App version: 42" }), "appVersion"), "present");
+assert.strictEqual(status(C.analyze({ title: "x", body: "WordPress app version 24.3" }), "appVersion"), "present");
+assert.strictEqual(found(C.analyze({ title: "x", body: "Device: Pixel 8" }), "device"), "Pixel 8");
+
 // pasted HTML is plain text in the result: it is carried through unchanged, never interpreted
 const html = C.analyze({ title: "<img src=x onerror=alert(1)>", body: "<script>alert(1)</script>" });
 assert.ok(html.text.includes("<img src=x onerror=alert(1)>") && html.text.includes("> <script>alert(1)</script>"));
