@@ -28,6 +28,8 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(file).pipe(res);
 });
 
+const ROUTE = { check: "#/check", pilot: "#/research", label: "#/research/labels", about: "#/research/methods" };
+const goView = async (page, v) => { await page.evaluate((x) => { location.hash = x; }, ROUTE[v]); await page.waitForTimeout(80); };
 let failures = 0;
 let browser = null;
 const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); if (!cond) failures++; };
@@ -38,14 +40,15 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   browser = await chromium.launch();
   const errors = [];
   const offsite = [];
-  async function open(opts, hash) {
+  async function open(opts, hash, dark) {
     const ctx = await browser.newContext(Object.assign({ viewport: { width: 1280, height: 900 } }, opts));
+    if (dark) await ctx.addInitScript(() => { try { localStorage.setItem("tbt-theme", "dark"); } catch (e) { /* ignore */ } });
     const page = await ctx.newPage();
     page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
     page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text()); });
     page.on("request", (r) => { if (!r.url().startsWith(base)) offsite.push(r.url()); });
     await page.goto(base + (hash || ""));
-    await page.waitForSelector("#checklist li");
+    await page.waitForSelector("#checklist li", { state: "attached" });
     return { ctx, page };
   }
   const statuses = (page) => page.$$eval("#checklist li", (els) => els.map((e) => e.dataset.key + ":" + e.dataset.status));
@@ -67,11 +70,13 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok((await page.locator("#tpl mark.add").count()) >= 1, "placeholders are highlighted");
     ok(/of \d found/.test(await page.textContent("#chk-score")), "summary: " + (await page.textContent("#chk-score")));
     ok(/Sample \d of 3/.test(await page.textContent("#ex-source")), "source line names the real issue: " + (await page.textContent("#ex-source")));
-    ok(/^#check\?report=[A-Z]+-\d+$/.test(await page.evaluate(() => location.hash)), "URL holds the sample: " + (await page.evaluate(() => location.hash)));
+    ok(/^#\/check\?report=[A-Z]+-\d+$/.test(await page.evaluate(() => location.hash)), "URL holds the sample: " + (await page.evaluate(() => location.hash)));
+    await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(80);
     await page.click("#btn-copy-tpl");
     await page.waitForFunction(() => document.querySelector("#copy-tpl-status").textContent);
     const clip = await page.evaluate(() => navigator.clipboard.readText());
-    ok(clip === tpl, "Copy report copies exactly the template text");
+    ok(clip === tpl, "Copy draft copies exactly the template text");
+    await page.goBack(); await page.waitForTimeout(80);
 
     // a shared sample link opens the same report
     const sampleUrl = await page.evaluate(() => location.href);
@@ -88,13 +93,13 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     // give any injected image or script every chance to load and run before checking
     await page.waitForLoadState("networkidle"); await page.waitForTimeout(200);
     ok((await page.evaluate(() => window.__xss)) === undefined, "pasted HTML is not executed");
-    ok((await page.locator("#tpl img, #checklist img, #tpl script, #ex-source img").count()) === 0, "pasted HTML creates no elements");
+    ok((await page.locator("#tpl img, #checklist img, #tpl script, #ex-source img, #preview img, #preview script, #gaps img").count()) === 0, "pasted HTML creates no elements");
     ok((await page.textContent("#tpl")).includes(evil), "pasted HTML is shown as text");
-    ok(await page.evaluate(() => location.hash === "#check"), "editing drops the sample from the URL");
+    ok(await page.evaluate(() => location.hash === "#/check"), "editing drops the sample from the URL");
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
     const link = await page.evaluate(() => navigator.clipboard.readText());
-    ok(/#check\?text=[A-Za-z0-9_-]+$/.test(link), "Copy link puts the text in the URL fragment");
+    ok(/#\/check\?text=[A-Za-z0-9_-]+$/.test(link), "Copy link puts the text in the URL fragment");
     const p3 = await ctx.newPage();
     p3.on("pageerror", (e) => errors.push("pageerror: " + e.message));
     await p3.goto(link); await p3.waitForSelector("#checklist li");
@@ -109,7 +114,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok(await page.evaluate(() => document.activeElement.id === "in-body"), "Clear moves focus to the report box");
     ok((await page.locator("#ai-card").isHidden()), "AI study tool is hidden when no AI is available");
     ok(/carries the full report text/.test(await page.textContent("#link-hint")), "the page warns that a link carries the report text");
-    await page.click("#tab-pilot");
+    await goView(page, "pilot");
     ok((await page.locator("#run-card").isHidden()) && (await page.locator("#run-off").isVisible()), "the pilot's run controls are hidden outside the Claude app, with a note instead");
     await ctx.close();
   }
@@ -118,10 +123,10 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   console.log("axe-core");
   const axeCounts = {};
   for (const width of [1280, 375]) for (const scheme of ["light", "dark"]) {
-    const { ctx, page } = await open({ colorScheme: scheme, viewport: { width, height: 900 } });
+    // dark is an explicit choice (the Dark theme toggle, remembered in localStorage), not the OS setting
+    const { ctx, page } = await open({ colorScheme: scheme, viewport: { width, height: 900 } }, "", scheme === "dark");
     for (const v of ["check", "pilot", "label", "about"]) {
-      await page.click("#tab-" + v);
-      await page.waitForTimeout(80);
+      await goView(page, v);
       await page.evaluate(AXE); // evaluated, not injected as a <script>: the page's CSP would block that
       const res = await page.evaluate(async () => {
         const r = await window.axe.run(document, { resultTypes: ["violations"] });
@@ -138,26 +143,29 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   for (const width of [320, 375, 390]) {
     const { ctx, page } = await open({ viewport: { width, height: 800 } });
     for (const v of ["check", "pilot", "label", "about"]) {
-      await page.click("#tab-" + v); await page.waitForTimeout(60);
+      await goView(page, v);
       const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       ok(over <= 0, width + "px " + v + ": no horizontal page scroll (overflow " + over + "px)");
-      const clipped = await page.$$eval(".tab", (els) => els.filter((e) => { const r = e.getBoundingClientRect(); return r.left < 0 || r.right > window.innerWidth; }).map((e) => e.textContent));
-      ok(!clipped.length, width + "px " + v + ": every tab is fully visible" + (clipped.length ? ": " + clipped.join(", ") : ""));
+      const clipped = await page.$$eval("#btn-menu, .crumbs a", (els) => els.filter((e) => { const r = e.getBoundingClientRect(); return r.left < 0 || r.right > window.innerWidth; }).map((e) => e.textContent));
+      ok(!clipped.length, width + "px " + v + ": Menu and breadcrumb are fully visible" + (clipped.length ? ": " + clipped.join(", ") : ""));
     }
     await ctx.close();
   }
   {
     const { ctx, page } = await open({});
-    await page.keyboard.press("Tab"); await page.keyboard.press("Tab");
-    ok(await page.evaluate(() => document.activeElement.id === "tab-check"), "keyboard: skip link, then the tabs");
-    await page.keyboard.press("ArrowRight");
-    ok(await page.evaluate(() => document.activeElement.id === "tab-pilot" && !document.querySelector("#pilot").hidden && location.hash === "#pilot"), "keyboard: arrow keys switch tabs and update the URL");
-    await page.click("#tab-check");
-    ok(/^#check\?report=/.test(await page.evaluate(() => location.hash)), "returning to the checker keeps its report in the URL");
+    await page.keyboard.press("Tab");
+    ok(await page.evaluate(() => document.activeElement.id === "skip"), "keyboard: the first Tab reaches Skip to content");
+    await page.keyboard.press("Enter");
+    ok(await page.evaluate(() => document.activeElement.id === "h-check" && location.hash.startsWith("#/check")), "keyboard: Skip to content moves focus to the screen's H1 without changing the route");
+    await page.focus("#skip"); await page.keyboard.press("Tab");
+    ok(await page.evaluate(() => document.activeElement.classList.contains("wordmark")), "keyboard: after the skip link, the rail comes first");
+    await page.locator("#rail").getByRole("link", { name: "Research" }).click(); await page.waitForTimeout(80);
+    await page.locator("#rail").getByRole("link", { name: "Check a report" }).click(); await page.waitForTimeout(80);
+    ok(/^#\/check\?report=/.test(await page.evaluate(() => location.hash)), "returning to the checker keeps its report in the URL");
     // WCAG 2.5.8 target size on every tab. Radio buttons and checkboxes are measured by their label (the click target);
     // the only exception taken is links inside a sentence (the "inline" exception).
     for (const v of ["check", "pilot", "label", "about"]) {
-      await page.click("#tab-" + v); await page.waitForTimeout(80);
+      await goView(page, v);
       const small = await page.$$eval("button, a, select, input, summary, textarea", (els) => els
         .filter((e) => e.offsetParent && !(e.tagName === "A" && e.closest("p, li, dd, td, .prose")))
         .map((e) => { const t = /^(radio|checkbox)$/.test(e.type) && e.closest("label") ? e.closest("label") : e; const r = t.getBoundingClientRect(); return [e.id || e.name || e.textContent.trim().slice(0, 20), Math.round(r.width), Math.round(r.height)]; })
@@ -182,16 +190,18 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.keyboard.press("Control+A"); await page.keyboard.type("1. Open the Episodes screen\n2. Tap Play\nApp version: 9");
     await page.waitForTimeout(300);
     ok(/App version/.test(await page.textContent("#checklist")) && (await page.locator('#checklist li[data-key="appVersion"]').getAttribute("data-status")) === "present", "keyboard: typed text is checked as you type");
-    ok(await tabTo("btn-copy-tpl"), "keyboard: Tab reaches Copy report");
+    ok(await tabTo("btn-review"), "keyboard: Tab reaches Review draft");
+    await page.keyboard.press("Enter"); await page.waitForTimeout(80);
+    ok(await tabTo("btn-copy-tpl"), "keyboard: on the Draft screen, Tab reaches Copy draft");
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.querySelector("#copy-tpl-status").textContent);
-    ok((await page.evaluate(() => navigator.clipboard.readText())).includes("App version: 9"), "keyboard: Enter on Copy report copies the rewrite");
+    ok((await page.evaluate(() => navigator.clipboard.readText())).includes("App version: 9"), "keyboard: Enter on Copy draft copies the rewrite");
     await ctx.close();
   }
   // ---- found / not found tags in "Every report in this run": the state must show without colour (WCAG 1.4.1) ----
   for (const scheme of ["light", "dark"]) {
-    const { ctx, page } = await open({ colorScheme: scheme });
-    await page.click("#tab-pilot");
+    const { ctx, page } = await open({ colorScheme: scheme }, "", scheme === "dark");
+    await goView(page, "pilot");
     await page.waitForSelector('[aria-label="Every report in this run"] tbody tr');
     // Each tag's state comes from its screen-reader text; its look is everything except colour.
     const tags = await page.$$eval('[aria-label="Every report in this run"] tbody td:nth-child(2) span[title]', (els) => els.map((e) => {
@@ -209,12 +219,12 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   {
     const { ctx, page } = await open({ viewport: { width: 640, height: 450 }, deviceScaleFactor: 2 });
     for (const v of ["check", "pilot", "label", "about"]) {
-      await page.click("#tab-" + v); await page.waitForTimeout(60);
+      await goView(page, v);
       const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       ok(over <= 0, "200% zoom " + v + ": no horizontal page scroll (overflow " + over + "px)");
     }
-    await page.click("#tab-check");
-    const cut = await page.$$eval("#checklist .name, #checklist .state, .tab, #btn-sample, #btn-copy-tpl", (els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > window.innerWidth).map((e) => e.textContent));
+    await goView(page, "check");
+    const cut = await page.$$eval("#checklist .name, #checklist .state, #btn-menu, #btn-sample, #btn-review", (els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > window.innerWidth).map((e) => e.textContent));
     ok(!cut.length, "200% zoom: labels and buttons are not cut off" + (cut.length ? ": " + cut.join(", ") : ""));
     await ctx.close();
   }
@@ -227,7 +237,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.fill("#in-body", "x".repeat(13000));
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
-    ok(/too long to put in a link/.test(await page.textContent("#link-status")), "too long for a link: says so and suggests copying the rewrite");
+    ok(/too long to put in a link/.test(await page.textContent("#link-status")), "too long for a link: says so and suggests copying the draft");
     await page.goto(base + "#check?text=AAAA"); await page.waitForTimeout(150);
     ok(/couldn't be read/.test(await page.textContent("#ex-source")), "a link with an unreadable report says so");
     await ctx.close();
@@ -249,18 +259,25 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   if (SHOTS) {
     const dir = path.join(DOCS, "screenshots");
     fs.mkdirSync(dir, { recursive: true });
-    const { ctx, page } = await open({ viewport: { width: 1280, height: 1000 }, deviceScaleFactor: 2, colorScheme: "light" }, "#check?report=WP-21127");
+    // the primary screen (Check, the report composer) at the root gate's 1440 and 320 widths, plus the README shots
+    for (const [w, hgt, file] of [[1440, 1100, "check-1440.png"], [320, 1600, "check-320.png"], [1280, 1000, "checker.png"]]) {
+      const s1 = await open({ viewport: { width: w, height: hgt }, deviceScaleFactor: 2, colorScheme: "light" }, "#/check?report=AP-3563");
+      await s1.page.waitForTimeout(200);
+      await s1.page.screenshot({ path: path.join(dir, file) });
+      await s1.ctx.close();
+    }
+    const { ctx, page } = await open({ viewport: { width: 1280, height: 1000 }, deviceScaleFactor: 2, colorScheme: "light" }, "#/research");
     await page.waitForTimeout(200);
-    await page.screenshot({ path: path.join(dir, "checker.png") });
-    await page.click("#tab-pilot"); await page.waitForTimeout(200);
     await page.evaluate(() => { const r = document.querySelector("#results"); window.scrollTo(0, r.getBoundingClientRect().top + window.scrollY - 16); });
     await page.screenshot({ path: path.join(dir, "study-results.png") });
+    await goView(page, "check"); await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(150);
+    await page.screenshot({ path: path.join(dir, "draft-1280.png") });
     await ctx.close();
-    const m = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: "light" }, "#check?report=AP-3563");
-    await m.page.locator("#chk-h").scrollIntoViewIfNeeded();
+    const m = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: "light" }, "#/check?report=AP-3563");
+    await m.page.locator("#pv-h").scrollIntoViewIfNeeded();
     await m.page.screenshot({ path: path.join(dir, "checker-mobile.png") });
     await m.ctx.close();
-    console.log("  wrote docs/screenshots/checker.png, study-results.png, checker-mobile.png");
+    console.log("  wrote docs/screenshots/check-1440.png, check-320.png, checker.png, study-results.png, draft-1280.png, checker-mobile.png");
   }
 
   await browser.close(); server.close();

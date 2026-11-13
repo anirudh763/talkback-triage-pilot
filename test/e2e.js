@@ -28,6 +28,7 @@ window.claude={use:async(n)=>{
  if(n==='db')return DB;
  return null}};}
 </script>`;
+const go = async (page, hash) => { await page.evaluate((x) => { location.hash = x; }, hash); await page.waitForTimeout(80); };
 const wrap = (mode) => built.replace('<head>', '<head>' + mock(mode));
 const server = http.createServer((req, res) => {
   // the page's own files (fonts, icons, manifest, service worker), served as GitHub Pages would
@@ -49,10 +50,11 @@ const server = http.createServer((req, res) => {
     const page = await ctx.newPage(); watch(page, 'owner');
     await page.goto(base + 'owner'); await page.waitForTimeout(300);
     console.log('[owner] checklist:', await page.textContent('#chk-score'));
+    await go(page, '#/draft');
     await page.click('#btn-compare'); await page.waitForFunction(() => document.querySelectorAll('.verdict').length === 2);
     console.log('[owner] compare:', await page.textContent('#triage-status'), '| struck lines:', await page.locator('.report .gone').count(), '| confidence shown:', await page.locator('text=Confidence').count());
     await page.screenshot({ path: path.join(__dirname, 'shot-check.png'), fullPage: true });
-    await page.click('#tab-pilot');
+    await go(page, '#/research');
     await page.locator('#cond-opts input[value=no_steps]').check(); await page.locator('#cond-opts input[value=no_version]').check();
     console.log('[owner] planned:', await page.textContent('#run-calls'));
     await page.click('#btn-run');
@@ -66,8 +68,8 @@ const server = http.createServer((req, res) => {
     console.log('[owner] finding:', (await page.textContent('#results')).match(/Exploratory[^.]*\.[^.]*\./)?.[0]);
     console.log('[owner] method saved:', await page.evaluate(() => [...window.__S.entries()].filter(([k]) => /^runs\/[^/]+$/.test(k)).map(([, v]) => v.method + '/' + v.status).join(',')));
     await page.screenshot({ path: path.join(__dirname, 'shot-pilot.png'), fullPage: false });
-    await page.click('#tab-label');
-    console.log('[owner] label set default:', await page.inputValue('#lab-set'), '| first report:', await page.textContent('#lab-card h3'));
+    await go(page, '#/research/labels');
+    console.log('[owner] label set default:', await page.inputValue('#lab-set'), '| first report:', await page.textContent('#lab-card h2'));
     for (let i = 0; i < 2; i++) { await page.check('input[name=lab-evid][value=actionable]'); await page.check('input[name=lab-impact][value=blocks_task]'); await page.click('text=Save and next'); await page.waitForTimeout(80); }
     console.log('[owner] where:', await page.textContent('#lab-where'));
     await page.selectOption('#lab-cond', 'no_steps'); await page.waitForTimeout(50);
@@ -80,9 +82,9 @@ const server = http.createServer((req, res) => {
     console.log('[owner] agree:', agreeText.slice(0, 260));
     // across both versions the two raters used two categories, so kappa is defined (1.00 here)
     if (!/Enough to start reproducing100% agree · κ = 1\.00/.test(agreeText)) errors.push('two-category kappa should be 1.00: ' + agreeText.slice(0, 200));
-    await page.click('#tab-pilot'); await page.waitForTimeout(100);
+    await go(page, '#/research'); await page.waitForTimeout(100);
     const agreeTable = await page.locator('caption:has-text("same version")').locator('xpath=..').textContent().catch(() => 'MISSING');
-    for (const v of ['check', 'pilot', 'label', 'about']) { await page.click('#tab-' + v); if (await page.evaluate(() => document.body.innerText.split('\n').some((l) => l.trim() === 'null'))) errors.push('stray "null" text on the ' + v + ' tab'); }
+    for (const v of ['#/check', '#/draft', '#/examples', '#/research', '#/research/labels', '#/research/methods']) { await go(page, v); if (await page.evaluate(() => document.body.innerText.split('\n').some((l) => l.trim() === 'null'))) errors.push('stray "null" text on the ' + v + ' tab'); }
     console.log('[owner] agreement table:', agreeTable.replace(/\s+/g, ' ').slice(0, 300));
     // as filed, Claude and the people all said "enough to start reproducing": one category, so kappa is undefined, not 1.00
     if (!/As filed100% · κ undefined \(all labels in one category\) \(2\)/.test(agreeTable.replace(/\s+/g, ' '))) errors.push('one-category kappa should be shown as undefined: ' + agreeTable.replace(/\s+/g, ' ').slice(0, 300));
@@ -111,9 +113,9 @@ const server = http.createServer((req, res) => {
     await page.goto(base + 'none'); await page.waitForTimeout(400);
     console.log('[standalone] overflow px:', await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth));
     await page.screenshot({ path: path.join(__dirname, 'shot-mobile-dark.png') });
-    await page.click('#tab-pilot'); await page.waitForTimeout(100);
+    await go(page, '#/research'); await page.waitForTimeout(100);
     console.log('[standalone] results:', (await page.textContent('#results')).slice(0, 120));
-    await page.click('#tab-label'); await page.waitForTimeout(100);
+    await go(page, '#/research/labels'); await page.waitForTimeout(100);
     console.log('[standalone] label overflow px:', await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth));
     await page.screenshot({ path: path.join(__dirname, 'shot-mobile-label.png') });
     await ctx.close();
@@ -146,12 +148,13 @@ const server = http.createServer((req, res) => {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const page = await ctx.newPage(); watch(page, 'apifail');
     await page.goto(base + 'apifail'); await page.waitForTimeout(300);
+    await go(page, '#/draft');
     await page.click('#btn-triage');
     await page.waitForFunction(() => document.querySelector('#triage-status').classList.contains('err'));
     const st = await page.textContent('#triage-status');
     console.log('[apifail] triage:', st);
     if (!/Too many Claude calls/.test(st)) errors.push('apifail: API failure not explained: ' + st);
-    await page.click('#tab-pilot'); await page.click('#btn-run');
+    await go(page, '#/research'); await page.click('#btn-run');
     await page.waitForFunction(() => document.querySelector('#run-status').classList.contains('err'), null, { timeout: 30000 });
     const rs = await page.textContent('#run-status');
     console.log('[apifail] run:', rs, '| resume visible:', await page.isVisible('#btn-resume'));

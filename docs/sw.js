@@ -3,7 +3,7 @@
 // latest page; the cache is used only when the network fails. Same-origin GET requests only.
 // scripts/build.js writes docs/sw.js from this file with the version from package.json.
 "use strict";
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 const CACHE = "talkback-triage-pilot-v" + VERSION;
 const PREFIX = "talkback-triage-pilot-";
 const SCOPE = new URL("./", self.location).href;

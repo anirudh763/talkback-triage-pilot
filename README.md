@@ -21,11 +21,13 @@ Below the checker, this repository holds an exploratory study: does removing Tal
 
 ## Report checker
 
-![The report checker on WordPress-Android #21127: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
+![The report composer on AntennaPod #3563: the report text beside a live preview with the app version highlighted, and prompts for the details not found](docs/screenshots/check-1440.png)
 
-The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
+The [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. It opens on **Check a report** (`#/check`) with a real, incomplete issue from the dataset; press **Try a sample report** for another, or paste your own.
 
-Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in text and with an icon. Below the list, a rewritten report marks what to add as `[ADD: ...]` and copies the Expected and Actual sections under their own headings.
+Check is a report composer: the report text beside a live preview of the report as a maintainer reads it on GitHub. Text the checker matched is highlighted where it appears. Each detail it did not find becomes a prompt where you type it in your own words and **Add to report**; the report is then checked again. Nothing is filled in for you. Each detail is also listed as Found, Incomplete, Not found, Optional or Not needed, in text and with an icon.
+
+**Review draft** (`#/draft`) opens the draft on its own screen: your report rearranged under the headings a developer looks for, with what to add marked `[ADD: ...]`, ready to copy or download as Markdown. **Examples** (`#/examples`) lists the 75 dataset reports with filters (app, a detail not found, title text); each opens in Check and links to its GitHub issue. The study is under **Research** (`#/research`, `#/research/labels`, `#/research/methods`). The page is light by default, including when your system prefers dark; **Dark theme** in the menu switches and is remembered. Old links (`#check?report=…`, `#pilot`, `#label`, `#about`) still work.
 
 | Detail | What counts |
 |---|---|
@@ -45,13 +47,13 @@ It finds missing sections only. A report with every section is not necessarily r
 
 ### Privacy, offline use, accessibility and security
 
-**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
+**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#/check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
 
 **Offline and install.** After one visit the page works without a network: a service worker keeps the page, its fonts and icons in a versioned cache. Online it always fetches the latest page first. It has a web app manifest and SVG and PNG icons, so browsers that support installing web apps can offer to install it; installing has not been tried by hand. The browser test turns the network off, reloads, and checks a sample. Without JavaScript the page shows a message pointing here.
 
-**Accessibility.** Passes automated axe-core checks with 0 violations on every tab, at 1280 and 375 px wide, in light and dark mode. Playwright also checks keyboard-only use, 320px and 375px widths, 200% zoom, 24px targets and error states. A manual screen-reader check has not been run.
+**Accessibility.** Passes automated axe-core checks with 0 violations on every screen, at 1280, 375 and 320 px wide, in the default light theme and the opt-in dark theme. Playwright also checks keyboard-only use, focus moving to each screen's heading, the Menu sheet (Escape closes it and returns focus), Back/Forward keeping the report, 320/768/1440 px widths without sideways scrolling, 200% zoom, 24px minimum targets (controls are built at 44px) and error states. A manual screen-reader check has not been run.
 
-**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep could not be run in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).
+**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep ran with a local rule set for HTML-string sinks (`innerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, `new Function`): 0 findings; its registry rule packs could not be downloaded in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).
 
 ## Use it in your own repo
 
@@ -182,7 +184,7 @@ Accessibility reports are often hard to act on. A developer who doesn't use Talk
 - **RQ2.** How well do the AI's answers agree with people's answers on the same report and version?
 - **RQ3.** Does the AI do better than a simple checklist rule ("enough to start reproducing when the report has steps")?
 
-The saved run addresses RQ1. RQ2 and RQ3 need human labels. The labelling tab and `scripts/agreement.js` exist and pass automated tests, but no human labeller has used them yet, so the workflow is untested with people.
+The saved run addresses RQ1. RQ2 and RQ3 need human labels. The labelling screen and `scripts/agreement.js` exist and pass automated tests, but no human labeller has used them yet, so the workflow is untested with people.
 
 ## What is in this repository
 
@@ -205,6 +207,8 @@ The saved run addresses RQ1. RQ2 and RQ3 need human labels. The labelling tab an
 | `examples/accessibility-bug.yml` | A GitHub issue form with the checker's seven details, to copy into another repository. |
 | `src/sw.js`, `src/manifest.webmanifest`, `src/icon.svg` | Offline and install support: the service worker (built to `docs/sw.js` with the version), the web app manifest and the icon. `scripts/icons.js` renders the PNG icons from the SVG. |
 | `test/offline.e2e.js`, `test/noscript.e2e.js`, `test/issue-form.test.js`, `test/version.test.js` | Offline reload, the no-JavaScript message, the issue form, and the version matching `CHANGELOG.md`. |
+| `test/routes.e2e.js` | The routed UI: each screen's heading, title and focus, the Menu sheet, Back/Forward and deep links keeping the report and filters, old links, light by default, the report composer's highlights and gap prompts, and axe-core in light and dark at 1280 and 320 px. |
+| `AGENTS.md`, `CLAUDE.md`, `DESIGN.md` | Notes for coding agents, and the app's design standard. |
 | `assets/`, `docs/screenshots/` | Screenshots for this README. |
 
 ## Quick start
@@ -326,14 +330,14 @@ Reproduce these numbers with `node scripts/analyze.js rmw9sfcx9`.
 
 The next step is human labels from at least two people working independently. [LABELING.md](LABELING.md) has the rubric and the procedure. In short:
 
-1. In the app's **Label reports** tab, start with the **5-report starter set**. Don't look at the AI's answers; that tab never shows them.
+1. In the app's **Research > Labels** screen (`#/research/labels`), start with the **5-report starter set**. Don't look at the AI's answers; that screen never shows them.
 2. Answer two questions per report:
    - "Could a developer start reproducing this issue with the information here?"
    - "Could a TalkBack user finish the task?"
 3. Press **Copy my labels** and save the text as `labels/<your-name>.json`. Open a pull request or an issue with it.
 4. Compare with `node scripts/agreement.js`, discuss the disagreements, tighten the rubric, then label more.
 
-![The Label reports tab](assets/label-reports.png)
+![The Label reports screen (earlier layout)](assets/label-reports.png)
 
 ## Limitations
 
