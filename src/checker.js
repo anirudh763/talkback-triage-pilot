@@ -23,7 +23,7 @@
     /(?<![\w.])(v\d+\.\d+(?:\.\d+)?)\b/,
   ];
   // A version right after one of these names belongs to the screen reader, the OS or another component, not the app.
-  const NOT_APP = /(?:talk ?back|screen ?reader|voice ?assistant|accessibility suite|braille ?back|android(?: os)?|\bos|sdk|api(?: level)?|one ?ui|miui|hyperos|color ?os|oxygen ?os|ios|chrome|webview|kernel|firmware|gradle|kotlin|java)\W*(?:app\W*)?$/i;
+  const NOT_APP = /(?:talk ?back|jieshuo|commentary(?: screen reader)?|accessibility scanner|screen ?reader|voice ?assistant|accessibility suite|braille ?back|android(?: os)?|\bos|sdk|api(?: level)?|one ?ui|miui|hyperos|color ?os|oxygen ?os|ios|chrome|webview|kernel|firmware|gradle|kotlin|java)\W*(?:app\W*)?$/i;
   const ANDROID = [
     /^[ \t]*#{1,6}[ \t]*android version[ \t]*\n+[ \t]*((?:android[ \t]*)?\d+(?:\.\d)?)/im,
     /\b(android\s*(?:os\s*)?(?:version\s*)?[:#*\s]*\d{1,2}(?:\.\d)?)\b/i,
@@ -47,9 +47,11 @@
     { re: new RegExp("\\b(" + NAV + "[ \\t]+the[ \\t]+(?:[`\"“']?[\\w-]+[`\"”']?[ \\t]+){1,3}" + SCREEN + ")\\b", "i") },
     { re: new RegExp("\\b" + NAV + "[ \\t]+(?:the[ \\t]+)?([\"“][^\"”\\n]{1,30}[\"”](?:[ \\t]+" + SCREEN + ")?)", "i"), named: true },
     { re: /\b((?:the[ \t]+)?[`"“'][^`"”'\n]{1,30}[`"”'][ \t]+(?:screen|page|tab|dialog|menu|view|button|field|link|checkbox|switch|toggle|slider|icon|item))\b/i },
-    { re: /\b([\w-]+[ \t]*>[ \t]*[\w-]+(?:[ \t]*>[ \t]*[\w-]+)*)/ },
+    // (?<![\w-])(?=\w) instead of \b: a match can only start at the beginning of a word run, so long runs like
+    // "a-a-a-..." are not retried at every position (that was catastrophic backtracking)
+    { re: /(?<![\w-])(?=\w)([\w-]+[ \t]*>[ \t]*[\w-]+(?:[ \t]*>[ \t]*[\w-]+)*)/ },
     { re: new RegExp("\\b(?:[Gg]o(?:es)? to|[Nn]avigate to|[Ss]witch to|[Oo]pen|[Ss]elect|[Tt]ap(?: on)?|in|on|from)[ \\t]+(?:the[ \\t]+)?((?:[A-Z][\\w-]*)(?:[ \\t]+[A-Z][\\w-]*){0,3}(?:[ \\t]+" + SCREEN + ")?)\\b"), named: true },
-    { re: /\b((?:the[ \t]+)?[\w-]+(?:[ \t]+[\w-]+)?[ \t]+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i },
+    { re: /(?<![\w-])(?=\w)((?:the[ \t]+)?[\w-]+(?:[ \t]+[\w-]+)?[ \t]+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i },
     { re: /\b((?:[A-Z][\w-]+[ \t]+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section))\b/ },
   ];
   // names that aren't screens: the screen reader, the platform, the app itself
@@ -68,17 +70,21 @@
   // "to the Post list screen" -> "Post list screen"; a bare "the button" names nothing and is rejected
   const LEAD = /^(?:(?:on|in|to|from|of|and|or|that|this|which|is|it|its|s|read|reads|open|opens|opening|go(?:es)? to|navigate to|switch to|select|tap(?: on)?|the|a|an)\s+)+/i;
   const cleanWhere = (v) => v.replace(LEAD, "").trim();
-  const namesSomething = (v) => /\S+\s+\S+|>/.test(cleanWhere(v));
+  const namesSomething = (v) => /\S\s+\S|>/.test(cleanWhere(v));
   const SR_CASE = (v) => (/^talk ?back$/i.test(v) ? "TalkBack" : v);
   const androidLabel = (v) => (v && /^\d/.test(v) ? "Android " + v : v);
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
   // The report as the rules should read it: HTML comments, unfilled template placeholders ("_No response_",
   // "[device]") and headings with nothing under them are removed, so an empty template section counts as absent.
-  const PLACEHOLDER = /_No response_|\[(?:device(?: model)?|version|app version|android version|os version|model|steps?|screen|screenshot|link)\]/gi;
+  const PLACEHOLDER = /_No response_|\[(?:device(?: model)?|version|app version|android version|os version|model|steps?|screen|screenshot|link)\]|\[e\.g\.[^\]\n]*\]/gi;
+  // whole lines that are template filler, not content: "N/A", "none", "-", "e.g. Pixel 8", GitHub's default prompts
+  const FILLER_LINE = /^[ \t]*(?:[-*][ \t]+)?(?:n\/?a|none|-+|e\.g\.[^\n]*|a clear and concise description of[^\n]*)[ \t]*\.?[ \t]*$/gim;
+  // an example after a field label: "Device: e.g. Pixel 8" keeps only "Device:"
+  const EXAMPLE_VALUE = /^([ \t]*(?:[-*][ \t]+)?\**[A-Za-z][\w ]{0,30}\**[ \t]*:\**[ \t]*)(?:e\.g\.|for example)[^\n]*$/gim;
   const IS_HEAD = (x) => /^\s*#{1,6}\s/.test(x) || /^\s*\*\*[^*\n]+\*\*\s*:?\s*$/.test(x);
   function clean(body) {
-    let out = body.replace(/<!--[\s\S]*?(?:-->|$)/g, "").replace(PLACEHOLDER, "");
+    let out = body.replace(/<!--[\s\S]*?(?:-->|$)/g, "").replace(PLACEHOLDER, "").replace(FILLER_LINE, "").replace(EXAMPLE_VALUE, "$1");
     // repeat until nothing changes: removing an empty subsection can leave its parent heading empty
     for (let prev = null; prev !== out; ) { prev = out; out = dropEmptyHeadings(out); }
     return out.replace(/\n{3,}/g, "\n\n");
@@ -152,12 +158,19 @@
     return out;
   }
 
+  const MAX_INPUT = 64000;
+  const INLINE_STEPS = /^[ \t]*(?:#{1,6}[ \t]*)?\**[ \t]*steps(?:[ \t]+to[ \t]+reproduce)?[ \t]*:?\**[ \t]*:?[ \t]*\S[^\n]{40,}$/im;
   function analyze(report) {
     const title = String((report && report.title) || "");
     const raw = String((report && report.body) || "");
-    const body = clean(raw);   // what the rules read; the rewrite keeps the original text verbatim
-    const all = title + "\n" + body;
-    const c = T.check({ title, body, labels: [] });
+    // the rules read at most MAX_INPUT characters, so a huge paste can't stall the page; the rewrite quotes it all
+    const truncated = raw.length > MAX_INPUT;
+    const body = clean(truncated ? raw.slice(0, MAX_INPUT) : raw);   // what the rules read
+    const all = title.slice(0, 1000) + "\n" + body;
+    const c = Object.assign({}, T.check({ title, body, labels: [] }));
+    // steps written on the label's own line: "**Steps to reproduce:** Open the app, swipe right twice, ..."
+    const inline = !c.hasSteps && body.match(INLINE_STEPS);
+    if (inline) c.hasSteps = true;
     const items = [];
     const add = (key, name, status, found, hint, required) => items.push({ key, name, status, found: found ? clip(found, 70) : null, hint, required: required !== false });
 
@@ -176,7 +189,7 @@
       add("srSteps", "TalkBack or screen-reader steps", "optional", null,
         "No screen reader is mentioned. If you used one, say when it was turned on and which gestures you used.", false);
     } else {
-      const stepText = stepLines.join("\n");
+      const stepText = stepLines.join("\n") + (inline ? "\n" + inline[0] : "");
       const ok = c.tbSteps || (c.hasSteps && SR.test(stepText));
       add("srSteps", "TalkBack or screen-reader steps", ok ? "present" : c.hasSteps && srName ? "partial" : "notfound",
         ok ? srName || "screen reader" : c.hasSteps && srName ? srName + " is mentioned, but not in the steps" : null,
@@ -223,7 +236,7 @@
       notFound: req.filter((x) => x.status === "notfound").length,
     };
     const tpl = template({ title, body, raw, items, stepLines, appV, andV, dev, srName });
-    return { items, summary, template: tpl, text: tpl.map((s) => s.text).join("") };
+    return { items, summary, truncated, template: tpl, text: tpl.map((s) => s.text).join("") };
   }
 
   // The rewritten report as a list of segments: {text} for content, {text, mark: "add"|"optional"} for placeholders.
@@ -296,7 +309,7 @@
     } catch (e) { return null; }
   }
 
-  const api = { analyze, encodeState, decodeState, MAX_LINK_CHARS };
+  const api = { analyze, encodeState, decodeState, MAX_LINK_CHARS, MAX_INPUT };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBC = api;
 })(typeof window !== "undefined" ? window : globalThis);

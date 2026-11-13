@@ -136,6 +136,33 @@ assert.strictEqual(status(C.analyze({ title: "x", body: "App version: 42" }), "a
 assert.strictEqual(status(C.analyze({ title: "x", body: "WordPress app version 24.3" }), "appVersion"), "present");
 assert.strictEqual(found(C.analyze({ title: "x", body: "Device: Pixel 8" }), "device"), "Pixel 8");
 
+// ---- Audit round 2 ----
+// 1. Unfilled templates, "N/A" and example text are not content.
+assert.strictEqual(status(C.analyze({ title: "x", body: "### Expected behavior\nN/A\n### Actual behavior\nN/A" }), "expectedActual"), "notfound", "N/A is not a description");
+assert.strictEqual(status(C.analyze({ title: "x", body: "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n**Actual behavior**\nA clear and concise description of what actually happened." }), "expectedActual"), "notfound", "GitHub's default template text is not a description");
+assert.strictEqual(status(C.analyze({ title: "x", body: "- Device: [e.g. Pixel 8]\n- OS: [e.g. Android 14]" }), "device"), "notfound", "[e.g. ...] is a placeholder");
+assert.strictEqual(status(C.analyze({ title: "x", body: "Device: e.g. Pixel 8" }), "device"), "notfound", "inline \"e.g. Pixel 8\" is an example, not a device");
+assert.strictEqual(status(C.analyze({ title: "x", body: "### Device model\nnone\n### Android version\n-" }), "device"), "notfound", "none / - are not values");
+assert.strictEqual(found(C.analyze({ title: "x", body: "Device: Pixel 8 (e.g. the one I own)" }), "device"), "Pixel 8 (e.g. the one I own)", "a real value with e.g. later on the line stays");
+// 2. No catastrophic backtracking: adversarial input finishes quickly.
+for (const [name, body] of [["a- x 50k", "a-".repeat(50000)], ["a x 50k + >b", "a".repeat(50000) + ">b"], ["words", "word ".repeat(20000)], ["dashes", "-".repeat(100000)]]) {
+  const t0 = Date.now(); C.analyze({ title: "x", body }); const ms = Date.now() - t0;
+  assert.ok(ms < 500, name + " took " + ms + " ms");
+}
+assert.strictEqual(C.analyze({ title: "x", body: "x".repeat(C.MAX_INPUT + 1) }).truncated, true, "very long input is cut and says so");
+assert.strictEqual(C.analyze({ title: "x", body: "x".repeat(100) }).truncated, false);
+// 3. Other screen readers' and tools' versions are not the app version.
+for (const b of ["Jieshuo version 12.3 on Pixel 7", "Tested with Accessibility Scanner version 2.3", "Commentary screen reader version 4.1"])
+  assert.strictEqual(status(C.analyze({ title: "x", body: b }), "appVersion"), "notfound", b);
+// 4. Steps written inline after the label count; a short label line doesn't.
+assert.strictEqual(status(C.analyze({ title: "x", body: "**Steps to reproduce:** Open the app, swipe right twice, and double-tap the post." }), "steps"), "present");
+assert.strictEqual(status(C.analyze({ title: "x", body: "Steps to reproduce: Open the app, swipe right twice, and double-tap the post." }), "steps"), "present");
+assert.strictEqual(status(C.analyze({ title: "x", body: "Steps: short" }), "steps"), "notfound");
+// The fixes change nothing on the 75 dataset reports (snapshot taken from main 0463a06).
+const snap = require("./fixtures/checker-dataset.json");
+for (const r of reports) assert.deepStrictEqual(C.analyze(r).items.map((i) => [i.key, i.status, i.found]), snap[r.id], r.id + " changed");
+assert.strictEqual(Object.keys(snap).length, 75);
+
 // pasted HTML is plain text in the result: it is carried through unchanged, never interpreted
 const html = C.analyze({ title: "<img src=x onerror=alert(1)>", body: "<script>alert(1)</script>" });
 assert.ok(html.text.includes("<img src=x onerror=alert(1)>") && html.text.includes("> <script>alert(1)</script>"));
