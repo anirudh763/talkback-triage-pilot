@@ -18,13 +18,16 @@ node scripts/check.js         # must end with "All shortened copies are clean."
 node scripts/build.js         # rebuilds docs/index.html
 ```
 
-The browser test needs Playwright:
+The tests need the dev dependencies (Playwright, axe-core and js-yaml):
 
 ```bash
-npm install
+npm ci
+npm test                       # unit tests, the issue form, the version check, then a rebuild
 npx playwright install chromium
-npm run test:e2e
+npm run test:e2e               # browser tests, including offline and no-JavaScript
 ```
+
+If you change `src/icon.svg`, run `npm run icons` to render the PNG icons, then `node scripts/build.js`. If you release a new version, change `version` in `package.json` and add a dated `## x.y.z – YYYY-MM-DD` heading at the top of `CHANGELOG.md`; `test/version.test.js` checks they match, and the service worker's cache name follows the version.
 
 ## Before you open a pull request
 
@@ -39,4 +42,4 @@ Add them to a `data/raw_<app>.txt` file in the same format (see [DATA.md](DATA.m
 
 ## Reporting a problem
 
-Open an issue. Say what you did, what you expected and what happened. Include the report id when it's about a specific report.
+For a security problem, follow [SECURITY.md](SECURITY.md) instead of opening a public issue. For anything else, open an issue. Say what you did, what you expected and what happened. Include the report id when it's about a specific report.

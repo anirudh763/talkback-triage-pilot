@@ -30,9 +30,10 @@ window.claude={use:async(n)=>{
 </script>`;
 const wrap = (mode) => built.replace('<head>', '<head>' + mock(mode));
 const server = http.createServer((req, res) => {
-  // the page's font files, served as GitHub Pages would
-  const font = req.url.match(/^\/([\w-]+\.woff2)$/);
-  if (font && fs.existsSync(path.join(__dirname, '../docs', font[1]))) { res.writeHead(200, { 'content-type': 'font/woff2' }); res.end(fs.readFileSync(path.join(__dirname, '../docs', font[1]))); return; }
+  // the page's own files (fonts, icons, manifest, service worker), served as GitHub Pages would
+  const TYPES = { woff2: 'font/woff2', svg: 'image/svg+xml', png: 'image/png', webmanifest: 'application/manifest+json', js: 'text/javascript' };
+  const own = req.url.match(/^\/([\w-]+\.(woff2|svg|png|webmanifest|js))$/);
+  if (own && fs.existsSync(path.join(__dirname, '../docs', own[1]))) { res.writeHead(200, { 'content-type': TYPES[own[2]] }); res.end(fs.readFileSync(path.join(__dirname, '../docs', own[1]))); return; }
   const mode = (req.url.match(/mode=(\w+)/) || [, 'owner'])[1]; res.writeHead(200, { 'content-type': 'text/html' }); res.end(wrap(mode)); });
 (async () => {
   await new Promise((r) => server.listen(0, r));

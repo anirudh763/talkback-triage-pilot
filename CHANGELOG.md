@@ -1,6 +1,20 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 – 2026-11-13
+
+0.2.0 was never tagged before this date, so this entry covers every change since 0.1.0, newest first.
+
+### Usability: install, offline and a ready-made issue form
+
+The checker's rules (`src/checker.js`), `src/core.js`, `data/` and `results/` are unchanged.
+
+- The page can be installed and works offline: a web app manifest, an original SVG icon with 192 and 512 px PNGs rendered from it (`scripts/icons.js`), and a service worker (`docs/sw.js`) with a relative scope and a versioned cache name (`talkback-triage-pilot-v0.2.0`). It fetches from the network first and uses the cache only when the network fails. It is not registered inside the Claude app or from `file://`. The Content Security Policy now allows the page's own worker and manifest (`worker-src 'self'`, `manifest-src 'self'`) and still blocks other sites.
+- A `<noscript>` message says the page needs JavaScript and links to the README.
+- `examples/accessibility-bug.yml`: a GitHub issue form to copy into another repository. Its fields are the checker's seven details, required where the checker requires them.
+- The README leads with the report checker and says that the labelling workflow has not been tried by a human labeller yet.
+- `SECURITY.md`: how to report a vulnerability and what is in scope.
+- New tests: `test/offline.e2e.js` (manifest, icons, worker scope and cache name, then the checker loads and analyzes a sample with the network off), `test/noscript.e2e.js` (JavaScript off, 1280 and 375 px, light and dark), `test/issue-form.test.js` (the form parses, its fields map to the checker's keys, a filled form is read as complete) and `test/version.test.js` (package.json, the worker's cache name and this file agree). axe-core now runs at 1280 and 375 px.
+- `js-yaml` 4.3.2 is a dev dependency, used only by the issue-form test.
 
 ### Fixes after a second review
 
@@ -55,9 +69,7 @@ Changes from a code audit. The saved runs and their numbers are unchanged.
 - Imported raters whose names have no Latin letters or digits no longer overwrite each other.
 - Removed the leftover confidence field from new answers, and duplicate and unreachable patterns from the removal rules. `results/pair_review.md` is unchanged.
 
-## 0.2.0 – 2026-11-10
-
-Changes made after an outside review of the first run.
+### Changes after an outside review of the first run (2026-11-10)
 
 **Removal rules**
 - "TalkBack steps removed" now drops only the action steps. It keeps observed-behaviour steps, anything TalkBack said, recordings, notes, workarounds and "Tested on" lines.

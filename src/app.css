@@ -153,3 +153,5 @@ tr.sel td { background: var(--accent-subtle); }
 details > summary { cursor: pointer; font-weight: 700; }
 .sitefoot { padding-block: 16px 40px; border-top: 1px solid var(--border); }
 .legendline { font-size: .8125rem; color: var(--fg-muted); font-weight: 400; }
+.noscript { margin: 16px 0; padding: 12px 14px; border: 1px solid var(--border-strong); border-left-width: 4px; border-radius: var(--radius); background: var(--bg-subtle); color: var(--fg); max-width: 80ch; }
+.noscript p { margin: 0; }

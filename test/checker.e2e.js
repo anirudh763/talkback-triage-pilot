@@ -17,7 +17,8 @@ const AXE = (() => {
   throw new Error("axe-core not found: run npm install");
 })();
 const SHOTS = process.argv.includes("--shots");
-const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".css": "text/css", ".js": "text/javascript" };
+const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".css": "text/css", ".js": "text/javascript",
+  ".svg": "image/svg+xml", ".webmanifest": "application/manifest+json" };
 
 const server = http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split("?")[0]);
@@ -116,8 +117,8 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   // ---- axe-core in light and dark, every view ----
   console.log("axe-core");
   const axeCounts = {};
-  for (const scheme of ["light", "dark"]) {
-    const { ctx, page } = await open({ colorScheme: scheme });
+  for (const width of [1280, 375]) for (const scheme of ["light", "dark"]) {
+    const { ctx, page } = await open({ colorScheme: scheme, viewport: { width, height: 900 } });
     for (const v of ["check", "pilot", "label", "about"]) {
       await page.click("#tab-" + v);
       await page.waitForTimeout(80);
@@ -126,8 +127,8 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
         const r = await window.axe.run(document, { resultTypes: ["violations"] });
         return r.violations.map((x) => x.id + " (" + x.nodes.length + "): " + x.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(", "));
       });
-      axeCounts[scheme + "/" + v] = res.length;
-      ok(res.length === 0, "axe " + scheme + " " + v + ": " + res.length + " violations" + (res.length ? "\n         " + res.join("\n         ") : ""));
+      axeCounts[width + "/" + scheme + "/" + v] = res.length;
+      ok(res.length === 0, "axe " + width + "px " + scheme + " " + v + ": " + res.length + " violations" + (res.length ? "\n         " + res.join("\n         ") : ""));
     }
     await ctx.close();
   }
@@ -248,7 +249,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   await browser.close(); server.close();
   ok(!offsite.length, "no network requests leave the page's own origin" + (offsite.length ? ": " + offsite.slice(0, 5).join(", ") : ""));
   ok(!errors.length, "no page or console errors" + (errors.length ? ": " + errors.join("; ") : ""));
-  console.log("\naxe violations by theme/view:", JSON.stringify(axeCounts));
+  console.log("\naxe violations by width/theme/view:", JSON.stringify(axeCounts));
   console.log(failures ? failures + " check(s) failed" : "all checks passed");
   process.exitCode = failures ? 1 : 0;
 })().catch(async (e) => { console.error(e); process.exitCode = 1; if (browser) await browser.close(); server.close(); });

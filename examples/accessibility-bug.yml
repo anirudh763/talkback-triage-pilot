@@ -1,0 +1,84 @@
+# A GitHub issue form for Android accessibility bug reports.
+# Copy this file to .github/ISSUE_TEMPLATE/accessibility-bug.yml in your own repository.
+# Its fields are the seven details the TalkBack Triage Pilot report checker looks for:
+# https://github.com/anirudh763/talkback-triage-pilot#report-checker
+# (Expected and actual behavior are two fields here; the checker counts them as one detail.)
+name: Accessibility bug
+description: Something doesn't work with TalkBack, another screen reader, or an accessibility setting.
+title: "[Accessibility]: "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. A developer who doesn't use a screen reader needs to repeat what you did, so please say which gestures you used and what was announced.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Number each action, from opening the app to seeing the problem.
+      placeholder: |
+        1. Open the app and go to the Post list screen
+        2. Swipe right until the three-dot menu button is focused
+        3. Double-tap the menu button
+    validations:
+      required: true
+  - type: textarea
+    id: srSteps
+    attributes:
+      label: TalkBack or screen-reader steps
+      description: Which screen reader you used, when it was turned on, and the gestures (swipe right, double-tap, explore by touch).
+      placeholder: |
+        1. Turn on TalkBack
+        2. Swipe right to move focus to the three-dot menu button
+        3. Double-tap to open the menu
+    validations:
+      required: true
+  - type: input
+    id: appVersion
+    attributes:
+      label: App version
+      description: From the app's Settings > About screen.
+      placeholder: "24.8"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      description: The phone or tablet model and its Android version.
+      placeholder: Pixel 8, Android 14
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen.
+      placeholder: TalkBack announces "More options, button" and the menu opens.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happens now. Quote what the screen reader announces.
+      placeholder: TalkBack announces "Unlabeled button" and nothing happens on double-tap.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Screen or element
+      description: The screen and the control, e.g. Post list > three-dot menu button.
+      placeholder: Post list screen > three-dot menu button
+    validations:
+      required: true
+  - type: textarea
+    id: srSettings
+    attributes:
+      label: Screen-reader settings (if relevant)
+      description: The TalkBack version and any non-default settings, such as speech rate, verbosity or font size, if they could matter.
+      placeholder: TalkBack 15.0, speech rate 150%, verbosity high
+    validations:
+      required: false
