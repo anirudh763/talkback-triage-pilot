@@ -6,13 +6,13 @@ Replace the opening of README.md, from the title down to the first `---`, with t
 
 # TalkBack Triage Pilot
 
-**Check an Android accessibility bug report for the details a developer needs to reproduce it.** Paste a report and see, item by item, whether it has steps to reproduce, TalkBack or screen-reader steps, the app version, the device and Android version, expected vs. actual behavior, and the screen or element. You get back a rewritten report with the missing parts marked `[MISSING: ...]`, ready to copy into the issue.
+**Check an Android accessibility bug report for the details a developer needs to reproduce it.** Paste a report and see, item by item, whether it has steps to reproduce, TalkBack or screen-reader steps, the app version, the device and Android version, expected vs. actual behavior, and the screen or element. Each detail is marked Found, Incomplete, Not found, Optional or Not needed. You get back a rewritten report where the details still to add are marked `[ADD: ...]`, ready to copy into the issue.
 
 It is a heuristic completeness check (pattern rules, not AI). It runs entirely in your browser and sends nothing anywhere.
 
 **Open it:** https://anirudh763.github.io/talkback-triage-pilot/ and press **Try a sample report** to see it on a real, incomplete issue from WordPress for Android or AntennaPod.
 
-![The report checker on a real WordPress for Android issue: three details missing, and the rewritten report with placeholders](docs/screenshots/checker.png)
+![The report checker on a real WordPress for Android issue: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
 
 The same repository holds a small **exploratory study**: do TalkBack reproduction steps and the app version change how an AI triages these reports? It uses 75 real accessibility issues from two open-source Android apps. **Status: exploratory.** One AI run, no human labels yet. See [Results so far](#results-so-far) and [Limitations](#limitations). The checker does not use the AI and makes no claim about improving AI triage.
 
@@ -20,7 +20,7 @@ The same repository holds a small **exploratory study**: do TalkBack reproductio
 
 ## Check a report
 
-| Detail | What counts | If it's missing, the template asks for |
+| Detail | What counts | If it's not found, the template asks for |
 |---|---|---|
 | Steps to reproduce | A numbered or bulleted list, or a "Steps" section | each action, including the gesture used |
 | TalkBack or screen-reader steps | The steps say when TalkBack (or another screen reader) is on | when TalkBack is turned on, which gesture at each step |
@@ -30,11 +30,13 @@ The same repository holds a small **exploratory study**: do TalkBack reproductio
 | Screen or element | `the Post list screen`, `"Visit" icon`, `Settings > Accessibility` | the screen and the control |
 | Screen-reader settings (optional) | `TalkBack 15.0`, speech rate, verbosity, font size | only if they could matter |
 
-A report about font size, contrast, touch targets or another non-screen-reader setting is not asked for screen-reader steps.
+A report about font size, contrast, touch targets or another non-screen-reader setting is not asked for screen-reader steps; when no screen reader is mentioned at all, screen-reader steps are optional.
 
 The rules are in `src/checker.js`. They reuse the study's checklist (`check()` in `src/core.js`) and add rules for reports from other apps. They are pattern matching: they can miss a detail written in an unusual way, or count a phrase that only looks like one. `node test/checker.test.js` shows what they catch.
 
-**Share a check:** a dataset report has its own link (`#check?report=WP-21127`). For pasted text, **Copy link to this check** puts the report in the part of the link after `#`, which browsers don't send to any server.
+**Share a check:** a dataset report has its own link (`#check?report=WP-21127`). For pasted text, **Copy link to this check** puts the whole report text into the link, after the `#`. Browsers don't send that part to the server, but anyone you give the link to can read the report, so don't share links to reports with private details.
+
+**Sends nothing:** the page's Content Security Policy allows it to load only its own files and blocks requests to any other site (`connect-src 'self'`); the browser test checks that a request to another site is refused.
 
 **Accessibility:** the site passes automated axe-core checks with 0 violations on every tab in light and dark mode, works at 320px wide, and its tabs are keyboard operable (arrow keys). It has not yet been tested by hand with a screen reader.
 
@@ -53,4 +55,4 @@ Replace "The checklist, the saved results and labelling all work offline." with 
 
 ## Security line (add under "Citing, licence and credits")
 
-- **Security:** checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. Hardened: data embedded in the page escapes every `<`; the CI workflow uses a read-only token and actions pinned to commit SHAs; pasted text is only ever shown as text (tested).
+- **Security:** checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. Hardened: a Content Security Policy that allows only the page's own scripts (by hash) and no outside requests; data embedded in the page escapes every `<`; the CI workflow uses a read-only token and actions pinned to commit SHAs; pasted text is only ever shown as text (tested).

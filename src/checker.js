@@ -14,7 +14,7 @@
   const HEADING = /^\s*(#{1,6}\s+\S|\*\*[^*]+\*\*:?\s*$)/;
 
   const APP_VERSION = [
-    /^\s*(?:#{1,6}\s*)?\**app version:?\**:?[ \t]*\n*[ \t]*(v?\d+(?:\.\d+)+(?:[ \t]*\([0-9a-f]{6,}\))?)/im,
+    /^\s*(?:#{1,6}\s*)?\**app version:?\**:?[ \t]*\n*[ \t]*(v?\d+(?:\.\d+)+[a-z]?(?:-[\w.]+)?(?:[ \t]*\([0-9a-f]{6,}\))?)/im,
     /\b((?:WPAndroid|JPAndroid|AntennaPod)(?:\s*\/\s*\w+)?(?:\s+version)?\s+v?\d+\.\d+[\w.-]*(?:\s*\(beta\))?)/i,
     /\b(JPAndroid\s+pr\d+-[0-9a-f]{6,})/i,
     /\b(develop\s*\([0-9a-f]{7,}\))/i,
@@ -30,27 +30,41 @@
   const DEVICE = [
     /^\s*#{1,6}\s*device(?: model)?\s*\n+\s*([^\n]{2,40})/im,
     /^\s*\**device(?: model)?:?\**:?[ \t]*([^\n]{2,40})/im,
-    /\b((?:google\s+)?pixel(?:\s+\d+\w*)?(?:\s+(?:pro|xl|a|fold))?|samsung(?:\s+galaxy)?(?:\s+[\w+]+){0,2}|galaxy\s+[\w+]+(?:\s+\d+)?|nokia\s*[\d.]+|(?:oneplus|xiaomi|redmi|poco|motorola|huawei|oppo|realme|xperia)\b(?:\s+\w*\d\w*)?|moto\s?[a-z]\d*\b|nexus(?:\s*\d+)?|honor\s+\d+\w*|lg g\d|emulator|simulator)\b/i,
+    /\b((?:google\s+)?pixel(?:\s+\d+\w*)?(?:\s+(?:pro|xl|a|fold))?|samsung(?:\s+galaxy)?(?:\s+[\w+]+){0,2}|galaxy\s+[\w+]+(?:\s+\d+)?|nokia\s*[\d.]+|(?:oneplus|xiaomi|redmi|poco|motorola|huawei|oppo|realme|xperia)\b(?:\s+(?:nord\s+|mi\s+|mate\s+)?[a-z]*\d+\w*(?:\s+(?:pro|plus|ultra|lite|max|mini|compact|5g)\b)*)?|moto\s?[a-z]\d*\b|nexus(?:\s*\d+\w*)?|honor\s+\d+\w*|lg g\d|emulator|simulator)\b/i,
   ];
   const EXPECTED = /\bexpected\b|\bshould\b/i;
   const ACTUAL = /\b(actual|current)\s+(behaviou?r|result)|\*\*result:?\*\*|\bactual\b|\binstead\b|\bobserved\b/i;
   const HEARD = /(announc\w*|says?|said|reads?( as)?|read aloud|spoken|prompts?)[^.\n]{0,40}["“'`][^"”'`\n]{1,80}["”'`]/i;
+  // Where in the app, tried in order. Each pattern stays on one line ([ \t], not \s) so it can't join two lines.
+  // "named" patterns accept a single quoted or Title Case name after a navigation verb: Go to "My Site",
+  // Open Reader, the "Home" tab, from WordPress Media Picker. The others need at least two words.
+  const SCREEN = "(?:screen|page|tab|dialog|menu|view|form|list|section|panel|sheet|bar|player|editor|picker|settings)";
+  const NAV = "(?:go(?:es)? to|navigate to|switch to|open|opens|opening|select|tap(?: on)?|in|on|from|to)";
   const WHERE = [
-    /^\s*(?:#{1,6}\s*)?\**(?:screen|element|where|location)\**\s*:\**[ \t]*([^\n]{2,60})/im,
-    /\b((?:on|in|to|from|open|opens|opening)\s+the\s+(?:[`"“']?[\w-]+[`"”']?\s+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section|panel|sheet|bar|player|editor|picker|settings))\b/i,
-    /\b((?:the\s+)?[`"“'][^`"”'\n]{1,30}[`"”']\s+(?:screen|page|tab|dialog|menu|view|button|field|link|checkbox|switch|toggle|slider|icon|item))\b/i,
-    /\b([\w-]+\s*>\s*[\w-]+(?:\s*>\s*[\w-]+)*)/,
-    /\b((?:the\s+)?[\w-]+(?:\s+[\w-]+)?\s+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i,
-    /\b((?:[A-Z][\w-]+\s+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section))\b/,
+    { re: /^[ \t]*(?:#{1,6}[ \t]*)?\**(?:screen|element|where|location)\**[ \t]*:\**[ \t]*([^\n]{2,60})/im },
+    { re: new RegExp("\\b(" + NAV + "[ \\t]+the[ \\t]+(?:[`\"“']?[\\w-]+[`\"”']?[ \\t]+){1,3}" + SCREEN + ")\\b", "i") },
+    { re: new RegExp("\\b" + NAV + "[ \\t]+(?:the[ \\t]+)?([\"“][^\"”\\n]{1,30}[\"”](?:[ \\t]+" + SCREEN + ")?)", "i"), named: true },
+    { re: /\b((?:the[ \t]+)?[`"“'][^`"”'\n]{1,30}[`"”'][ \t]+(?:screen|page|tab|dialog|menu|view|button|field|link|checkbox|switch|toggle|slider|icon|item))\b/i },
+    { re: /\b([\w-]+[ \t]*>[ \t]*[\w-]+(?:[ \t]*>[ \t]*[\w-]+)*)/ },
+    { re: new RegExp("\\b(?:[Gg]o(?:es)? to|[Nn]avigate to|[Ss]witch to|[Oo]pen|[Ss]elect|[Tt]ap(?: on)?|in|on|from)[ \\t]+(?:the[ \\t]+)?((?:[A-Z][\\w-]*)(?:[ \\t]+[A-Z][\\w-]*){0,3}(?:[ \\t]+" + SCREEN + ")?)\\b"), named: true },
+    { re: /\b((?:the[ \t]+)?[\w-]+(?:[ \t]+[\w-]+)?[ \t]+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i },
+    { re: /\b((?:[A-Z][\w-]+[ \t]+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section))\b/ },
   ];
+  // names that aren't screens: the screen reader, the platform, the app itself
+  const NOT_A_SCREEN = /^(?:talk ?back|android(?: \w+)?|google|play store|github|wordpress(?: app)?|jetpack(?: app)?|antennapod|f-droid|accessibility scanner|the|a|an|i|it|this|when|then|settings app)$/i;
   const SR_SETTINGS = /\b(talk ?back\s*(?:version\s*v?\d+(?:\.\d+)*|v?\d+\.\d+(?:\.\d+)*)|speech rate|verbosity|explore by touch|reading controls|granularity|punctuation|braille\w*|android accessibility suite(?:\s*\d+(?:\.\d+)*)?|font size|large (?:system )?font|display size|magnification|high contrast|bold text|colou?r correction|select to speak|switch access|voice access)\b/i;
 
   const first = (list, text, ok) => {
     for (const r of list) { const m = text.match(r); if (!m) continue; const v = (m[1] || m[0]).trim(); if (!ok || ok(v)) return v; }
     return null;
   };
+  // like first(), but tries every match of each pattern, not only the first one
+  const firstOfAll = (list, text, ok) => {
+    for (const r of list) for (const m of text.matchAll(new RegExp(r.source, r.flags.replace("g", "") + "g"))) { const v = (m[1] || m[0]).trim(); if (!ok || ok(v)) return v; }
+    return null;
+  };
   // "to the Post list screen" -> "Post list screen"; a bare "the button" names nothing and is rejected
-  const LEAD = /^(?:(?:on|in|to|from|of|and|or|that|this|which|is|it|its|s|read|reads|open|opens|opening|the|a|an)\s+)+/i;
+  const LEAD = /^(?:(?:on|in|to|from|of|and|or|that|this|which|is|it|its|s|read|reads|open|opens|opening|go(?:es)? to|navigate to|switch to|select|tap(?: on)?|the|a|an)\s+)+/i;
   const cleanWhere = (v) => v.replace(LEAD, "").trim();
   const namesSomething = (v) => /\S+\s+\S+|>/.test(cleanWhere(v));
   const SR_CASE = (v) => (/^talk ?back$/i.test(v) ? "TalkBack" : v);
@@ -58,16 +72,18 @@
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
   // The lines of a report under a heading that matches `re`, up to the next heading.
+  // Headings: "### Expected behavior", "**Expected behavior:**", "**Expected:** text on the same line".
   function section(body, re) {
     const L = body.split("\n");
     for (let i = 0; i < L.length; i++) {
       const line = L[i];
-      const head = line.match(/^\s*(?:#{1,6}\s*|\*\*)\s*([^*:\n]+?)\s*:?\s*\**\s*:?\s*(.*)$/);
-      if (!head || !re.test(head[1]) || head[1].length > 40) continue;
-      if (!/^\s*(#{1,6}|\*\*)/.test(line)) continue;
+      const md = line.match(/^\s*#{1,6}\s*([^\n]+?)\s*:?\s*$/);
+      const bold = line.match(/^\s*\*\*\s*([^*\n]+?)\s*:?\s*\*\*\s*:?\s*(.*)$/);
+      const head = md ? [line, md[1], ""] : bold;
+      if (!head || head[1].length > 40 || !re.test(head[1].trim())) continue;
       const out = [];
       if (head[2] && head[2].trim()) out.push(head[2].trim());
-      for (let j = i + 1; j < L.length && !HEADING.test(L[j]); j++) out.push(L[j]);
+      for (let j = i + 1; j < L.length && !HEADING.test(L[j]) && !/^\s*\*\*[^*\n]+\*\*/.test(L[j]); j++) out.push(L[j]);
       const text = out.join("\n").trim();
       if (text) return text;
     }
@@ -97,7 +113,7 @@
 
     // 1. steps to reproduce
     const stepLines = steps(body);
-    add("steps", "Steps to reproduce", c.hasSteps ? "present" : "missing",
+    add("steps", "Steps to reproduce", c.hasSteps ? "present" : "notfound",
       c.hasSteps ? (stepLines.length ? stepLines.length + " steps" : "steps paragraph") : null,
       "Number each action from opening the app to seeing the problem.");
 
@@ -106,35 +122,42 @@
     const otherAT = all.match(OTHER_AT);
     if (!SR.test(all) && otherAT) {
       add("srSteps", "TalkBack or screen-reader steps", "na", "Report is about " + otherAT[0].toLowerCase() + ", not a screen reader", "Not needed for this report.", false);
+    } else if (!SR.test(all)) {
+      add("srSteps", "TalkBack or screen-reader steps", "optional", null,
+        "No screen reader is mentioned. If you used one, say when it was turned on and which gestures you used.", false);
     } else {
       const stepText = stepLines.join("\n");
       const ok = c.tbSteps || (c.hasSteps && SR.test(stepText));
-      add("srSteps", "TalkBack or screen-reader steps", ok ? "present" : c.hasSteps && srName ? "partial" : "missing",
+      add("srSteps", "TalkBack or screen-reader steps", ok ? "present" : c.hasSteps && srName ? "partial" : "notfound",
         ok ? srName || "screen reader" : c.hasSteps && srName ? srName + " is mentioned, but not in the steps" : null,
         "Say when the screen reader is turned on and which gestures you used: swipe right, double-tap, explore by touch.");
     }
 
     // 3. app version
     const appV = first(APP_VERSION, body);
-    add("appVersion", "App version", c.appVersion || appV ? "present" : "missing", appV || (c.appVersion ? "found" : null),
+    add("appVersion", "App version", c.appVersion || appV ? "present" : "notfound", appV || (c.appVersion ? "found" : null),
       "Copy it from the app's Settings > About screen, e.g. 24.8 or 3.1.0.");
 
     // 4. device and Android version
     const andV = androidLabel(first(ANDROID, body)), dev = first(DEVICE, body);
-    add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "missing",
+    add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "notfound",
       [dev, andV].filter(Boolean).join(", ") || null,
       andV && !dev ? "Add the device model, e.g. Pixel 8." : dev && !andV ? "Add the Android version, e.g. Android 14." : "Add the device model and Android version, e.g. Pixel 8, Android 14.");
 
     // 5. expected vs actual
     const exp = c.expectedActual || EXPECTED.test(body), act = c.expectedActual || ACTUAL.test(body) || HEARD.test(body);
-    add("expectedActual", "Expected vs. actual behavior", exp && act ? "present" : exp || act ? "partial" : "missing",
+    add("expectedActual", "Expected vs. actual behavior", exp && act ? "present" : exp || act ? "partial" : "notfound",
       exp && act ? "both described" : exp ? "expected only" : act ? "actual only" : null,
       exp && !act ? "Say what happens now, and quote what TalkBack announces." : act && !exp ? "Say what should happen instead." : "Say what should happen and what happens now, quoting what TalkBack announces.");
 
     // 6. the screen or element
-    const whereRaw = first(WHERE, all, namesSomething);
+    let whereRaw = null;
+    for (const w of WHERE) {
+      whereRaw = firstOfAll([w.re], all, w.named ? (v) => !NOT_A_SCREEN.test(v.replace(/["“”]/g, "").trim()) : namesSomething);
+      if (whereRaw) break;
+    }
     const where = whereRaw ? cleanWhere(whereRaw) : null;
-    add("where", "Screen or element", where ? "present" : "missing", where,
+    add("where", "Screen or element", where ? "present" : "notfound", where,
       "Name the screen and the control, e.g. Post list > three-dot menu button.");
 
     // 7. screen-reader settings: optional, only when relevant
@@ -147,18 +170,19 @@
       required: req.length,
       present: req.filter((x) => x.status === "present").length,
       partial: req.filter((x) => x.status === "partial").length,
-      missing: req.filter((x) => x.status === "missing").length,
+      notFound: req.filter((x) => x.status === "notfound").length,
     };
     const tpl = template({ title, body, items, stepLines, appV, andV, dev, srName });
     return { items, summary, template: tpl, text: tpl.map((s) => s.text).join("") };
   }
 
-  // The rewritten report as a list of segments: {text} for content, {text, mark: "missing"|"optional"} for placeholders.
+  // The rewritten report as a list of segments: {text} for content, {text, mark: "add"|"optional"} for placeholders.
+  // Placeholders say what to add ("[ADD: ...]"), not that the detail is certainly absent: the rules can miss things.
   function template(x) {
     const by = Object.fromEntries(x.items.map((i) => [i.key, i]));
     const segs = [];
     const t = (s) => segs.push({ text: s });
-    const miss = (s) => segs.push({ text: "[MISSING: " + s + "]", mark: "missing" });
+    const miss = (s) => segs.push({ text: "[ADD: " + s + "]", mark: "add" });
     const opt = (s) => segs.push({ text: "[ADD IF RELEVANT: " + s + "]", mark: "optional" });
     const val = (v, missing) => (v ? t(v) : miss(missing));
 
@@ -170,7 +194,8 @@
     val(x.dev, "device model, e.g. Pixel 8");
     t("\n- Android version: ");
     val(x.andV, "Android version, e.g. Android 14");
-    if (by.srSteps.status !== "na") { t("\n- Screen reader: "); val(x.srName, "screen reader and its version, e.g. TalkBack 15.0"); }
+    if (by.srSteps.status === "optional") { t("\n- Screen reader: "); opt("screen reader and its version, if you used one"); }
+    else if (by.srSteps.status !== "na") { t("\n- Screen reader: "); val(x.srName, "screen reader and its version, e.g. TalkBack 15.0"); }
     t("\n- Screen-reader settings: ");
     if (by.srSettings.status === "present") t(by.srSettings.found); else opt("speech rate, verbosity, font or display size");
 
@@ -179,14 +204,14 @@
 
     t("\n\n### Steps to reproduce\n");
     let n = 1;
-    if (by.srSteps.status === "partial" || (by.srSteps.status === "missing" && x.stepLines.length)) { t(n++ + ". "); miss("when TalkBack is turned on"); t("\n"); }
+    if (by.srSteps.status === "partial" || (by.srSteps.status === "notfound" && x.stepLines.length)) { t(n++ + ". "); miss("when TalkBack is turned on"); t("\n"); }
     if (x.stepLines.length) for (const s of x.stepLines) t(n++ + ". " + s + "\n");
     else if (by.steps.status === "present") t("(see the steps in the original report below)\n");
     else {
-      if (by.srSteps.status !== "na") { t("1. "); miss("turn on TalkBack"); t("\n"); n++; }
+      if (by.srSteps.status === "notfound") { t("1. "); miss("turn on TalkBack"); t("\n"); n++; }
       t(n + ". "); miss("each action, including the gesture used (swipe right, double-tap)"); t("\n");
     }
-    if (by.srSteps.status === "partial" || (by.srSteps.status === "missing" && x.stepLines.length)) { t(n + ". "); miss("which gesture you used at each step"); t("\n"); }
+    if (by.srSteps.status === "partial" || (by.srSteps.status === "notfound" && x.stepLines.length)) { t(n + ". "); miss("which gesture you used at each step"); t("\n"); }
 
     const expText = section(x.body, /^expected\b/i), actText = section(x.body, /^(actual|current|observed)\b/i);
     const ea = by.expectedActual.status;

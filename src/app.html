@@ -22,7 +22,7 @@
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
   <div class="lede">
     <h2>Check an Android accessibility bug report</h2>
-    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span> It runs in your browser; the text is not sent anywhere.</p>
+    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span>. It runs in your browser; the text is not sent anywhere.</p>
   </div>
 
   <div class="toolbar">
@@ -31,6 +31,7 @@
     <button class="btn" id="btn-link" type="button">Copy link to this check</button>
     <p class="src" id="ex-source" aria-live="polite"></p>
   </div>
+  <p class="small muted" id="link-hint">A link to pasted text carries the full report text inside the link, so anyone who gets the link can read the report.</p>
   <p class="small muted" id="link-status" role="status"></p>
 
   <div class="split">
@@ -65,7 +66,7 @@
         <div class="box-header"><h3 id="tpl-h">Rewritten report</h3>
           <div class="row"><span class="small muted" id="copy-tpl-status" role="status"></span><button class="btn" id="btn-copy-tpl" type="button">Copy report</button></div>
         </div>
-        <pre class="tpl" id="tpl" tabindex="0" aria-label="Rewritten report, with missing details marked [MISSING]"></pre>
+        <pre class="tpl" id="tpl" tabindex="0" aria-label="Rewritten report, with details to add marked [ADD]"></pre>
       </section>
     </div>
   </div>
@@ -101,7 +102,8 @@
 
   <div class="tablewrap" id="coverage"></div>
 
-  <div class="card pad stack" aria-labelledby="run-h">
+  <p class="notice" id="run-off">This page shows the saved run. Running the pilot needs the Claude app; to rerun it with your own API key, see <code>scripts/run-triage.mjs</code> in the project's README.</p>
+  <div class="card pad stack" id="run-card" aria-labelledby="run-h" hidden>
     <h3 id="run-h">Run the ablation</h3>
     <p class="small muted">Each report is triaged once per version. A shortened version is run only when the report has the detail it removes and the checker confirms nothing else it measures was lost. Calls run two at a time on the account of whoever presses Run.</p>
     <div class="row" style="align-items:stretch">
@@ -284,6 +286,9 @@
     [sample, db, user, downloads] = await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
     if (user) { try { me = await user.me(); } catch (e) { me = null; } }
     $("#ai-card").hidden = !sample;
+    // outside the Claude app the run controls can't do anything, so they are not shown
+    $("#run-card").hidden = !sample;
+    $("#run-off").hidden = !!sample;
     if (!sample) { aiOff = true; $("#run-status").textContent = NO_AI_RUN; updateCallCount(); }
     startDb();
     renderLabelView();
@@ -365,13 +370,13 @@
     const s = svg("svg", { class: "ico", viewBox: "0 0 20 20", width: "20", height: "20", "aria-hidden": "true", focusable: "false" });
     const ring = { cx: "10", cy: "10", r: "8.25", fill: "none", stroke: "currentColor", "stroke-width": "1.5" };
     if (status === "present") { s.append(svg("circle", Object.assign({}, ring, { fill: "currentColor" })), svg("path", { d: "M6 10.2l2.6 2.6L14.2 7.2", fill: "none", stroke: "var(--bg)", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" })); }
-    else if (status === "missing") { s.append(svg("circle", ring), svg("path", { d: "M7 7l6 6M13 7l-6 6", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
+    else if (status === "notfound") { s.append(svg("circle", ring), svg("path", { d: "M7 7l6 6M13 7l-6 6", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
     else if (status === "partial") { s.append(svg("circle", ring), svg("path", { d: "M10 1.75a8.25 8.25 0 0 1 0 16.5z", fill: "currentColor" })); }
     else if (status === "optional") { s.append(svg("circle", Object.assign({}, ring, { "stroke-dasharray": "3 2.6" }))); }
     else { s.append(svg("circle", ring), svg("path", { d: "M6.5 10h7", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
     return s;
   }
-  const STATE_TEXT = { present: "Found", partial: "Incomplete", missing: "Missing", optional: "Optional", na: "Not needed" };
+  const STATE_TEXT = { present: "Found", partial: "Incomplete", notfound: "Not found", optional: "Optional", na: "Not needed" };
 
   let summaryTimer = null;
   function updateChecklist(now) {
@@ -383,13 +388,13 @@
       h("span", { class: "state" }, STATE_TEXT[it.status]),
       h("p", { class: "detail" },
         it.status === "na" ? it.found
-          : it.found && it.status !== "missing" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
+          : it.found && it.status !== "notfound" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
           : it.hint))));
     $("#tpl").replaceChildren(...a.template.map((s) => (s.mark ? h("mark", { class: s.mark }, s.text) : s.text)));
     const empty = !rep.title.trim() && !rep.body.trim();
     const S = a.summary;
     const text = empty ? "Nothing to check yet. Paste a report, or try a sample."
-      : S.present + " of " + S.required + " found" + (S.missing ? ", " + S.missing + " missing" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
+      : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
     clearTimeout(summaryTimer);
     // the summary is a live region: while someone types, announce it only after a pause
     if (now) $("#chk-score").textContent = text;
@@ -796,7 +801,7 @@
       const full = res.full;
       const tr = h("tr", { class: r.id === detailId ? "sel" : null },
         h("td", null, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, r.app + " #" + r.number), h("div", { class: "small muted" }, r.title.slice(0, 80))),
-        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": present" : ": missing") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " present" : " missing")))))),
+        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": found" : ": not found") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " found" : " not found")))))),
         h("td", null, h("span", { class: "pill" }, outcome(r))),
         conds.map((c) => {
           const a = res[c];

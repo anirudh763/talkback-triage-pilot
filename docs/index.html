@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-A8+3y1KfrcBTOvNkUyJ10BZMQTcJgsXWKF9d5UaPIqs=' 'sha256-2Ffu6XsmCMUwbavFqU+T4sEU4x75m/QPFEtC7h/Ma8w='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -55,10 +56,10 @@ th{font-size:.85em;color:var(--fg-muted);font-weight:700;background:var(--bg-sub
   --crit: var(--bad); --crit-bg: var(--bad-subtle); --warn-bg: var(--warn-subtle); --ok-bg: var(--ok-subtle);
   --none: var(--fg-muted); --none-bg: var(--bg-inset); --bar: var(--accent);
   --removed-bg: var(--bad-subtle); --removed-ink: var(--bad);
-  --mark-missing-bg: #ffebe9; --mark-missing-fg: #a40e26; --mark-opt-bg: #eef1f4; --mark-opt-fg: #424a53;
+  --mark-add-bg: #ffebe9; --mark-add-fg: #a40e26; --mark-opt-bg: #eef1f4; --mark-opt-fg: #424a53;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --mark-missing-bg: #3c1618; --mark-missing-fg: #ffa198; --mark-opt-bg: #212830; --mark-opt-fg: #c9d1d9; }
+  :root { --mark-add-bg: #3c1618; --mark-add-fg: #ffa198; --mark-opt-bg: #212830; --mark-opt-fg: #c9d1d9; }
 }
 body { font-size: 1rem; }
 a { text-underline-offset: 2px; }
@@ -80,7 +81,7 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 .app-header .repo { margin-left: auto; font-size: .875rem; display: inline-flex; align-items: center; min-height: 32px; }
 .skip { min-height: 32px; }
 @media (max-width: 760px) { .app-header nav { order: 3; flex: 1 1 100%; } .app-header .repo { margin-left: 0; } }
-.tabs { position: relative; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.tabs { position: relative; display: flex; flex-wrap: wrap; gap: 0 2px; max-width: 100%; }
 .tab { appearance: none; border: 0; background: none; color: var(--fg-muted); font: 700 .9375rem var(--font); min-height: 44px; padding: 10px 10px; box-shadow: inset 0 -2px 0 transparent; cursor: pointer; white-space: nowrap; }
 .tab[aria-selected="true"] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
 .tab:hover { color: var(--fg); background: var(--bg-inset); }
@@ -140,7 +141,7 @@ details.more[open] > summary { margin-bottom: 8px; }
 .lint .detail { grid-column: 2 / -1; font-size: .875rem; color: var(--fg-muted); overflow-wrap: anywhere; }
 .lint .detail code { color: var(--fg); background: var(--bg-inset); padding: 0 4px; border-radius: 4px; }
 .lint [data-status="present"] .ico, .lint [data-status="present"] .state { color: var(--ok); }
-.lint [data-status="missing"] .ico, .lint [data-status="missing"] .state { color: var(--bad); }
+.lint [data-status="notfound"] .ico, .lint [data-status="notfound"] .state { color: var(--bad); }
 .lint [data-status="partial"] .ico, .lint [data-status="partial"] .state { color: var(--warn); }
 .lint [data-status="optional"] .ico, .lint [data-status="optional"] .state,
 .lint [data-status="na"] .ico, .lint [data-status="na"] .state { color: var(--fg-muted); }
@@ -148,7 +149,7 @@ details.more[open] > summary { margin-bottom: 8px; }
 
 .tpl { margin: 0; padding: 12px 14px; font-family: var(--mono); font-size: .8125rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 560px; overflow: auto; background: var(--bg); border-radius: 0 0 var(--radius) var(--radius); }
 .tpl mark { border-radius: 3px; padding: 0 2px; font-weight: 700; }
-.tpl mark.missing { background: var(--mark-missing-bg); color: var(--mark-missing-fg); }
+.tpl mark.add { background: var(--mark-add-bg); color: var(--mark-add-fg); }
 .tpl mark.optional { background: var(--mark-opt-bg); color: var(--mark-opt-fg); font-weight: 400; }
 .copybox { width: 100%; min-height: 120px; }
 #copy-tpl-status:empty, #link-status:empty { display: none; }
@@ -223,7 +224,7 @@ details > summary { cursor: pointer; font-weight: 700; }
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
   <div class="lede">
     <h2>Check an Android accessibility bug report</h2>
-    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span> It runs in your browser; the text is not sent anywhere.</p>
+    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span>. It runs in your browser; the text is not sent anywhere.</p>
   </div>
 
   <div class="toolbar">
@@ -232,6 +233,7 @@ details > summary { cursor: pointer; font-weight: 700; }
     <button class="btn" id="btn-link" type="button">Copy link to this check</button>
     <p class="src" id="ex-source" aria-live="polite"></p>
   </div>
+  <p class="small muted" id="link-hint">A link to pasted text carries the full report text inside the link, so anyone who gets the link can read the report.</p>
   <p class="small muted" id="link-status" role="status"></p>
 
   <div class="split">
@@ -266,7 +268,7 @@ details > summary { cursor: pointer; font-weight: 700; }
         <div class="box-header"><h3 id="tpl-h">Rewritten report</h3>
           <div class="row"><span class="small muted" id="copy-tpl-status" role="status"></span><button class="btn" id="btn-copy-tpl" type="button">Copy report</button></div>
         </div>
-        <pre class="tpl" id="tpl" tabindex="0" aria-label="Rewritten report, with missing details marked [MISSING]"></pre>
+        <pre class="tpl" id="tpl" tabindex="0" aria-label="Rewritten report, with details to add marked [ADD]"></pre>
       </section>
     </div>
   </div>
@@ -302,7 +304,8 @@ details > summary { cursor: pointer; font-weight: 700; }
 
   <div class="tablewrap" id="coverage"></div>
 
-  <div class="card pad stack" aria-labelledby="run-h">
+  <p class="notice" id="run-off">This page shows the saved run. Running the pilot needs the Claude app; to rerun it with your own API key, see <code>scripts/run-triage.mjs</code> in the project's README.</p>
+  <div class="card pad stack" id="run-card" aria-labelledby="run-h" hidden>
     <h3 id="run-h">Run the ablation</h3>
     <p class="small muted">Each report is triaged once per version. A shortened version is run only when the report has the detail it removes and the checker confirms nothing else it measures was lost. Calls run two at a time on the account of whoever presses Run.</p>
     <div class="row" style="align-items:stretch">
@@ -829,7 +832,7 @@ details > summary { cursor: pointer; font-weight: 700; }
   const HEADING = /^\s*(#{1,6}\s+\S|\*\*[^*]+\*\*:?\s*$)/;
 
   const APP_VERSION = [
-    /^\s*(?:#{1,6}\s*)?\**app version:?\**:?[ \t]*\n*[ \t]*(v?\d+(?:\.\d+)+(?:[ \t]*\([0-9a-f]{6,}\))?)/im,
+    /^\s*(?:#{1,6}\s*)?\**app version:?\**:?[ \t]*\n*[ \t]*(v?\d+(?:\.\d+)+[a-z]?(?:-[\w.]+)?(?:[ \t]*\([0-9a-f]{6,}\))?)/im,
     /\b((?:WPAndroid|JPAndroid|AntennaPod)(?:\s*\/\s*\w+)?(?:\s+version)?\s+v?\d+\.\d+[\w.-]*(?:\s*\(beta\))?)/i,
     /\b(JPAndroid\s+pr\d+-[0-9a-f]{6,})/i,
     /\b(develop\s*\([0-9a-f]{7,}\))/i,
@@ -845,27 +848,41 @@ details > summary { cursor: pointer; font-weight: 700; }
   const DEVICE = [
     /^\s*#{1,6}\s*device(?: model)?\s*\n+\s*([^\n]{2,40})/im,
     /^\s*\**device(?: model)?:?\**:?[ \t]*([^\n]{2,40})/im,
-    /\b((?:google\s+)?pixel(?:\s+\d+\w*)?(?:\s+(?:pro|xl|a|fold))?|samsung(?:\s+galaxy)?(?:\s+[\w+]+){0,2}|galaxy\s+[\w+]+(?:\s+\d+)?|nokia\s*[\d.]+|(?:oneplus|xiaomi|redmi|poco|motorola|huawei|oppo|realme|xperia)\b(?:\s+\w*\d\w*)?|moto\s?[a-z]\d*\b|nexus(?:\s*\d+)?|honor\s+\d+\w*|lg g\d|emulator|simulator)\b/i,
+    /\b((?:google\s+)?pixel(?:\s+\d+\w*)?(?:\s+(?:pro|xl|a|fold))?|samsung(?:\s+galaxy)?(?:\s+[\w+]+){0,2}|galaxy\s+[\w+]+(?:\s+\d+)?|nokia\s*[\d.]+|(?:oneplus|xiaomi|redmi|poco|motorola|huawei|oppo|realme|xperia)\b(?:\s+(?:nord\s+|mi\s+|mate\s+)?[a-z]*\d+\w*(?:\s+(?:pro|plus|ultra|lite|max|mini|compact|5g)\b)*)?|moto\s?[a-z]\d*\b|nexus(?:\s*\d+\w*)?|honor\s+\d+\w*|lg g\d|emulator|simulator)\b/i,
   ];
   const EXPECTED = /\bexpected\b|\bshould\b/i;
   const ACTUAL = /\b(actual|current)\s+(behaviou?r|result)|\*\*result:?\*\*|\bactual\b|\binstead\b|\bobserved\b/i;
   const HEARD = /(announc\w*|says?|said|reads?( as)?|read aloud|spoken|prompts?)[^.\n]{0,40}["“'`][^"”'`\n]{1,80}["”'`]/i;
+  // Where in the app, tried in order. Each pattern stays on one line ([ \t], not \s) so it can't join two lines.
+  // "named" patterns accept a single quoted or Title Case name after a navigation verb: Go to "My Site",
+  // Open Reader, the "Home" tab, from WordPress Media Picker. The others need at least two words.
+  const SCREEN = "(?:screen|page|tab|dialog|menu|view|form|list|section|panel|sheet|bar|player|editor|picker|settings)";
+  const NAV = "(?:go(?:es)? to|navigate to|switch to|open|opens|opening|select|tap(?: on)?|in|on|from|to)";
   const WHERE = [
-    /^\s*(?:#{1,6}\s*)?\**(?:screen|element|where|location)\**\s*:\**[ \t]*([^\n]{2,60})/im,
-    /\b((?:on|in|to|from|open|opens|opening)\s+the\s+(?:[`"“']?[\w-]+[`"”']?\s+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section|panel|sheet|bar|player|editor|picker|settings))\b/i,
-    /\b((?:the\s+)?[`"“'][^`"”'\n]{1,30}[`"”']\s+(?:screen|page|tab|dialog|menu|view|button|field|link|checkbox|switch|toggle|slider|icon|item))\b/i,
-    /\b([\w-]+\s*>\s*[\w-]+(?:\s*>\s*[\w-]+)*)/,
-    /\b((?:the\s+)?[\w-]+(?:\s+[\w-]+)?\s+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i,
-    /\b((?:[A-Z][\w-]+\s+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section))\b/,
+    { re: /^[ \t]*(?:#{1,6}[ \t]*)?\**(?:screen|element|where|location)\**[ \t]*:\**[ \t]*([^\n]{2,60})/im },
+    { re: new RegExp("\\b(" + NAV + "[ \\t]+the[ \\t]+(?:[`\"“']?[\\w-]+[`\"”']?[ \\t]+){1,3}" + SCREEN + ")\\b", "i") },
+    { re: new RegExp("\\b" + NAV + "[ \\t]+(?:the[ \\t]+)?([\"“][^\"”\\n]{1,30}[\"”](?:[ \\t]+" + SCREEN + ")?)", "i"), named: true },
+    { re: /\b((?:the[ \t]+)?[`"“'][^`"”'\n]{1,30}[`"”'][ \t]+(?:screen|page|tab|dialog|menu|view|button|field|link|checkbox|switch|toggle|slider|icon|item))\b/i },
+    { re: /\b([\w-]+[ \t]*>[ \t]*[\w-]+(?:[ \t]*>[ \t]*[\w-]+)*)/ },
+    { re: new RegExp("\\b(?:[Gg]o(?:es)? to|[Nn]avigate to|[Ss]witch to|[Oo]pen|[Ss]elect|[Tt]ap(?: on)?|in|on|from)[ \\t]+(?:the[ \\t]+)?((?:[A-Z][\\w-]*)(?:[ \\t]+[A-Z][\\w-]*){0,3}(?:[ \\t]+" + SCREEN + ")?)\\b"), named: true },
+    { re: /\b((?:the[ \t]+)?[\w-]+(?:[ \t]+[\w-]+)?[ \t]+(?:button|field|checkbox|toggle|slider|icon|menu item|text box|dropdown))\b/i },
+    { re: /\b((?:[A-Z][\w-]+[ \t]+){1,3}(?:screen|page|tab|dialog|menu|view|form|list|section))\b/ },
   ];
+  // names that aren't screens: the screen reader, the platform, the app itself
+  const NOT_A_SCREEN = /^(?:talk ?back|android(?: \w+)?|google|play store|github|wordpress(?: app)?|jetpack(?: app)?|antennapod|f-droid|accessibility scanner|the|a|an|i|it|this|when|then|settings app)$/i;
   const SR_SETTINGS = /\b(talk ?back\s*(?:version\s*v?\d+(?:\.\d+)*|v?\d+\.\d+(?:\.\d+)*)|speech rate|verbosity|explore by touch|reading controls|granularity|punctuation|braille\w*|android accessibility suite(?:\s*\d+(?:\.\d+)*)?|font size|large (?:system )?font|display size|magnification|high contrast|bold text|colou?r correction|select to speak|switch access|voice access)\b/i;
 
   const first = (list, text, ok) => {
     for (const r of list) { const m = text.match(r); if (!m) continue; const v = (m[1] || m[0]).trim(); if (!ok || ok(v)) return v; }
     return null;
   };
+  // like first(), but tries every match of each pattern, not only the first one
+  const firstOfAll = (list, text, ok) => {
+    for (const r of list) for (const m of text.matchAll(new RegExp(r.source, r.flags.replace("g", "") + "g"))) { const v = (m[1] || m[0]).trim(); if (!ok || ok(v)) return v; }
+    return null;
+  };
   // "to the Post list screen" -> "Post list screen"; a bare "the button" names nothing and is rejected
-  const LEAD = /^(?:(?:on|in|to|from|of|and|or|that|this|which|is|it|its|s|read|reads|open|opens|opening|the|a|an)\s+)+/i;
+  const LEAD = /^(?:(?:on|in|to|from|of|and|or|that|this|which|is|it|its|s|read|reads|open|opens|opening|go(?:es)? to|navigate to|switch to|select|tap(?: on)?|the|a|an)\s+)+/i;
   const cleanWhere = (v) => v.replace(LEAD, "").trim();
   const namesSomething = (v) => /\S+\s+\S+|>/.test(cleanWhere(v));
   const SR_CASE = (v) => (/^talk ?back$/i.test(v) ? "TalkBack" : v);
@@ -873,16 +890,18 @@ details > summary { cursor: pointer; font-weight: 700; }
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
   // The lines of a report under a heading that matches `re`, up to the next heading.
+  // Headings: "### Expected behavior", "**Expected behavior:**", "**Expected:** text on the same line".
   function section(body, re) {
     const L = body.split("\n");
     for (let i = 0; i < L.length; i++) {
       const line = L[i];
-      const head = line.match(/^\s*(?:#{1,6}\s*|\*\*)\s*([^*:\n]+?)\s*:?\s*\**\s*:?\s*(.*)$/);
-      if (!head || !re.test(head[1]) || head[1].length > 40) continue;
-      if (!/^\s*(#{1,6}|\*\*)/.test(line)) continue;
+      const md = line.match(/^\s*#{1,6}\s*([^\n]+?)\s*:?\s*$/);
+      const bold = line.match(/^\s*\*\*\s*([^*\n]+?)\s*:?\s*\*\*\s*:?\s*(.*)$/);
+      const head = md ? [line, md[1], ""] : bold;
+      if (!head || head[1].length > 40 || !re.test(head[1].trim())) continue;
       const out = [];
       if (head[2] && head[2].trim()) out.push(head[2].trim());
-      for (let j = i + 1; j < L.length && !HEADING.test(L[j]); j++) out.push(L[j]);
+      for (let j = i + 1; j < L.length && !HEADING.test(L[j]) && !/^\s*\*\*[^*\n]+\*\*/.test(L[j]); j++) out.push(L[j]);
       const text = out.join("\n").trim();
       if (text) return text;
     }
@@ -912,7 +931,7 @@ details > summary { cursor: pointer; font-weight: 700; }
 
     // 1. steps to reproduce
     const stepLines = steps(body);
-    add("steps", "Steps to reproduce", c.hasSteps ? "present" : "missing",
+    add("steps", "Steps to reproduce", c.hasSteps ? "present" : "notfound",
       c.hasSteps ? (stepLines.length ? stepLines.length + " steps" : "steps paragraph") : null,
       "Number each action from opening the app to seeing the problem.");
 
@@ -921,35 +940,42 @@ details > summary { cursor: pointer; font-weight: 700; }
     const otherAT = all.match(OTHER_AT);
     if (!SR.test(all) && otherAT) {
       add("srSteps", "TalkBack or screen-reader steps", "na", "Report is about " + otherAT[0].toLowerCase() + ", not a screen reader", "Not needed for this report.", false);
+    } else if (!SR.test(all)) {
+      add("srSteps", "TalkBack or screen-reader steps", "optional", null,
+        "No screen reader is mentioned. If you used one, say when it was turned on and which gestures you used.", false);
     } else {
       const stepText = stepLines.join("\n");
       const ok = c.tbSteps || (c.hasSteps && SR.test(stepText));
-      add("srSteps", "TalkBack or screen-reader steps", ok ? "present" : c.hasSteps && srName ? "partial" : "missing",
+      add("srSteps", "TalkBack or screen-reader steps", ok ? "present" : c.hasSteps && srName ? "partial" : "notfound",
         ok ? srName || "screen reader" : c.hasSteps && srName ? srName + " is mentioned, but not in the steps" : null,
         "Say when the screen reader is turned on and which gestures you used: swipe right, double-tap, explore by touch.");
     }
 
     // 3. app version
     const appV = first(APP_VERSION, body);
-    add("appVersion", "App version", c.appVersion || appV ? "present" : "missing", appV || (c.appVersion ? "found" : null),
+    add("appVersion", "App version", c.appVersion || appV ? "present" : "notfound", appV || (c.appVersion ? "found" : null),
       "Copy it from the app's Settings > About screen, e.g. 24.8 or 3.1.0.");
 
     // 4. device and Android version
     const andV = androidLabel(first(ANDROID, body)), dev = first(DEVICE, body);
-    add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "missing",
+    add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "notfound",
       [dev, andV].filter(Boolean).join(", ") || null,
       andV && !dev ? "Add the device model, e.g. Pixel 8." : dev && !andV ? "Add the Android version, e.g. Android 14." : "Add the device model and Android version, e.g. Pixel 8, Android 14.");
 
     // 5. expected vs actual
     const exp = c.expectedActual || EXPECTED.test(body), act = c.expectedActual || ACTUAL.test(body) || HEARD.test(body);
-    add("expectedActual", "Expected vs. actual behavior", exp && act ? "present" : exp || act ? "partial" : "missing",
+    add("expectedActual", "Expected vs. actual behavior", exp && act ? "present" : exp || act ? "partial" : "notfound",
       exp && act ? "both described" : exp ? "expected only" : act ? "actual only" : null,
       exp && !act ? "Say what happens now, and quote what TalkBack announces." : act && !exp ? "Say what should happen instead." : "Say what should happen and what happens now, quoting what TalkBack announces.");
 
     // 6. the screen or element
-    const whereRaw = first(WHERE, all, namesSomething);
+    let whereRaw = null;
+    for (const w of WHERE) {
+      whereRaw = firstOfAll([w.re], all, w.named ? (v) => !NOT_A_SCREEN.test(v.replace(/["“”]/g, "").trim()) : namesSomething);
+      if (whereRaw) break;
+    }
     const where = whereRaw ? cleanWhere(whereRaw) : null;
-    add("where", "Screen or element", where ? "present" : "missing", where,
+    add("where", "Screen or element", where ? "present" : "notfound", where,
       "Name the screen and the control, e.g. Post list > three-dot menu button.");
 
     // 7. screen-reader settings: optional, only when relevant
@@ -962,18 +988,19 @@ details > summary { cursor: pointer; font-weight: 700; }
       required: req.length,
       present: req.filter((x) => x.status === "present").length,
       partial: req.filter((x) => x.status === "partial").length,
-      missing: req.filter((x) => x.status === "missing").length,
+      notFound: req.filter((x) => x.status === "notfound").length,
     };
     const tpl = template({ title, body, items, stepLines, appV, andV, dev, srName });
     return { items, summary, template: tpl, text: tpl.map((s) => s.text).join("") };
   }
 
-  // The rewritten report as a list of segments: {text} for content, {text, mark: "missing"|"optional"} for placeholders.
+  // The rewritten report as a list of segments: {text} for content, {text, mark: "add"|"optional"} for placeholders.
+  // Placeholders say what to add ("[ADD: ...]"), not that the detail is certainly absent: the rules can miss things.
   function template(x) {
     const by = Object.fromEntries(x.items.map((i) => [i.key, i]));
     const segs = [];
     const t = (s) => segs.push({ text: s });
-    const miss = (s) => segs.push({ text: "[MISSING: " + s + "]", mark: "missing" });
+    const miss = (s) => segs.push({ text: "[ADD: " + s + "]", mark: "add" });
     const opt = (s) => segs.push({ text: "[ADD IF RELEVANT: " + s + "]", mark: "optional" });
     const val = (v, missing) => (v ? t(v) : miss(missing));
 
@@ -985,7 +1012,8 @@ details > summary { cursor: pointer; font-weight: 700; }
     val(x.dev, "device model, e.g. Pixel 8");
     t("\n- Android version: ");
     val(x.andV, "Android version, e.g. Android 14");
-    if (by.srSteps.status !== "na") { t("\n- Screen reader: "); val(x.srName, "screen reader and its version, e.g. TalkBack 15.0"); }
+    if (by.srSteps.status === "optional") { t("\n- Screen reader: "); opt("screen reader and its version, if you used one"); }
+    else if (by.srSteps.status !== "na") { t("\n- Screen reader: "); val(x.srName, "screen reader and its version, e.g. TalkBack 15.0"); }
     t("\n- Screen-reader settings: ");
     if (by.srSettings.status === "present") t(by.srSettings.found); else opt("speech rate, verbosity, font or display size");
 
@@ -994,14 +1022,14 @@ details > summary { cursor: pointer; font-weight: 700; }
 
     t("\n\n### Steps to reproduce\n");
     let n = 1;
-    if (by.srSteps.status === "partial" || (by.srSteps.status === "missing" && x.stepLines.length)) { t(n++ + ". "); miss("when TalkBack is turned on"); t("\n"); }
+    if (by.srSteps.status === "partial" || (by.srSteps.status === "notfound" && x.stepLines.length)) { t(n++ + ". "); miss("when TalkBack is turned on"); t("\n"); }
     if (x.stepLines.length) for (const s of x.stepLines) t(n++ + ". " + s + "\n");
     else if (by.steps.status === "present") t("(see the steps in the original report below)\n");
     else {
-      if (by.srSteps.status !== "na") { t("1. "); miss("turn on TalkBack"); t("\n"); n++; }
+      if (by.srSteps.status === "notfound") { t("1. "); miss("turn on TalkBack"); t("\n"); n++; }
       t(n + ". "); miss("each action, including the gesture used (swipe right, double-tap)"); t("\n");
     }
-    if (by.srSteps.status === "partial" || (by.srSteps.status === "missing" && x.stepLines.length)) { t(n + ". "); miss("which gesture you used at each step"); t("\n"); }
+    if (by.srSteps.status === "partial" || (by.srSteps.status === "notfound" && x.stepLines.length)) { t(n + ". "); miss("which gesture you used at each step"); t("\n"); }
 
     const expText = section(x.body, /^expected\b/i), actText = section(x.body, /^(actual|current|observed)\b/i);
     const ea = by.expectedActual.status;
@@ -1111,6 +1139,9 @@ details > summary { cursor: pointer; font-weight: 700; }
     [sample, db, user, downloads] = await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
     if (user) { try { me = await user.me(); } catch (e) { me = null; } }
     $("#ai-card").hidden = !sample;
+    // outside the Claude app the run controls can't do anything, so they are not shown
+    $("#run-card").hidden = !sample;
+    $("#run-off").hidden = !!sample;
     if (!sample) { aiOff = true; $("#run-status").textContent = NO_AI_RUN; updateCallCount(); }
     startDb();
     renderLabelView();
@@ -1192,13 +1223,13 @@ details > summary { cursor: pointer; font-weight: 700; }
     const s = svg("svg", { class: "ico", viewBox: "0 0 20 20", width: "20", height: "20", "aria-hidden": "true", focusable: "false" });
     const ring = { cx: "10", cy: "10", r: "8.25", fill: "none", stroke: "currentColor", "stroke-width": "1.5" };
     if (status === "present") { s.append(svg("circle", Object.assign({}, ring, { fill: "currentColor" })), svg("path", { d: "M6 10.2l2.6 2.6L14.2 7.2", fill: "none", stroke: "var(--bg)", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" })); }
-    else if (status === "missing") { s.append(svg("circle", ring), svg("path", { d: "M7 7l6 6M13 7l-6 6", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
+    else if (status === "notfound") { s.append(svg("circle", ring), svg("path", { d: "M7 7l6 6M13 7l-6 6", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
     else if (status === "partial") { s.append(svg("circle", ring), svg("path", { d: "M10 1.75a8.25 8.25 0 0 1 0 16.5z", fill: "currentColor" })); }
     else if (status === "optional") { s.append(svg("circle", Object.assign({}, ring, { "stroke-dasharray": "3 2.6" }))); }
     else { s.append(svg("circle", ring), svg("path", { d: "M6.5 10h7", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" })); }
     return s;
   }
-  const STATE_TEXT = { present: "Found", partial: "Incomplete", missing: "Missing", optional: "Optional", na: "Not needed" };
+  const STATE_TEXT = { present: "Found", partial: "Incomplete", notfound: "Not found", optional: "Optional", na: "Not needed" };
 
   let summaryTimer = null;
   function updateChecklist(now) {
@@ -1210,13 +1241,13 @@ details > summary { cursor: pointer; font-weight: 700; }
       h("span", { class: "state" }, STATE_TEXT[it.status]),
       h("p", { class: "detail" },
         it.status === "na" ? it.found
-          : it.found && it.status !== "missing" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
+          : it.found && it.status !== "notfound" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
           : it.hint))));
     $("#tpl").replaceChildren(...a.template.map((s) => (s.mark ? h("mark", { class: s.mark }, s.text) : s.text)));
     const empty = !rep.title.trim() && !rep.body.trim();
     const S = a.summary;
     const text = empty ? "Nothing to check yet. Paste a report, or try a sample."
-      : S.present + " of " + S.required + " found" + (S.missing ? ", " + S.missing + " missing" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
+      : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
     clearTimeout(summaryTimer);
     // the summary is a live region: while someone types, announce it only after a pause
     if (now) $("#chk-score").textContent = text;
@@ -1623,7 +1654,7 @@ details > summary { cursor: pointer; font-weight: 700; }
       const full = res.full;
       const tr = h("tr", { class: r.id === detailId ? "sel" : null },
         h("td", null, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, r.app + " #" + r.number), h("div", { class: "small muted" }, r.title.slice(0, 80))),
-        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": present" : ": missing") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " present" : " missing")))))),
+        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": found" : ": not found") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " found" : " not found")))))),
         h("td", null, h("span", { class: "pill" }, outcome(r))),
         conds.map((c) => {
           const a = res[c];
