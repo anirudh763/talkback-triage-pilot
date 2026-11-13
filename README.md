@@ -1,30 +1,171 @@
 # TalkBack Triage Pilot
 
-**Do TalkBack reproduction steps and the app version in an Android accessibility bug report change how an AI triages it?**
+**A report checker for Android accessibility bug reports, and the small pilot study behind it.**
 
-This repository is a small, open pilot study and the web app that runs it. It uses 75 real accessibility issues from two open-source Android apps. Each report is triaged by an AI twice: once as filed, and once with its TalkBack steps or version details taken out. The two answers are then compared. People can label the same reports, so the AI's answers can be checked against human judgement.
+Paste a bug report and the checker lists which of seven details it can find: steps, TalkBack or screen-reader steps, app version, device and Android version, expected vs. actual behavior, the screen or element, and screen-reader settings. It then gives you the report rewritten with `[ADD: ...]` where something was not found. It is a heuristic completeness check (rules, not AI), runs in your browser, and works offline once loaded.
 
-**Status: exploratory.** One AI run, no human labels yet. Read the results as "the AI's answer depends on these lines". Whether its answers are *right* still needs labels from people. See [Limitations](#limitations).
+**Try it:** open https://anirudh763.github.io/talkback-triage-pilot/ and press **Try a sample report**, or paste your own. Limits: it finds missing sections only, and it has no user validation. See [What it is not](#what-it-is-not).
 
-**Live app:** https://anirudh763.github.io/talkback-triage-pilot/ opens on a **report checker**: paste an Android accessibility bug report and see which sections were not found. It finds missing sections only; a report with every section can still be impossible to reproduce. It is a heuristic check (rules, not AI) and runs in your browser. See [Report checker](#report-checker).
+**Status: public beta**, maintained by one student on a best-effort basis. The supported task is narrow: before you file or triage an Android accessibility bug, check one report for missing sections and copy the rewritten version. The checker has not been tried with real reporters or triagers. Security reports: see [SECURITY.md](SECURITY.md) (through GitHub, not email).
 
-![Results of the clean run in the app](assets/pilot-results.png)
-
----
+Below the checker, this repository holds an exploratory study: does removing TalkBack steps or the app version from 75 real issues change how an AI triages them? See [The study](#the-study).
 
 ## Contents
 
-- [Why this matters](#why-this-matters)
-- [Research questions](#research-questions)
-- [What is in this repository](#what-is-in-this-repository)
-- [Quick start](#quick-start)
-- [How the pilot works](#how-the-pilot-works)
-- [Results so far](#results-so-far)
-- [Labelling reports](#labelling-reports)
-- [Limitations](#limitations)
+- [Report checker](#report-checker)
+- [Use it in your own repo](#use-it-in-your-own-repo)
+- [The study](#the-study): [why](#why-this-matters), [questions](#research-questions), [how it works](#how-the-pilot-works), [results](#results-so-far), [labelling](#labelling-reports), [limitations](#limitations)
+- [What is in this repository](#what-is-in-this-repository) and [quick start](#quick-start)
 - [Related work](#related-work)
 - [Citing, licence and credits](#citing-licence-and-credits)
-- [Report checker](#report-checker)
+
+## Report checker
+
+![The report checker on WordPress-Android #21127: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
+
+The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
+
+Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in text and with an icon. Below the list, a rewritten report marks what to add as `[ADD: ...]` and copies the Expected and Actual sections under their own headings.
+
+| Detail | What counts |
+|---|---|
+| Steps to reproduce | A numbered or bulleted list, or a "Steps" section with text in it |
+| TalkBack or screen-reader steps | The steps say when TalkBack or another screen reader is on. Optional when no screen reader is mentioned; not needed for font-size, contrast and similar reports |
+| App version | `App version: 3.1.0`, `App version: 42`, `JPAndroid 24.8`. A TalkBack, Android or other component version never counts |
+| Device and Android version | `Pixel 8`, `Nexus 6P`, `Android 14`, `API 34`; one of the two is "Incomplete" |
+| Expected vs. actual behavior | Both described; a quoted announcement counts as "actual" |
+| Screen or element | `the Post list screen`, `Go to "My Site"`, `Settings > Accessibility` |
+| Screen-reader settings (optional) | `TalkBack 15.0`, speech rate, verbosity, font size |
+
+Empty template sections, HTML comments and unfilled placeholders such as `_No response_`, `[device]`, `[e.g. Pixel 8]`, `N/A` or GitHub's default "A clear and concise description of…" prompt don't count as content. Steps written on the label's own line (`Steps to reproduce: Open the app, swipe right twice, …`) count. The checker reads at most the first 64,000 characters of a report and says so when it cuts one.
+
+### What it is not
+
+It finds missing sections only. A report with every section is not necessarily reproducible or ready to act on: [AntennaPod #6598](https://github.com/AntennaPod/AntennaPod/issues/6598) had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed. No interviews or user studies have been done with people who file or triage reports, so the checker has no user validation. It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
+
+### Privacy, offline use, accessibility and security
+
+**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
+
+**Offline and install.** After one visit the page works without a network: a service worker keeps the page, its fonts and icons in a versioned cache. Online it always fetches the latest page first. It has a web app manifest and SVG and PNG icons, so browsers that support installing web apps can offer to install it; installing has not been tried by hand. The browser test turns the network off, reloads, and checks a sample. Without JavaScript the page shows a message pointing here.
+
+**Accessibility.** Passes automated axe-core checks with 0 violations on every tab, at 1280 and 375 px wide, in light and dark mode. Playwright also checks keyboard-only use, 320px and 375px widths, 200% zoom, 24px targets and error states. A manual screen-reader check has not been run.
+
+**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep could not be run in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).
+
+## Use it in your own repo
+
+[`examples/accessibility-bug.yml`](examples/accessibility-bug.yml) is a GitHub issue form that asks for the checker's seven details, with expected and actual behavior as two fields. Fields are required where the checker requires them; screen-reader settings are optional. To use it, copy the file to `.github/ISSUE_TEMPLATE/accessibility-bug.yml` in your repository:
+
+```bash
+mkdir -p .github/ISSUE_TEMPLATE
+curl -fsSL -o .github/ISSUE_TEMPLATE/accessibility-bug.yml \
+  https://raw.githubusercontent.com/anirudh763/talkback-triage-pilot/main/examples/accessibility-bug.yml
+```
+
+A test (`test/issue-form.test.js`) checks that the file parses, that its field ids map onto the checker's keys, and that an issue filled in with the form's example answers is read by the checker as having all seven details. It has not been tried on a real repository's issues yet.
+
+<details>
+<summary>The whole form</summary>
+
+```yaml
+# A GitHub issue form for Android accessibility bug reports.
+# Copy this file to .github/ISSUE_TEMPLATE/accessibility-bug.yml in your own repository.
+# Its fields are the seven details the TalkBack Triage Pilot report checker looks for:
+# https://github.com/anirudh763/talkback-triage-pilot#report-checker
+# (Expected and actual behavior are two fields here; the checker counts them as one detail.)
+name: Accessibility bug
+description: Something doesn't work with TalkBack, another screen reader, or an accessibility setting.
+title: "[Accessibility]: "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. A developer who doesn't use a screen reader needs to repeat what you did, so please say which gestures you used and what was announced.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Number each action, from opening the app to seeing the problem.
+      placeholder: |
+        1. Open the app and go to the Post list screen
+        2. Swipe right until the three-dot menu button is focused
+        3. Double-tap the menu button
+    validations:
+      required: true
+  - type: textarea
+    id: srSteps
+    attributes:
+      label: TalkBack or screen-reader steps
+      description: Which screen reader you used, when it was turned on, and the gestures (swipe right, double-tap, explore by touch).
+      placeholder: |
+        1. Turn on TalkBack
+        2. Swipe right to move focus to the three-dot menu button
+        3. Double-tap to open the menu
+    validations:
+      required: true
+  - type: input
+    id: appVersion
+    attributes:
+      label: App version
+      description: From the app's Settings > About screen.
+      placeholder: "24.8"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      description: The phone or tablet model and its Android version.
+      placeholder: Pixel 8, Android 14
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen.
+      placeholder: TalkBack announces "More options, button" and the menu opens.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happens now. Quote what the screen reader announces.
+      placeholder: TalkBack announces "Unlabeled button" and nothing happens on double-tap.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Screen or element
+      description: The screen and the control, e.g. Post list > three-dot menu button.
+      placeholder: Post list screen > three-dot menu button
+    validations:
+      required: true
+  - type: textarea
+    id: srSettings
+    attributes:
+      label: Screen-reader settings (if relevant)
+      description: The TalkBack version and any non-default settings, such as speech rate, verbosity or font size, if they could matter.
+      placeholder: TalkBack 15.0, speech rate 150%, verbosity high
+    validations:
+      required: false
+```
+
+</details>
+
+## The study
+
+**Do TalkBack reproduction steps and the app version in an Android accessibility bug report change how an AI triages it?**
+
+A small, open pilot study and the web app that runs it. It uses 75 real accessibility issues from two open-source Android apps. Each report is triaged by an AI twice: once as filed, and once with its TalkBack steps or version details taken out. The two answers are then compared. People can label the same reports, so the AI's answers can be checked against human judgement.
+
+**Status: exploratory.** One AI run, no human labels yet. Read the results as "the AI's answer depends on these lines". Whether its answers are *right* still needs labels from people. See [Limitations](#limitations).
+
+![Results of the clean run in the app](assets/pilot-results.png)
 
 ## Why this matters
 
@@ -41,7 +182,7 @@ Accessibility reports are often hard to act on. A developer who doesn't use Talk
 - **RQ2.** How well do the AI's answers agree with people's answers on the same report and version?
 - **RQ3.** Does the AI do better than a simple checklist rule ("enough to start reproducing when the report has steps")?
 
-The saved run addresses RQ1. RQ2 and RQ3 need human labels, and the app and scripts are ready for them.
+The saved run addresses RQ1. RQ2 and RQ3 need human labels. The labelling tab and `scripts/agreement.js` exist and pass automated tests, but no human labeller has used them yet, so the workflow is untested with people.
 
 ## What is in this repository
 
@@ -55,17 +196,20 @@ The saved run addresses RQ1. RQ2 and RQ3 need human labels, and the app and scri
 | `results/pair_review.md` | Every line each shortened copy removes, for hand-checking. |
 | `results/*.csv` | The runs as spreadsheets. |
 | `labels/` | Where human label files go. See [LABELING.md](LABELING.md). |
-| `scripts/` | Command-line tools (below). Node.js 18 or later, no dependencies. |
+| `scripts/` | Command-line tools (below). Node.js 18 or later, no dependencies. `scripts/icons.js` needs Playwright. |
 | `test/core.test.js` | Checks the answer parser and the statistics against hand-worked values. No dependencies. |
 | `test/e2e.js` | Browser test of the built app with a fake AI, including failed and refused AI replies. Uses Playwright. |
 | `src/checker.js` | The report checker's rules and the rewritten-report template. No user interface, no network. |
 | `src/ui.css`, `src/app.css` | Shared base styles and the app's own styles, inlined into `docs/index.html` by `scripts/build.js`. |
 | `test/checker.test.js`, `test/checker.e2e.js`, `test/workflow.test.js` | Checker unit tests; browser test of the checker with the axe-core, keyboard, 320/375px and 200% zoom checks; CI workflow guards. |
+| `examples/accessibility-bug.yml` | A GitHub issue form with the checker's seven details, to copy into another repository. |
+| `src/sw.js`, `src/manifest.webmanifest`, `src/icon.svg` | Offline and install support: the service worker (built to `docs/sw.js` with the version), the web app manifest and the icon. `scripts/icons.js` renders the PNG icons from the SVG. |
+| `test/offline.e2e.js`, `test/noscript.e2e.js`, `test/issue-form.test.js`, `test/version.test.js` | Offline reload, the no-JavaScript message, the issue form, and the version matching `CHANGELOG.md`. |
 | `assets/`, `docs/screenshots/` | Screenshots for this README. |
 
 ## Quick start
 
-**Just look at it:** open the [live app](https://anirudh763.github.io/talkback-triage-pilot/), or open `docs/index.html` in a browser. The report checker, the saved results and labelling all work offline. Asking the AI live only works when the page runs inside the Claude app (see [AI triage](#4-ai-triage)).
+**Just look at it:** open the [live app](https://anirudh763.github.io/talkback-triage-pilot/), or open `docs/index.html` in a browser. The report checker, the saved results and labelling need no server; on the live site they keep working offline after the first visit. Asking the AI live only works when the page runs inside the Claude app (see [AI triage](#4-ai-triage)).
 
 **Run the checks and rebuild** (needs [Node.js](https://nodejs.org) 18+):
 
@@ -212,34 +356,6 @@ The next step is human labels from at least two people working independently. [L
 
 - **Citing:** see [CITATION.cff](CITATION.cff); GitHub's "Cite this repository" button uses it.
 - **Licence:** the code is under the [MIT licence](LICENSE). The Atkinson Hyperlegible font files in `src/` and `docs/` are by the Braille Institute, under the SIL Open Font License 1.1 ([`src/atkinson-hyperlegible-OFL.txt`](src/atkinson-hyperlegible-OFL.txt)). The issue text in `data/` belongs to its original GitHub authors and is included, shortened, for research with a link to each issue. See [DATA.md](DATA.md).
-- **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+- **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md). To report a security problem, see [SECURITY.md](SECURITY.md).
 - **Author:** Anirudh Yadav Boosa, University of North Texas. Questions and suggestions are welcome as [GitHub issues](https://github.com/anirudh763/talkback-triage-pilot/issues).
 - **AI use:** the triage in the saved runs was done by Claude (Anthropic), as described above. The code and documentation were written with AI assistance.
-
-## Report checker
-
-![The report checker on WordPress-Android #21127: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
-
-The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
-
-Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in text and with an icon. Below the list, a rewritten report marks what to add as `[ADD: ...]` and copies the Expected and Actual sections under their own headings.
-
-| Detail | What counts |
-|---|---|
-| Steps to reproduce | A numbered or bulleted list, or a "Steps" section with text in it |
-| TalkBack or screen-reader steps | The steps say when TalkBack or another screen reader is on. Optional when no screen reader is mentioned; not needed for font-size, contrast and similar reports |
-| App version | `App version: 3.1.0`, `App version: 42`, `JPAndroid 24.8`. A TalkBack, Android or other component version never counts |
-| Device and Android version | `Pixel 8`, `Nexus 6P`, `Android 14`, `API 34`; one of the two is "Incomplete" |
-| Expected vs. actual behavior | Both described; a quoted announcement counts as "actual" |
-| Screen or element | `the Post list screen`, `Go to "My Site"`, `Settings > Accessibility` |
-| Screen-reader settings (optional) | `TalkBack 15.0`, speech rate, verbosity, font size |
-
-Empty template sections, HTML comments and unfilled placeholders such as `_No response_`, `[device]`, `[e.g. Pixel 8]`, `N/A` or GitHub's default "A clear and concise description of…" prompt don't count as content. Steps written on the label's own line (`Steps to reproduce: Open the app, swipe right twice, …`) count. The checker reads at most the first 64,000 characters of a report and says so when it cuts one.
-
-**What it is not.** It finds missing sections only. A report with every section is not necessarily reproducible or ready to act on: [AntennaPod #6598](https://github.com/AntennaPod/AntennaPod/issues/6598) had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed. No interviews or user studies have been done with people who file or triage reports, so the checker has no user validation. It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
-
-**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
-
-**Accessibility.** Passes automated axe-core checks with 0 violations on every tab in light and dark mode. Playwright also checks keyboard-only use, 320px and 375px widths, 200% zoom, 24px targets and error states. A manual screen-reader check has not been run.
-
-**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep could not be run in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).

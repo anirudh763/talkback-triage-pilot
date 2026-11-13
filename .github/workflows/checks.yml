@@ -19,13 +19,16 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
+      - name: Install dev dependencies
+        run: npm ci
       - name: Answer parser and statistics
         run: node test/core.test.js
-      - name: Report checker and workflow guards
+      - name: Report checker, issue form and workflow guards
         run: |
           node test/checker.test.js
           node test/workflow.test.js
           node test/copy.test.js
+          node test/issue-form.test.js
       - name: Checklist and clean-copy check
         run: node scripts/check.js --quiet
       - name: Rebuild generated files
@@ -33,11 +36,12 @@ jobs:
           node scripts/pair-review.js
           node scripts/build.js
       - name: Generated files are up to date
-        run: git diff --exit-code -- data/issues.json results/pair_review.md docs/index.html
+        run: git diff --exit-code -- data/issues.json results/pair_review.md docs/
+      - name: Version matches the changelog
+        run: node test/version.test.js
       - name: Analysis runs
         run: node scripts/analyze.js
-      - name: Browser tests (study flows, report checker, axe-core, 320px)
+      - name: Browser tests (study flows, report checker, axe-core, 320px, offline, no JavaScript)
         run: |
-          npm ci
           npx playwright install --with-deps chromium
           npm run test:e2e

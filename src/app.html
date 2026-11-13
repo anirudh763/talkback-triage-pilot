@@ -17,6 +17,7 @@
 </header>
 
 <main class="wrap" id="main" tabindex="-1">
+<noscript><div class="noscript"><p><strong>This page needs JavaScript.</strong> The report checker and the study results run as scripts in your browser; nothing is sent anywhere. Turn JavaScript on and reload, or read how the checker works and the study's results in the <a href="https://github.com/anirudh763/talkback-triage-pilot#readme">README on GitHub</a>.</p></div></noscript>
 
 <!-- ============ CHECK ============ -->
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
@@ -103,7 +104,7 @@
     <p class="small muted">Exploratory: one AI run, no human labels yet. Shortened copies pass an automated check, which has known gaps (see How the study works).</p>
   </div>
 
-  <div class="tablewrap" id="coverage"></div>
+  <div class="tablewrap" id="coverage" tabindex="0" role="region" aria-label="How often each detail appears in the filed reports"></div>
 
   <p class="notice" id="run-off">This page shows the saved run. Running the pilot needs the Claude app; to rerun it with your own API key, see <code>scripts/run-triage.mjs</code> in the project's README.</p>
   <div class="card pad stack" id="run-card" aria-labelledby="run-h" hidden>
@@ -219,6 +220,13 @@
   <p class="small muted">Source code, data and method: <a href="https://github.com/anirudh763/talkback-triage-pilot">github.com/anirudh763/talkback-triage-pilot</a>. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
 </footer>
 
+<script>
+// Offline support for the standalone page (GitHub Pages or a local server): a service worker next to this file,
+// scoped to this folder. Not registered inside the Claude app (the page then runs in a frame) or from file://.
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && window.top === window.self && !window.claude) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function () {}); });
+}
+</script>
 <script>/*CORE*/</script>
 <script type="application/json" id="dataset">/*DATA*/</script>
 <script type="application/json" id="archive">/*ARCHIVE*/</script>
@@ -836,11 +844,11 @@
       h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Results"), h("label", { class: "row small", for: "run-pick" }, "Run", picker)),
       h("p", { class: "small muted", id: "run-progress" }, prog.answered + " of " + (run.meta.total || "?") + " calls answered" + (prog.errors ? " · " + prog.errors + " failed (unreadable or refused; Finish this run retries them)" : "") + " · " + (run.meta.tier === "quick" ? "Quick" : "Default") + " model · " + (run.meta.scope === "all" ? "all reports" : "reports with steps or version")),
       finding,
-      h("div", { class: "tablewrap" }, mt),
+      h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "What Claude said, by condition" }, mt),
       Object.keys(S.paired).length ? h("div", { class: "card pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
       human,
       detailId ? detailPanel(BY_ID[detailId], run, conds) : null,
-      h("div", { class: "tablewrap" }, rt),
+      h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "Every report in this run" }, rt),
       exportRow].filter(Boolean));
   }
 
@@ -1003,7 +1011,7 @@
     const nameOf = (x) => x.imported ? x.name : x.mine ? (x.name || "You") : ((names[x.key] && names[x.key].name) || "Another rater");
     $("#lab-who").textContent = "Label without looking at Claude's answers; this tab never shows them.";
     const rows = list.map((x) => h("tr", null, h("th", { scope: "row" }, nameOf(x)), h("td", { class: "num" }, String(Object.keys(x.labels).length))));
-    const parts = [h("div", { class: "tablewrap" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Rater"), h("th", { scope: "col", class: "num" }, "Labels"))), h("tbody", null, rows)))];
+    const parts = [h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "Raters and their label counts" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Rater"), h("th", { scope: "col", class: "num" }, "Labels"))), h("tbody", null, rows)))];
     const withLabels = list.filter((x) => Object.keys(x.labels).length);
     if (withLabels.length >= 2) {
       const [a, b] = withLabels;
@@ -1058,7 +1066,7 @@
       }
       return h("tr", null, h("th", { scope: "row" }, T.CONDITIONS[c].label), cellK(T.cohenKappa(pE)), cellK(T.cohenKappa(pR)), cellK(T.cohenKappa(pB)));
     });
-    return h("div", { class: "tablewrap" }, h("table", null,
+    return h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "Agreement with people's labels of the same version" }, h("table", null,
       h("caption", null, "Agreement with people's labels of the same version"),
       h("thead", null, h("tr", null, h("th", { scope: "col" }, "Version"), h("th", { scope: "col" }, "Claude: enough to start reproducing"), h("th", { scope: "col" }, "Checklist rule: enough to start reproducing"), h("th", { scope: "col" }, "Claude: blocks the task"))),
       h("tbody", null, rows)));
