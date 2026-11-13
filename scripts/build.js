@@ -12,7 +12,7 @@ const style = (css) => css.replace(/<\/style/gi, "<\\/style");
 const core = src("core.js");
 const checker = src("checker.js");
 const tpl = src("app.html");
-const FONTS = ["atkinson-hyperlegible-latin-400-normal.woff2", "atkinson-hyperlegible-latin-700-normal.woff2"];
+const FONTS = ["atkinson-hyperlegible-latin-400-normal.woff2", "atkinson-hyperlegible-latin-700-normal.woff2", "atkinson-hyperlegible-OFL.txt"];
 const reports = loadReports();
 
 // Only runs made with the fixed removal rules (method 2) are shown in the app.

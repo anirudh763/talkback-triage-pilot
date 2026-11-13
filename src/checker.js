@@ -14,22 +14,24 @@
   const HEADING = /^\s*(#{1,6}\s+\S|\*\*[^*]+\*\*:?\s*$)/;
 
   const APP_VERSION = [
-    /^\s*(?:#{1,6}\s*)?\**app version:?\**:?[ \t]*\n*[ \t]*(v?\d+(?:\.\d+)+[a-z]?(?:-[\w.]+)?(?:[ \t]*\([0-9a-f]{6,}\))?)/im,
+    /^[ \t]*(?:#{1,6}[ \t]*)?\**app version:?\**:?[ \t]*(?:\n[ \t]*)*(v?\d+(?:\.\d+)*[a-z]?(?:-[\w.]+)?(?:[ \t]*\([0-9a-f]{6,}\))?)(?![\w.])/im,
     /\b((?:WPAndroid|JPAndroid|AntennaPod)(?:\s*\/\s*\w+)?(?:\s+version)?\s+v?\d+\.\d+[\w.-]*(?:\s*\(beta\))?)/i,
     /\b(JPAndroid\s+pr\d+-[0-9a-f]{6,})/i,
     /\b(develop\s*\([0-9a-f]{7,}\))/i,
     /\b(version\s+alpha-\d+)/i,
-    /(?<!android\s)(?<!android os\s)\b((?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*v?\d+(?:\.\d+)+[\w.-]*)/i,
+    /\b((?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*v?\d+(?:\.\d+)+[\w.-]*)/i,
     /(?<![\w.])(v\d+\.\d+(?:\.\d+)?)\b/,
   ];
+  // A version right after one of these names belongs to the screen reader, the OS or another component, not the app.
+  const NOT_APP = /(?:talk ?back|screen ?reader|voice ?assistant|accessibility suite|braille ?back|android(?: os)?|\bos|sdk|api(?: level)?|one ?ui|miui|hyperos|color ?os|oxygen ?os|ios|chrome|webview|kernel|firmware|gradle|kotlin|java)\W*(?:app\W*)?$/i;
   const ANDROID = [
-    /^\s*#{1,6}\s*android version\s*\n+\s*((?:android\s*)?\d+(?:\.\d)?)/im,
+    /^[ \t]*#{1,6}[ \t]*android version[ \t]*\n+[ \t]*((?:android[ \t]*)?\d+(?:\.\d)?)/im,
     /\b(android\s*(?:os\s*)?(?:version\s*)?[:#*\s]*\d{1,2}(?:\.\d)?)\b/i,
     /\b((?:SDK|API)\s*(?:level\s*)?\d{2})\b/,
   ];
   const DEVICE = [
-    /^\s*#{1,6}\s*device(?: model)?\s*\n+\s*([^\n]{2,40})/im,
-    /^\s*\**device(?: model)?:?\**:?[ \t]*([^\n]{2,40})/im,
+    /^[ \t]*#{1,6}[ \t]*device(?: model)?[ \t]*\n+[ \t]*(?![#*])([^\n]{2,40})/im,
+    /^[ \t]*\**device(?: model)?:?\**:?[ \t]*(?![#\s])([^\n]{2,40})/im,
     /\b((?:google\s+)?pixel(?:\s+\d+\w*)?(?:\s+(?:pro|xl|a|fold))?|samsung(?:\s+galaxy)?(?:\s+[\w+]+){0,2}|galaxy\s+[\w+]+(?:\s+\d+)?|nokia\s*[\d.]+|(?:oneplus|xiaomi|redmi|poco|motorola|huawei|oppo|realme|xperia)\b(?:\s+(?:nord\s+|mi\s+|mate\s+)?[a-z]*\d+\w*(?:\s+(?:pro|plus|ultra|lite|max|mini|compact|5g)\b)*)?|moto\s?[a-z]\d*\b|nexus(?:\s*\d+\w*)?|honor\s+\d+\w*|lg g\d|emulator|simulator)\b/i,
   ];
   const EXPECTED = /\bexpected\b|\bshould\b/i;
@@ -71,6 +73,53 @@
   const androidLabel = (v) => (v && /^\d/.test(v) ? "Android " + v : v);
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
+  // The report as the rules should read it: HTML comments, unfilled template placeholders ("_No response_",
+  // "[device]") and headings with nothing under them are removed, so an empty template section counts as absent.
+  const PLACEHOLDER = /_No response_|\[(?:device(?: model)?|version|app version|android version|os version|model|steps?|screen|screenshot|link)\]/gi;
+  const IS_HEAD = (x) => /^\s*#{1,6}\s/.test(x) || /^\s*\*\*[^*\n]+\*\*\s*:?\s*$/.test(x);
+  function clean(body) {
+    let out = body.replace(/<!--[\s\S]*?(?:-->|$)/g, "").replace(PLACEHOLDER, "");
+    // repeat until nothing changes: removing an empty subsection can leave its parent heading empty
+    for (let prev = null; prev !== out; ) { prev = out; out = dropEmptyHeadings(out); }
+    return out.replace(/\n{3,}/g, "\n\n");
+  }
+  function dropEmptyHeadings(text) {
+    const L = text.split("\n");
+    const keep = [];
+    for (let i = 0; i < L.length; i++) {
+      // a heading that carries its own values ("##### Tested on Pixel 7, Android 14") is content, not a label
+      const label = L[i].replace(/[#*:]/g, " ").trim();
+      if (IS_HEAD(L[i]) && !/\d/.test(label) && label.split(/\s+/).length <= 6) {
+        let j = i + 1;
+        while (j < L.length && !IS_HEAD(L[j]) && !/[\w\d]/.test(L[j])) j++;
+        // a heading followed only by blank or punctuation-only lines, then another heading or the end, is empty
+        if (j >= L.length || IS_HEAD(L[j])) { const lvl = (L[i].match(/^\s*(#{1,6})\s/) || [])[1]; const nextLvl = j < L.length ? (L[j].match(/^\s*(#{1,6})\s/) || [])[1] : null;
+          // keep a parent heading whose subsections follow ("## Environment" then "### Device")
+          if (!(lvl && nextLvl && nextLvl.length > lvl.length)) continue; }
+      }
+      keep.push(L[i]);
+    }
+    return keep.join("\n");
+  }
+  // a device value names something: not only punctuation, a field label ("model:") or a placeholder ("[device]")
+  const isDeviceValue = (v) => {
+    const t = v.replace(/[*_#:`\[\]()<>.,;-]+/g, " ").trim();
+    return /[a-z0-9]/i.test(t) && !/^(?:device|model|device model|phone|name|no response|n\/?a|none|unknown)$/i.test(t);
+  };
+  function appVersion(body) {
+    for (const r of APP_VERSION) {
+      for (const m of body.matchAll(new RegExp(r.source, r.flags.replace("g", "") + "g"))) {
+        const v = (m[1] || m[0]).trim();
+        // what comes before the version on the same line: "TalkBack app version: 15.1" belongs to TalkBack,
+        // even with the words "app version"; "WordPress app version 24.3" and "App version: 42" are the app's
+        const start = m.index + m[0].indexOf(m[1] || m[0]);
+        const before = body.slice(Math.max(0, body.lastIndexOf("\n", start - 1) + 1, start - 40), start);
+        if (!NOT_APP.test(before.replace(/\b(?:app\s+)?(?:version|ver\.?|build)\s*[:#]?\s*$/i, "").trim())) return v;
+      }
+    }
+    return null;
+  }
+
   // The lines of a report under a heading that matches `re`, up to the next heading.
   // Headings: "### Expected behavior", "**Expected behavior:**", "**Expected:** text on the same line".
   function section(body, re) {
@@ -105,7 +154,8 @@
 
   function analyze(report) {
     const title = String((report && report.title) || "");
-    const body = String((report && report.body) || "");
+    const raw = String((report && report.body) || "");
+    const body = clean(raw);   // what the rules read; the rewrite keeps the original text verbatim
     const all = title + "\n" + body;
     const c = T.check({ title, body, labels: [] });
     const items = [];
@@ -134,12 +184,12 @@
     }
 
     // 3. app version
-    const appV = first(APP_VERSION, body);
+    const appV = appVersion(body);
     add("appVersion", "App version", c.appVersion || appV ? "present" : "notfound", appV || (c.appVersion ? "found" : null),
       "Copy it from the app's Settings > About screen, e.g. 24.8 or 3.1.0.");
 
     // 4. device and Android version
-    const andV = androidLabel(first(ANDROID, body)), dev = first(DEVICE, body);
+    const andV = androidLabel(first(ANDROID, body)), dev = firstOfAll(DEVICE, body, isDeviceValue);
     add("device", "Device and Android version", andV && dev ? "present" : andV || dev ? "partial" : "notfound",
       [dev, andV].filter(Boolean).join(", ") || null,
       andV && !dev ? "Add the device model, e.g. Pixel 8." : dev && !andV ? "Add the Android version, e.g. Android 14." : "Add the device model and Android version, e.g. Pixel 8, Android 14.");
@@ -172,7 +222,7 @@
       partial: req.filter((x) => x.status === "partial").length,
       notFound: req.filter((x) => x.status === "notfound").length,
     };
-    const tpl = template({ title, body, items, stepLines, appV, andV, dev, srName });
+    const tpl = template({ title, body, raw, items, stepLines, appV, andV, dev, srName });
     return { items, summary, template: tpl, text: tpl.map((s) => s.text).join("") };
   }
 
@@ -220,7 +270,7 @@
     t("\n\n### Actual behavior\n");
     if (actText) t(actText); else if (ea === "present" || ea === "partial" && by.expectedActual.found === "actual only") t("(described in the original report below)"); else miss("what happens instead, quoting what TalkBack announces");
 
-    if (x.body.trim()) t("\n\n### Original report\n" + x.body.trim().split("\n").map((l) => (l.trim() ? "> " + l : ">")).join("\n") + "\n");
+    if (x.raw.trim()) t("\n\n### Original report\n" + x.raw.trim().split("\n").map((l) => (l.trim() ? "> " + l : ">")).join("\n") + "\n");
     else t("\n");
     return segs;
   }

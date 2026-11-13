@@ -99,6 +99,43 @@ for (const id of ["WP-20770", "WP-20363", "WP-18698", "AP-6692", "AP-6598"]) ass
 // The screen-name rule doesn't take the screen reader or the app for a screen.
 assert.strictEqual(status(C.analyze({ title: "x", body: "Open TalkBack and go to WordPress." }), "where"), "notfound");
 
+// Empty template sections, HTML comments and placeholders are not content (review 2, item 1).
+const emptyEA = C.analyze({ title: "x", body: "### Expected behavior\n\n### Actual behavior\n" });
+assert.strictEqual(status(emptyEA, "expectedActual"), "notfound", "empty Expected/Actual headings are not a description");
+const emptyDev = C.analyze({ title: "x", body: "### Device model\n\n### Android version\nAndroid 14" });
+assert.strictEqual(status(emptyDev, "device"), "partial", "an empty Device section must not capture the next heading");
+assert.strictEqual(found(emptyDev, "device"), "Android 14");
+const form = C.analyze({ title: "x", body: [
+  "### App version", "", "_No response_", "", "### Device model", "<!-- e.g. Pixel 8 -->", "", "### Android version", "", "### Steps to reproduce", "<!-- 1. ... -->", "",
+  "### Expected behavior", "<!-- what should happen -->", "### Actual behavior", "", "##### Tested on [device], Android [version]"].join("\n") });
+for (const k of ["appVersion", "device", "steps", "expectedActual"]) assert.strictEqual(status(form, k), "notfound", "unfilled issue form: " + k);
+assert.ok(form.text.includes("### Expected behavior\n[ADD:"), "an empty Expected section is not copied as content");
+const filled = C.analyze({ title: "x", body: "### Expected behavior\nIt reads \"Play\".\n\n### Actual behavior\n<!-- comment -->\nIt reads \"Button\"." });
+assert.strictEqual(status(filled, "expectedActual"), "present");
+
+// The app version is never the screen reader's or the OS's version; explicit integer releases count (review 2, item 2).
+const srv = C.analyze({ title: "x", body: "TalkBack version 15.1\nAndroid 14\nDevice: Pixel 8" });
+assert.strictEqual(status(srv, "appVersion"), "notfound", "TalkBack version is not the app version: " + found(srv, "appVersion"));
+for (const b of ["TalkBack v15.1", "Android Accessibility Suite version 14.2", "One UI version 6.1", "Chrome version 120.0.6099", "Android OS version 13.1", "Screen reader version 2.3"])
+  assert.strictEqual(status(C.analyze({ title: "x", body: b }), "appVersion"), "notfound", b);
+assert.strictEqual(found(C.analyze({ title: "x", body: "App version: 42" }), "appVersion"), "42");
+assert.strictEqual(found(C.analyze({ title: "x", body: "### App version\n\n1024" }), "appVersion"), "1024");
+assert.strictEqual(found(C.analyze({ title: "x", body: "**App version**: 7" }), "appVersion"), "7");
+assert.strictEqual(found(C.analyze({ title: "x", body: "TalkBack 15.1, app version 3.2.0" }), "appVersion"), "app version 3.2.0");
+
+// A bare field label or placeholder is not a device; a version named for a component is never the app's (review 3).
+for (const b of ["Device model:", "Device: [device]", "Device:", "**Device:** _No response_"]) {
+  const a = C.analyze({ title: "x", body: b });
+  assert.strictEqual(status(a, "device"), "notfound", JSON.stringify(b) + " -> " + JSON.stringify(found(a, "device")));
+}
+for (const b of ["TalkBack app version: 15.1", "Android Accessibility Suite app version: 15.1", "Chrome app version 120.0.6099"]) {
+  const a = C.analyze({ title: "x", body: b });
+  assert.strictEqual(status(a, "appVersion"), "notfound", JSON.stringify(b) + " -> " + JSON.stringify(found(a, "appVersion")));
+}
+assert.strictEqual(status(C.analyze({ title: "x", body: "App version: 42" }), "appVersion"), "present");
+assert.strictEqual(status(C.analyze({ title: "x", body: "WordPress app version 24.3" }), "appVersion"), "present");
+assert.strictEqual(found(C.analyze({ title: "x", body: "Device: Pixel 8" }), "device"), "Pixel 8");
+
 // pasted HTML is plain text in the result: it is carried through unchanged, never interpreted
 const html = C.analyze({ title: "<img src=x onerror=alert(1)>", body: "<script>alert(1)</script>" });
 assert.ok(html.text.includes("<img src=x onerror=alert(1)>") && html.text.includes("> <script>alert(1)</script>"));

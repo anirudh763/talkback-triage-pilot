@@ -6,7 +6,7 @@ This repository is a small, open pilot study and the web app that runs it. It us
 
 **Status: exploratory.** One AI run, no human labels yet. Read the results as "the AI's answer depends on these lines". Whether its answers are *right* still needs labels from people. See [Limitations](#limitations).
 
-**Live app:** https://anirudh763.github.io/talkback-triage-pilot/
+**Live app:** https://anirudh763.github.io/talkback-triage-pilot/ opens on a **report checker**: paste an Android accessibility bug report and see which details a developer needs were not found. It is a heuristic check (rules, not AI) and runs in your browser. See [Report checker](#report-checker).
 
 ![Results of the clean run in the app](assets/pilot-results.png)
 
@@ -24,6 +24,7 @@ This repository is a small, open pilot study and the web app that runs it. It us
 - [Limitations](#limitations)
 - [Related work](#related-work)
 - [Citing, licence and credits](#citing-licence-and-credits)
+- [Report checker](#report-checker)
 
 ## Why this matters
 
@@ -56,12 +57,15 @@ The saved run addresses RQ1. RQ2 and RQ3 need human labels, and the app and scri
 | `labels/` | Where human label files go. See [LABELING.md](LABELING.md). |
 | `scripts/` | Command-line tools (below). Node.js 18 or later, no dependencies. |
 | `test/core.test.js` | Checks the answer parser and the statistics against hand-worked values. No dependencies. |
-| `test/e2e.js` | Browser test of the built app with a fake AI. Uses Playwright. |
-| `assets/` | Screenshots for this README. |
+| `test/e2e.js` | Browser test of the built app with a fake AI, including failed and refused AI replies. Uses Playwright. |
+| `src/checker.js` | The report checker's rules and the rewritten-report template. No user interface, no network. |
+| `src/ui.css`, `src/app.css` | Shared base styles and the app's own styles, inlined into `docs/index.html` by `scripts/build.js`. |
+| `test/checker.test.js`, `test/checker.e2e.js`, `test/workflow.test.js` | Checker unit tests; browser test of the checker with the axe-core, keyboard, 320/375px and 200% zoom checks; CI workflow guards. |
+| `assets/`, `docs/screenshots/` | Screenshots for this README. |
 
 ## Quick start
 
-**Just look at it:** open the [live app](https://anirudh763.github.io/talkback-triage-pilot/), or open `docs/index.html` in a browser. The checklist, the saved results and labelling all work offline. Asking the AI live only works when the page runs inside the Claude app (see [AI triage](#4-ai-triage)).
+**Just look at it:** open the [live app](https://anirudh763.github.io/talkback-triage-pilot/), or open `docs/index.html` in a browser. The report checker, the saved results and labelling all work offline. Asking the AI live only works when the page runs inside the Claude app (see [AI triage](#4-ai-triage)).
 
 **Run the checks and rebuild** (needs [Node.js](https://nodejs.org) 18+):
 
@@ -133,7 +137,7 @@ For each report that has the details, the pilot makes shortened copies:
 - **App version & device removed.** Drops the app version, Android version, device and where the app came from. It keeps "first occurred" notes.
 - **Both removed.**
 
-Nothing marks where text was cut. A copy is used only if the checklist confirms that the target detail is gone and **every other detail it measures is unchanged** (`pairCheck()`). All 134 copies pass this check. Every removed line is listed in [`results/pair_review.md`](results/pair_review.md), and the app shows each removal struck through.
+Nothing marks where text was cut. A copy is used only if the checklist confirms that the target detail is gone and **every other detail it measures is unchanged** (`pairCheck()`). All 134 copies pass this check. The check is automated: it confirms that the other measured details are still there, not that a copy differs from the original only in the removed detail. Two known cases: WordPress-Android #21127's copy without steps keeps a sentence that describes how to reproduce the bug, and AntennaPod #8145's copy drops a step that reports what happened ("Screens auto advance without a next/previous"). Every removed line is listed in [`results/pair_review.md`](results/pair_review.md), and the app shows each removal struck through.
 
 ![A report with its four versions and the AI's answer to each](assets/report-detail.png)
 
@@ -191,6 +195,7 @@ The next step is human labels from at least two people working independently. [L
 - **Small, uneven sample.** 75 issues from two apps. Many WordPress issues were written by the app's own team as audits, not by end users. Report the apps separately.
 - **Run-to-run variation.** AI answers vary between runs, and the saved run is a single run on an unpinned model setting. Repeat runs, and use a named model through `run-triage.mjs` for anything you publish.
 - **Rule-based checklist.** The checklist is pattern matching and can miss or over-match. `pair_review.md` lets you check every removal.
+- **Automated clean-copy check.** "Clean" means no other measured detail was lost, as judged by the same rules. It is not a check of meaning; see WordPress-Android #21127 and AntennaPod #8145 above.
 - **No developer outcome yet.** Nothing here shows that the tool improves triage or helps developers reproduce bugs.
 - **GitHub outcomes are context only.** Whether an issue was closed, not planned or left open depends on many things.
 
@@ -204,7 +209,35 @@ The next step is human labels from at least two people working independently. [L
 ## Citing, licence and credits
 
 - **Citing:** see [CITATION.cff](CITATION.cff); GitHub's "Cite this repository" button uses it.
-- **Licence:** the code is under the [MIT licence](LICENSE). The issue text in `data/` belongs to its original GitHub authors and is included, shortened, for research with a link to each issue. See [DATA.md](DATA.md).
+- **Licence:** the code is under the [MIT licence](LICENSE). The Atkinson Hyperlegible font files in `src/` and `docs/` are by the Braille Institute, under the SIL Open Font License 1.1 ([`src/atkinson-hyperlegible-OFL.txt`](src/atkinson-hyperlegible-OFL.txt)). The issue text in `data/` belongs to its original GitHub authors and is included, shortened, for research with a link to each issue. See [DATA.md](DATA.md).
 - **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 - **Author:** Anirudh Yadav Boosa, University of North Texas. Questions and suggestions are welcome as [GitHub issues](https://github.com/anirudh763/talkback-triage-pilot/issues).
 - **AI use:** the triage in the saved runs was done by Claude (Anthropic), as described above. The code and documentation were written with AI assistance.
+
+## Report checker
+
+![The report checker on WordPress-Android #21127: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
+
+The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for the details a developer needs to reproduce it. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
+
+Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in text and with an icon. Below the list, a rewritten report marks what to add as `[ADD: ...]` and copies the Expected and Actual sections under their own headings.
+
+| Detail | What counts |
+|---|---|
+| Steps to reproduce | A numbered or bulleted list, or a "Steps" section with text in it |
+| TalkBack or screen-reader steps | The steps say when TalkBack or another screen reader is on. Optional when no screen reader is mentioned; not needed for font-size, contrast and similar reports |
+| App version | `App version: 3.1.0`, `App version: 42`, `JPAndroid 24.8`. A TalkBack, Android or other component version never counts |
+| Device and Android version | `Pixel 8`, `Nexus 6P`, `Android 14`, `API 34`; one of the two is "Incomplete" |
+| Expected vs. actual behavior | Both described; a quoted announcement counts as "actual" |
+| Screen or element | `the Post list screen`, `Go to "My Site"`, `Settings > Accessibility` |
+| Screen-reader settings (optional) | `TalkBack 15.0`, speech rate, verbosity, font size |
+
+Empty template sections, HTML comments and unfilled placeholders such as `_No response_` or `[device]` don't count as content.
+
+**What it is not.** It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
+
+**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
+
+**Accessibility.** Passes automated axe-core checks with 0 violations on every tab in light and dark mode. Playwright also checks keyboard-only use, 320px and 375px widths, 200% zoom, 24px targets and error states. A manual screen-reader check has not been run.
+
+**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep could not be run in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).

@@ -335,8 +335,20 @@
     const po = agree / n;
     let pe = 0;
     for (const c of cats) pe += ((pa[c] || 0) / n) * ((pb[c] || 0) / n);
-    const k = pe === 1 ? 1 : (po - pe) / (1 - pe);
-    return { n, po, k };
+    // When both raters put every item in the same single category, chance agreement is 1 and kappa is 0/0:
+    // undefined, not perfect agreement. Report the observed agreement and say why kappa is missing.
+    if (pe >= 1 - 1e-12) return { n, po, k: null, reason: "all labels in one category, so chance agreement is 1 and kappa is undefined" };
+    return { n, po, k: (po - pe) / (1 - pe) };
+  }
+  const formatKappa = (r) => (!r ? "–" : r.k == null ? "undefined (all labels in one category)" : r.k.toFixed(2));
+
+  // How far a run got: calls answered, calls that came back unreadable or refused, and calls still to do.
+  // items: {reportId: {condition: answer | {error}}}
+  function runProgress(items, total) {
+    let answered = 0, errors = 0;
+    for (const rid in items || {}) for (const c in items[rid]) { if (items[rid][c] && items[rid][c].error) errors++; else answered++; }
+    total = total || 0;
+    return { total, attempted: answered + errors, answered, errors, remaining: Math.max(0, total - answered), complete: total > 0 && answered >= total };
   }
 
   // exact two-sided McNemar (binomial) test on discordant pairs
@@ -392,7 +404,7 @@
     return { rows, paired };
   }
 
-  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, prompt, parseAnswer, cohenKappa, mcnemar, summarize, stepBlocks };
+  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, prompt, parseAnswer, cohenKappa, formatKappa, runProgress, mcnemar, summarize, stepBlocks };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBT = api;
 })(typeof window !== "undefined" ? window : globalThis);

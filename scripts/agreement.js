@@ -21,7 +21,7 @@ const raters = files.map((f) => {
   const d = JSON.parse(fs.readFileSync(f, "utf8"));
   return { name: path.basename(f, ".json"), labels: d.labels || d };
 });
-const fmt = (k) => (k && k.n ? Math.round(k.po * 100) + "% agree, kappa " + k.k.toFixed(2) + " (n=" + k.n + ")" : "no shared labels");
+const fmt = (k) => (k && k.n ? Math.round(k.po * 100) + "% agree, kappa " + T.formatKappa(k) + " (n=" + k.n + ")" : "no shared labels");
 
 // people vs people
 for (let i = 0; i < raters.length; i++) for (let j = i + 1; j < raters.length; j++) {

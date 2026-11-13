@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Fixes after a second review
+
+The study's data, saved runs and `results/` are unchanged.
+
+- Checker: empty template sections, HTML comments and placeholders (`_No response_`, `[device]`) no longer count as content. `### Expected behavior` with nothing under it was "both described", and an empty `### Device model` section took the next heading as the device.
+- Checker: a TalkBack, Android, One UI, Chrome or other component version is never taken as the app version, and an explicit integer release (`App version: 42`) now counts.
+- Pilot runs: unreadable or refused AI replies are counted as failed calls, not as answers. A run with failures is shown as incomplete, and Finish this run stays available to retry them. Before, a run where every call failed showed "106 of 106 calls answered" and hid the button.
+- Cohen's kappa is undefined, not 1, when every label is in one category (chance agreement is 1). The app and `scripts/agreement.js` show "undefined (all labels in one category)" next to the observed agreement.
+- The app and README call the clean-copy check automated and name two known cases where it misses a change in meaning (WordPress-Android #21127, AntennaPod #8145).
+- The README has a Report checker section, and the font licence (SIL OFL 1.1) is in `src/` and `docs/`.
+- Browser tests: failed and refused AI replies (all and some), an API failure, keyboard-only use, 200% zoom and empty or broken input.
+
 ### Report checker as the front page
 
 The study's data, saved runs, `results/` and analysis outputs are unchanged.
