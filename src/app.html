@@ -398,7 +398,7 @@
     const empty = !rep.title.trim() && !rep.body.trim();
     const S = a.summary;
     const text = empty ? "Nothing to check yet. Paste a report, or try a sample."
-      : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "");
+      : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "") + (a.truncated ? ". Only the first " + C.MAX_INPUT.toLocaleString("en-US") + " characters were checked" : "");
     clearTimeout(summaryTimer);
     // the summary is a live region: while someone types, announce it only after a pause
     if (now) $("#chk-score").textContent = text;

@@ -234,7 +234,7 @@ Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in t
 | Screen or element | `the Post list screen`, `Go to "My Site"`, `Settings > Accessibility` |
 | Screen-reader settings (optional) | `TalkBack 15.0`, speech rate, verbosity, font size |
 
-Empty template sections, HTML comments and unfilled placeholders such as `_No response_` or `[device]` don't count as content.
+Empty template sections, HTML comments and unfilled placeholders such as `_No response_`, `[device]`, `[e.g. Pixel 8]`, `N/A` or GitHub's default "A clear and concise description of…" prompt don't count as content. Steps written on the label's own line (`Steps to reproduce: Open the app, swipe right twice, …`) count. The checker reads at most the first 64,000 characters of a report and says so when it cuts one.
 
 **What it is not.** It finds missing sections only. A report with every section is not necessarily reproducible or ready to act on: [AntennaPod #6598](https://github.com/AntennaPod/AntennaPod/issues/6598) had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed. No interviews or user studies have been done with people who file or triage reports, so the checker has no user validation. It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
 
