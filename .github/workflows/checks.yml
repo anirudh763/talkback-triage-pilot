@@ -25,6 +25,7 @@ jobs:
         run: |
           node test/checker.test.js
           node test/workflow.test.js
+          node test/copy.test.js
       - name: Checklist and clean-copy check
         run: node scripts/check.js --quiet
       - name: Rebuild generated files

@@ -6,7 +6,7 @@ This repository is a small, open pilot study and the web app that runs it. It us
 
 **Status: exploratory.** One AI run, no human labels yet. Read the results as "the AI's answer depends on these lines". Whether its answers are *right* still needs labels from people. See [Limitations](#limitations).
 
-**Live app:** https://anirudh763.github.io/talkback-triage-pilot/ opens on a **report checker**: paste an Android accessibility bug report and see which details a developer needs were not found. It is a heuristic check (rules, not AI) and runs in your browser. See [Report checker](#report-checker).
+**Live app:** https://anirudh763.github.io/talkback-triage-pilot/ opens on a **report checker**: paste an Android accessibility bug report and see which sections were not found. It finds missing sections only; a report with every section can still be impossible to reproduce. It is a heuristic check (rules, not AI) and runs in your browser. See [Report checker](#report-checker).
 
 ![Results of the clean run in the app](assets/pilot-results.png)
 
@@ -103,6 +103,8 @@ node scripts/agreement.js labels/rater-a.json labels/rater-b.json
 Public GitHub issues, fetched on 9 November 2026:
 - WordPress for Android: 51 issues labelled `Accessibility` that mention TalkBack or a screen reader.
 - AntennaPod: all 24 issues labelled `Area: Accessibility`.
+
+This is an accessibility-issue sample, not only bug reports: by their GitHub type labels, 24 are bugs or crashes, 29 are feature requests or enhancements (for example [AntennaPod #8145](https://github.com/AntennaPod/AntennaPod/issues/8145), an accessibility concern labelled "Type: Feature request"), 1 is a task and 21 have no type label.
 
 Images and videos become `[image]` and `[video]`, template checklists are dropped, and long bodies are cut at about 1,200 characters. Full details are in [DATA.md](DATA.md).
 
@@ -218,7 +220,7 @@ The next step is human labels from at least two people working independently. [L
 
 ![The report checker on WordPress-Android #21127: three details not found, and the rewritten report with placeholders](docs/screenshots/checker.png)
 
-The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for the details a developer needs to reproduce it. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
+The front page of the [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. Press **Try a sample report** to see it on a real, incomplete issue from the dataset, or paste your own.
 
 Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in text and with an icon. Below the list, a rewritten report marks what to add as `[ADD: ...]` and copies the Expected and Actual sections under their own headings.
 
@@ -234,7 +236,7 @@ Each detail is marked Found, Incomplete, Not found, Optional or Not needed, in t
 
 Empty template sections, HTML comments and unfilled placeholders such as `_No response_` or `[device]` don't count as content.
 
-**What it is not.** It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
+**What it is not.** It finds missing sections only. A report with every section is not necessarily reproducible or ready to act on: [AntennaPod #6598](https://github.com/AntennaPod/AntennaPod/issues/6598) had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed. No interviews or user studies have been done with people who file or triage reports, so the checker has no user validation. It is a heuristic completeness check (pattern rules in `src/checker.js`, not AI). It can miss a detail written in an unusual way or count a phrase that only looks like one. It says nothing about whether the AI triage in the study is right, and it doesn't use the AI.
 
 **Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
 
