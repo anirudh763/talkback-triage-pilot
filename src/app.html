@@ -22,7 +22,8 @@
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
   <div class="lede">
     <h2>Check an Android accessibility bug report</h2>
-    <p class="muted">Paste a bug report to see which details a developer needs to reproduce it, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span>. It runs in your browser; the text is not sent anywhere.</p>
+    <p class="muted">Paste a bug report to see which sections it is missing, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span>. It runs in your browser; the text is not sent anywhere.</p>
+    <p class="small muted" id="not-repro">It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and an upstream fix before it was resolved.</p>
   </div>
 
   <div class="toolbar">
@@ -58,7 +59,7 @@
 
     <div class="pane">
       <section class="box" aria-labelledby="chk-h">
-        <div class="box-header"><h3 id="chk-h">What a developer needs</h3><span class="summary" id="chk-score" role="status" aria-live="polite"></span></div>
+        <div class="box-header"><h3 id="chk-h">Sections in this report</h3><span class="summary" id="chk-score" role="status" aria-live="polite"></span></div>
         <ul class="lint" id="checklist" aria-labelledby="chk-h"></ul>
         <p class="boxfoot">Pattern rules can miss or over-match. Steps, version and device use the same rules as the study's checklist, plus extra rules for other apps.</p>
       </section>
@@ -98,6 +99,7 @@
   <div class="lede">
     <h2>Two-app pilot</h2>
     <p class="muted" id="pilot-lede"></p>
+    <p class="small muted">The 75 issues are an accessibility-issue sample, not only bug reports: by their GitHub type labels, 24 are bugs or crashes, 29 are feature requests or enhancements (for example <a href="https://github.com/AntennaPod/AntennaPod/issues/8145" rel="noopener">AntennaPod #8145</a>, an accessibility concern labelled "Type: Feature request"), 1 is a task and 21 have no type label.</p>
     <p class="small muted">Exploratory: one AI run, no human labels yet. Shortened copies pass an automated check, which has known gaps (see How the study works).</p>
   </div>
 

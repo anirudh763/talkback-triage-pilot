@@ -2,7 +2,7 @@
 
 ## What it is
 
-75 accessibility issues from the public GitHub issue trackers of two open-source Android apps, fetched on **9 November 2026** through the GitHub REST API.
+75 accessibility issues from the public GitHub issue trackers of two open-source Android apps, fetched on **9 November 2026** through the GitHub REST API. They are an accessibility-issue sample, not only bug reports: by their GitHub type labels, 24 are bugs or crashes, 29 are feature requests or enhancements (for example [AntennaPod #8145](https://github.com/AntennaPod/AntennaPod/issues/8145), an accessibility concern labelled "Type: Feature request"), 1 is a task and 21 have no type label.
 
 | App | Repository | Selection | Issues |
 |---|---|---|---|
