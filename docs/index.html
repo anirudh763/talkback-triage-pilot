@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-374RpazkRqZGx2pC7n/8veQArA1ErzIcNwUWguBcfHM=' 'sha256-eQ+/dHkOTsgxJ6GJ9aLROx0YiEWwlFwr329U3wsJGUk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-+XOWMh+KHr+a7325Jv2WMpR5jXUl2l670fL/bEr6tx8=' 'sha256-eQ+/dHkOTsgxJ6GJ9aLROx0YiEWwlFwr329U3wsJGUk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#151b23" media="(prefers-color-scheme: dark)">
@@ -921,7 +921,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const cleanWhere = (v) => v.replace(LEAD, "").trim();
   const namesSomething = (v) => /\S\s+\S|>/.test(cleanWhere(v));
   const SR_CASE = (v) => (/^talk ?back$/i.test(v) ? "TalkBack" : v);
-  const androidLabel = (v) => (v && /^\d/.test(v) ? "Android " + v : v);
+  // "Android version: 14" -> "Android 14", so the rewrite does not print the label twice
+  const androidLabel = (v) => { if (!v) return v; v = v.replace(/^android\s+(?:os\s+)?version[\s*_:=]*/i, ""); return /^\d/.test(v) ? "Android " + v : v; };
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
   // The report as the rules should read it: HTML comments, unfilled template placeholders ("_No response_",
