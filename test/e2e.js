@@ -58,6 +58,11 @@ const server = http.createServer((req, res) => {
     await page.click('#btn-run');
     await page.waitForFunction(() => /Finished/.test(document.querySelector('#run-status').textContent), null, { timeout: 60000 });
     console.log('[owner] run:', await page.textContent('#run-status'));
+    // The finished bar fills its track, and it moves by transform, never by animating width (DESIGN.md motion rule).
+    await page.waitForFunction(() => /^matrix\(1, 0, 0, 1/.test(getComputedStyle(document.querySelector('#run-bar')).transform), null, { timeout: 2000 }).catch(() => {}); // let the 200ms transition end
+    const bar = await page.$eval('#run-bar', (i) => { const s = getComputedStyle(i), r = i.getBoundingClientRect(), t = i.parentElement.getBoundingClientRect(); return { tf: s.transform, tp: s.transitionProperty, full: Math.abs(r.width - t.width) < 1 }; });
+    console.log('[owner] progress bar:', JSON.stringify(bar));
+    if (!bar.full || !/^matrix\(1, 0, 0, 1/.test(bar.tf) || /width|all/.test(bar.tp)) errors.push('owner: progress bar is not a full scaleX transform without a width transition: ' + JSON.stringify(bar));
     console.log('[owner] finding:', (await page.textContent('#results')).match(/Exploratory[^.]*\.[^.]*\./)?.[0]);
     console.log('[owner] method saved:', await page.evaluate(() => [...window.__S.entries()].filter(([k]) => /^runs\/[^/]+$/.test(k)).map(([, v]) => v.method + '/' + v.status).join(',')));
     await page.screenshot({ path: path.join(__dirname, 'shot-pilot.png'), fullPage: false });

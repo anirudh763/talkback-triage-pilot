@@ -4,6 +4,20 @@
 
 0.2.0 was never tagged before this date, so this entry covers every change since 0.1.0, newest first.
 
+### Design standard
+
+The checker's rules, scoring, `data/` and `results/` are unchanged.
+
+- `DESIGN.md` at the repository root lists the app's tokens with light and dark values, measured contrast ratios, motion and components.
+- In "Every report in this run", a detail that was not found is now a dashed, struck-through tag, so found and not found differ without colour; the caption explains the tags and spells out TB, VER, DEV, E/A, SAID and MEDIA.
+- App copies of shared components are gone: `.badge` (and its dot), `.chip`, `.pill` and `.honest` are ui.css `.label`, `.sr` is `.sr-only`, `.card` is `.box`. Unused colour aliases were removed.
+- "Heuristic completeness check (rules, not AI)" is its own line instead of a pill inside a sentence.
+- Report text, the rewritten report and the report viewer are .875rem; form fields are 16px on touch devices so iOS does not zoom.
+- Notices and the no-JavaScript message lost their coloured left stripe.
+- The pilot's progress bar scales with a transform instead of animating its width.
+- `src/ui.css`: root size 93.75% (a larger browser default font now applies), buttons get a pressed state and primary buttons a hover state, colour transitions only when reduced motion is off, and `.app-header .repo` is shared.
+- Tests: `test/checker.e2e.js` checks that found and not-found tags differ by more than colour (light and dark); `test/e2e.js` checks the finished progress bar is a full transform with no width transition.
+
 ### Usability: install, offline and a ready-made issue form
 
 The checker's rules (`src/checker.js`), `src/core.js`, `data/` and `results/` are unchanged.

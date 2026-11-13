@@ -188,6 +188,23 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok((await page.evaluate(() => navigator.clipboard.readText())).includes("App version: 9"), "keyboard: Enter on Copy report copies the rewrite");
     await ctx.close();
   }
+  // ---- found / not found tags in "Every report in this run": the state must show without colour (WCAG 1.4.1) ----
+  for (const scheme of ["light", "dark"]) {
+    const { ctx, page } = await open({ colorScheme: scheme });
+    await page.click("#tab-pilot");
+    await page.waitForSelector('[aria-label="Every report in this run"] tbody tr');
+    // Each tag's state comes from its screen-reader text; its look is everything except colour.
+    const tags = await page.$$eval('[aria-label="Every report in this run"] tbody td:nth-child(2) span[title]', (els) => els.map((e) => {
+      const s = getComputedStyle(e);
+      return { found: !/not found$/.test(e.textContent), look: [s.borderTopStyle, s.textDecorationLine, s.fontWeight, s.fontStyle].join("|") };
+    }));
+    const looks = (f) => new Set(tags.filter((t) => t.found === f).map((t) => t.look));
+    const on = looks(true), off = looks(false);
+    ok(tags.length > 0 && on.size > 0 && off.size > 0, scheme + ": the per-report table has found and not-found tags (" + tags.length + ")");
+    ok([...off].every((l) => !on.has(l)), scheme + ": not-found tags differ from found tags by more than colour (found " + [...on].join(", ") + "; not found " + [...off].join(", ") + ")");
+    await ctx.close();
+  }
+
   // ---- 200% zoom: a 1280px window at 200% is a 640px-wide CSS viewport with 2x pixels ----
   {
     const { ctx, page } = await open({ viewport: { width: 640, height: 450 }, deviceScaleFactor: 2 });

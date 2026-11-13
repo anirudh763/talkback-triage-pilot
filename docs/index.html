@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-+XOWMh+KHr+a7325Jv2WMpR5jXUl2l670fL/bEr6tx8=' 'sha256-eQ+/dHkOTsgxJ6GJ9aLROx0YiEWwlFwr329U3wsJGUk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-+XOWMh+KHr+a7325Jv2WMpR5jXUl2l670fL/bEr6tx8=' 'sha256-i0eDyl7wI8DH8WHMkJkXg5ITjc5U202hCWSyASO+DMg='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#151b23" media="(prefers-color-scheme: dark)">
@@ -24,7 +24,7 @@
   --border:#d1d9e0; --border-strong:#818b98; --accent:#0b57d0; --accent-fg:#ffffff; --accent-subtle:#e8f0fe;
   --ok:#1a7f37; --ok-subtle:#dafbe1; --bad:#cf222e; --bad-subtle:#ffebe9; --warn:#9a6700; --warn-subtle:#fff8c5;
   --focus:#0b57d0; --radius:6px; --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; --fs:15px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; --fs:93.75%;
   color-scheme:light dark;
 }
 @media (prefers-color-scheme:dark){:root{
@@ -37,7 +37,9 @@ code,kbd,pre,.mono{font-family:var(--mono);font-size:.92em}
 a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:9;background:var(--bg);padding:8px 12px;border:1px solid var(--border)}
 .btn{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-subtle);color:var(--fg);font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
-.btn:hover{background:var(--bg-inset)} .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn:hover,.btn:active{background:var(--bg-inset)} .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{filter:brightness(.92)} .btn.primary:active{filter:brightness(.9)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:background-color 120ms,border-color 120ms}}
 .btn.danger{color:var(--bad)} .btn[disabled]{opacity:.55;cursor:not-allowed}
 .input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius);padding:5px 10px;min-height:32px}
 .label{display:inline-flex;align-items:center;gap:4px;padding:0 8px;border:1px solid var(--border);border-radius:2em;font-size:.85em;line-height:22px}
@@ -47,7 +49,7 @@ a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-off
 table{border-collapse:collapse;width:100%} th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top}
 th{font-size:.85em;color:var(--fg-muted);font-weight:700;background:var(--bg-subtle)}
 .app-header{display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid var(--border);background:var(--bg-subtle)}
-.app-header .name{font-weight:700} .app-header nav a{color:var(--fg);text-decoration:none;padding:6px 8px;border-radius:var(--radius)}
+.app-header .name{font-weight:700} .app-header .repo{margin-left:auto;color:var(--accent);text-decoration:underline} .app-header nav a{color:var(--fg);text-decoration:none;padding:6px 8px;border-radius:var(--radius)}
 .app-header nav a[aria-current="page"]{box-shadow:inset 0 -2px 0 var(--accent)}
 .muted{color:var(--fg-muted)} .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -56,10 +58,6 @@ th{font-size:.85em;color:var(--fg-muted);font-weight:700;background:var(--bg-sub
    Layout: a developer tool. App header with tabs; the checker is a split pane (report | results),
    like a linter: one row per detail with a status icon, the text that matched, and a fix. */
 :root {
-  --surface: var(--bg); --surface-2: var(--bg-subtle); --ink: var(--fg); --ink-2: var(--fg-muted); --ink-3: var(--fg-muted);
-  --line: var(--border); --info: var(--accent); --info-bg: var(--accent-subtle);
-  --crit: var(--bad); --crit-bg: var(--bad-subtle); --warn-bg: var(--warn-subtle); --ok-bg: var(--ok-subtle);
-  --none: var(--fg-muted); --none-bg: var(--bg-inset); --bar: var(--accent);
   --removed-bg: var(--bad-subtle); --removed-ink: var(--bad);
   --mark-add-bg: #ffebe9; --mark-add-fg: #a40e26; --mark-opt-bg: #eef1f4; --mark-opt-fg: #424a53;
 }
@@ -68,7 +66,6 @@ th{font-size:.85em;color:var(--fg-muted);font-weight:700;background:var(--bg-sub
 }
 body { font-size: 1rem; }
 a { text-underline-offset: 2px; }
-.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 h1, h2, h3 { line-height: 1.25; margin: 0; }
 h2 { font-size: 1.35rem; }
@@ -83,7 +80,7 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 .app-header { flex-wrap: wrap; gap: 4px 20px; padding: 0 max(16px, env(safe-area-inset-left, 0px)); }
 .app-header h1 { font-size: 1rem; padding: 12px 0; }
 .app-header nav { min-width: 0; max-width: 100%; }
-.app-header .repo { margin-left: auto; font-size: .875rem; display: inline-flex; align-items: center; min-height: 32px; }
+.app-header .repo { font-size: .875rem; display: inline-flex; align-items: center; min-height: 32px; }
 .skip { min-height: 32px; }
 @media (max-width: 760px) { .app-header nav { order: 3; flex: 1 1 100%; } .app-header .repo { margin-left: 0; } }
 .tabs { position: relative; display: flex; flex-wrap: wrap; gap: 0 2px; max-width: 100%; }
@@ -95,8 +92,7 @@ main { padding-block: 20px 56px; }
 .view { display: grid; gap: 18px; }
 .lede { display: grid; gap: 6px; max-width: 80ch; }
 
-/* boxes (Primer-style): 1px border, 6px radius, no shadows */
-.card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); }
+/* boxes: ui.css .box (1px border, 6px radius, no shadows) */
 .pad { padding: 16px; }
 .stack { display: grid; gap: 12px; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -109,10 +105,11 @@ main { padding-block: 20px 56px; }
 /* form controls */
 label.field { display: grid; gap: 4px; font-weight: 700; font-size: .875rem; }
 input[type="text"], textarea, select { font: inherit; font-weight: 400; color: var(--fg); background: var(--bg); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 5px 10px; min-height: 32px; width: 100%; min-width: 0; }
-textarea { font-family: var(--mono); font-size: .8125rem; line-height: 1.55; min-height: 320px; resize: vertical; }
+textarea { font-family: var(--mono); font-size: .875rem; line-height: 1.55; min-height: 320px; resize: vertical; }
 select { width: auto; max-width: 100%; }
+/* iOS zooms the page when a field under 16px gets focus */
+@media (pointer: coarse) { input[type="text"], textarea, select { font-size: 16px; } }
 .btn { font-size: .875rem; }
-.btn.primary:hover { filter: brightness(1.08); }
 .btn.link { border: 0; background: none; padding: 2px 2px; min-height: 24px; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 .btn svg { flex: none; }
 fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px 12px; margin: 0; min-width: 0; }
@@ -124,7 +121,6 @@ input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-
 /* ============ checker ============ */
 .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .toolbar .src { font-size: .875rem; color: var(--fg-muted); flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; }
-.honest { display: inline-flex; align-items: center; gap: 6px; padding: 1px 8px; border: 1px solid var(--border-strong); border-radius: 2em; font-size: .8125rem; font-weight: 700; color: var(--fg); background: var(--bg-subtle); }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 @media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
 .pane { display: grid; gap: 16px; min-width: 0; }
@@ -152,7 +148,7 @@ details.more[open] > summary { margin-bottom: 8px; }
 .lint [data-status="na"] .ico, .lint [data-status="na"] .state { color: var(--fg-muted); }
 .boxfoot { padding: 8px 14px; border-top: 1px solid var(--border); font-size: .8125rem; color: var(--fg-muted); background: var(--bg-subtle); border-radius: 0 0 var(--radius) var(--radius); }
 
-.tpl { margin: 0; padding: 12px 14px; font-family: var(--mono); font-size: .8125rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 560px; overflow: auto; background: var(--bg); border-radius: 0 0 var(--radius) var(--radius); }
+.tpl { margin: 0; padding: 12px 14px; font-family: var(--mono); font-size: .875rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 560px; overflow: auto; background: var(--bg); border-radius: 0 0 var(--radius) var(--radius); }
 .tpl mark { border-radius: 3px; padding: 0 2px; font-weight: 700; }
 .tpl mark.add { background: var(--mark-add-bg); color: var(--mark-add-fg); }
 .tpl mark.optional { background: var(--mark-opt-bg); color: var(--mark-opt-fg); font-weight: 400; }
@@ -164,17 +160,16 @@ details.more[open] > summary { margin-bottom: 8px; }
 .meter > i { display: block; height: 100%; background: var(--accent); }
 .verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .verdict { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 10px; background: var(--bg); align-content: start; }
-.badge { display: inline-flex; align-items: center; gap: 6px; padding: 0 8px; border: 1px solid currentColor; border-radius: 2em; font-weight: 700; font-size: .8125rem; line-height: 22px; }
-.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.b-blocks { color: var(--bad); } .b-slows { color: var(--warn); } .b-minor { color: var(--ok); }
-.b-cant { color: var(--fg-muted); } .b-act { color: var(--accent); } .b-need { color: var(--warn); }
+.label { font-size: .8125rem; white-space: nowrap; }
+.label.accent { color: var(--accent); border-color: currentColor; }
+.verdict .label { font-weight: 700; }
 .kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: .875rem; margin: 0; }
 .kv dt { color: var(--fg-muted); }
 .kv dd { margin: 0; }
 .status { min-height: 1.4em; color: var(--fg-muted); font-size: .875rem; }
 .status.err { color: var(--bad); }
-.notice { border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: var(--radius); padding: 10px 14px; color: var(--fg-muted); background: var(--bg-subtle); }
-.report { font-family: var(--mono); font-size: .8125rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; max-height: 420px; overflow: auto; margin: 0; }
+.notice { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; color: var(--fg-muted); background: var(--bg-subtle); }
+.report { font-family: var(--mono); font-size: .875rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; max-height: 420px; overflow: auto; margin: 0; }
 .report.tall { max-height: none; }
 .report .gone { background: var(--removed-bg); color: var(--removed-ink); text-decoration: line-through; text-decoration-thickness: 1px; display: block; }
 .tablewrap { position: relative; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
@@ -191,13 +186,16 @@ td.num, th.num { text-align: right; }
 .hbar { height: 6px; background: var(--bg-inset); border-radius: 3px; overflow: hidden; }
 .hbar > i { display: block; height: 100%; background: var(--accent); }
 .chips { display: flex; gap: 4px; flex-wrap: wrap; }
-.chip { font: .75rem var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--fg-muted); }
-.chip.on { background: var(--accent-subtle); border-color: var(--accent); color: var(--fg); }
+/* Detail tags in the per-report table: found is solid and filled, not found is dashed and struck through,
+   so the state reads without colour (WCAG 1.4.1). Mono because TB/VER/DEV are codes. */
+.chips .label { font: .8rem var(--mono); line-height: 20px; padding: 0 6px; }
+.chips .label.on { background: var(--accent-subtle); border-color: var(--accent); color: var(--fg); }
+.chips .label.off { border-style: dashed; border-color: var(--border-strong); color: var(--fg-muted); text-decoration: line-through; }
 .flip { color: var(--warn); font-weight: 700; }
-.pill { font-size: .8125rem; padding: 0 8px; line-height: 22px; border-radius: 2em; border: 1px solid var(--border); color: var(--fg-muted); white-space: nowrap; }
 tr.sel td { background: var(--accent-subtle); }
 .progress { height: 8px; background: var(--bg-inset); border-radius: 4px; overflow: hidden; }
-.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.progress > i { display: block; height: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+@media (prefers-reduced-motion: no-preference) { .progress > i { transition: transform 200ms linear; } }
 .finding { font-size: 1.0625rem; font-weight: 700; line-height: 1.45; max-width: 72ch; }
 .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; }
@@ -207,13 +205,13 @@ tr.sel td { background: var(--accent-subtle); }
 details > summary { cursor: pointer; font-weight: 700; }
 .sitefoot { padding-block: 16px 40px; border-top: 1px solid var(--border); }
 .legendline { font-size: .8125rem; color: var(--fg-muted); font-weight: 400; }
-.noscript { margin: 16px 0; padding: 12px 14px; border: 1px solid var(--border-strong); border-left-width: 4px; border-radius: var(--radius); background: var(--bg-subtle); color: var(--fg); max-width: 80ch; }
+.noscript { margin: 16px 0; padding: 12px 14px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg-subtle); color: var(--fg); max-width: 80ch; }
 .noscript p { margin: 0; }
 </style>
 
 <a class="skip" href="#main">Skip to content</a>
 <header class="app-header">
-  <h1>TalkBack Triage Pilot</h1>
+  <h1 class="name">TalkBack Triage Pilot</h1>
   <nav aria-label="Sections">
     <div class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-check" aria-controls="check" aria-selected="true">Check a report</button>
@@ -232,7 +230,8 @@ details > summary { cursor: pointer; font-weight: 700; }
 <section class="view" id="check" role="tabpanel" aria-labelledby="tab-check">
   <div class="lede">
     <h2>Check an Android accessibility bug report</h2>
-    <p class="muted">Paste a bug report to see which sections it is missing, and get a rewritten report with the gaps marked. <span class="honest">Heuristic completeness check (rules, not AI)</span>. It runs in your browser; the text is not sent anywhere.</p>
+    <p><strong>Heuristic completeness check (rules, not AI)</strong></p>
+    <p class="muted">Paste a bug report to see which sections it is missing, and get a rewritten report with the gaps marked. It runs in your browser; the text is not sent anywhere.</p>
     <p class="small muted" id="not-repro">It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
   </div>
 
@@ -282,7 +281,7 @@ details > summary { cursor: pointer; font-weight: 700; }
     </div>
   </div>
 
-  <section class="card pad stack" id="ai-card" aria-labelledby="ai-h" hidden>
+  <section class="box pad stack" id="ai-card" aria-labelledby="ai-h" hidden>
     <h3 id="ai-h">Study tool: ask Claude to triage this report</h3>
     <p class="small muted">Part of the study, separate from the checker above. It works only when this page runs inside the Claude app. Exploratory: one AI run, no human labels yet.</p>
     <div class="row">
@@ -316,7 +315,7 @@ details > summary { cursor: pointer; font-weight: 700; }
   <div class="tablewrap" id="coverage" tabindex="0" role="region" aria-label="How often each detail appears in the filed reports"></div>
 
   <p class="notice" id="run-off">This page shows the saved run. Running the pilot needs the Claude app; to rerun it with your own API key, see <code>scripts/run-triage.mjs</code> in the project's README.</p>
-  <div class="card pad stack" id="run-card" aria-labelledby="run-h" hidden>
+  <div class="box pad stack" id="run-card" aria-labelledby="run-h" hidden>
     <h3 id="run-h">Run the ablation</h3>
     <p class="small muted">Each report is triaged once per version. A shortened version is run only when the report has the detail it removes and the checker confirms nothing else it measures was lost. Calls run two at a time on the account of whoever presses Run.</p>
     <div class="row" style="align-items:stretch">
@@ -359,14 +358,14 @@ details > summary { cursor: pointer; font-weight: 700; }
     <p class="muted">People's labels are the reference Claude is compared with, once two people agree on them. Start with the five-report starter set, label on your own, then compare with a second person and fix the rubric where you disagree.</p>
   </div>
   <div class="grid2">
-    <div class="card pad stack" id="lab-card"></div>
+    <div class="box pad stack" id="lab-card"></div>
     <div class="stack">
-      <div class="card pad stack">
+      <div class="box pad stack">
         <h3>Raters and agreement</h3>
         <p class="small muted" id="lab-who"></p>
         <div id="lab-agree"></div>
       </div>
-      <div class="card pad stack">
+      <div class="box pad stack">
         <h3>Share labels</h3>
         <p class="small muted">Copy your labels to send them, or paste labels a collaborator sent you to add them as a second rater.</p>
         <div class="row">
@@ -391,7 +390,7 @@ details > summary { cursor: pointer; font-weight: 700; }
     <h2>What this does, step by step</h2>
     <p class="muted">The question: when an Android accessibility bug report includes TalkBack reproduction steps and the app version, does an AI judge differently whether a developer could start reproducing it? And do people agree with its judgments?</p>
   </div>
-  <div class="card pad">
+  <div class="box pad">
     <ol class="steps">
       <li><div><h3>Collect real reports</h3><p class="muted">Public GitHub issues from two open-source Android apps, fetched on 9 November 2026. WordPress for Android: issues labelled <code>Accessibility</code> that mention TalkBack or a screen reader (51). AntennaPod: every issue labelled <code>Area: Accessibility</code> (24). Images and videos become <code>[image]</code> and <code>[video]</code>, template checklists are dropped, and bodies are cut at about 1,200 characters.</p></div></li>
       <li><div><h3>Check each report</h3><p class="muted">Pattern rules flag six details: TalkBack reproduction steps, app version, Android version or device, expected vs. actual behaviour, what TalkBack said, and a recording or screenshot. The rules are deterministic, so anyone can rerun them.</p></div></li>
@@ -401,7 +400,7 @@ details > summary { cursor: pointer; font-weight: 700; }
     </ol>
   </div>
   <div class="grid2">
-    <div class="card pad prose">
+    <div class="box pad prose">
       <h3>What the results can and can't show</h3>
       <ul>
         <li>The removal comparison shows whether Claude's answer depends on those lines. It doesn't show that Claude is right.</li>
@@ -413,7 +412,7 @@ details > summary { cursor: pointer; font-weight: 700; }
         <li>GitHub outcomes (closed, not planned, still open) are context only.</li>
       </ul>
     </div>
-    <div class="card pad prose">
+    <div class="box pad prose">
       <h3>Closest related work</h3>
       <ul>
         <li>Aljedaani, Mkaouer, Ludi, Ouni, Jenhani. <a href="https://smilevo.github.io/access/" rel="noopener">On the Identification of Accessibility Bug Reports in Open Source Systems</a>. W4A 2022. Finding which reports are about accessibility; this pilot asks what a developer can do with one.</li>
@@ -1212,17 +1211,17 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     { k: "media", key: "recording_or_screenshot", name: "Recording or screenshot", short: "MEDIA", why: "A screen recording, screenshot or video is attached." },
   ];
   const IMPACT = {
-    blocks_task: { t: "Blocks the task", c: "b-blocks" },
-    slows_task: { t: "Slows the task", c: "b-slows" },
-    minor: { t: "Minor", c: "b-minor" },
-    cannot_tell: { t: "Can't tell", c: "b-cant" },
+    blocks_task: { t: "Blocks the task", c: "bad" },
+    slows_task: { t: "Slows the task", c: "warn" },
+    minor: { t: "Minor", c: "ok" },
+    cannot_tell: { t: "Can't tell", c: "" },
   };
   const EVID = {
-    actionable: { t: "Enough to start reproducing", c: "b-act" },
-    needs_more_evidence: { t: "Needs more evidence", c: "b-need" },
+    actionable: { t: "Enough to start reproducing", c: "accent" },
+    needs_more_evidence: { t: "Needs more evidence", c: "warn" },
   };
   const outcome = (r) => r.state === "open" ? "Open" : r.stateReason === "completed" ? "Closed: completed" : r.stateReason === "not_planned" ? "Closed: not planned" : r.stateReason === "duplicate" ? "Closed: duplicate" : "Closed";
-  const badge = (map, v) => h("span", { class: "badge " + (map[v] ? map[v].c : "b-cant") }, map[v] ? map[v].t : v);
+  const badge = (map, v) => h("span", { class: ("label " + (map[v] ? map[v].c : "")).trim() }, map[v] ? map[v].t : v);
 
   // ---------- capabilities ----------
   // Inside Claude the page can call the model; anywhere else (GitHub Pages, a local file) it shows saved runs only.
@@ -1442,7 +1441,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       const k = line.trim();
       if (pool[k]) { pool[k]--; pre.append(line + "\n"); }
       else if (!k) pre.append("\n");
-      else pre.append(h("span", { class: "gone" }, h("span", { class: "sr" }, "Removed: "), line));
+      else pre.append(h("span", { class: "gone" }, h("span", { class: "sr-only" }, "Removed: "), line));
     }
     return pre;
   }
@@ -1477,7 +1476,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
         out.replaceChildren(
           h("div", { class: "verdicts" }, cards),
           same ? h("p", { class: "notice" }, "This report has no TalkBack steps or version info to remove, so only one version was triaged.")
-            : h("div", { class: "card pad stack" }, h("h3", null, "What was removed"), h("p", { class: "small muted" }, "Struck-through lines were left out of the second copy."), removedView(r.body, cut)));
+            : h("div", { class: "box pad stack" }, h("h3", null, "What was removed"), h("p", { class: "small muted" }, "Struck-through lines were left out of the second copy."), removedView(r.body, cut)));
         st.textContent = (same ? "Done." : changed ? "Done. Claude's call changed when the details were removed." : "Done. Claude's call stayed the same without the details.") + cutNote;
       }
     } catch (e) {
@@ -1595,7 +1594,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     $("#btn-run").disabled = true; $("#btn-stop").disabled = false; $("#btn-resume").hidden = true;
     const st = $("#run-status"); st.classList.remove("err");
     const bar = $("#run-bar");
-    const step = () => { bar.style.width = (total ? (done / total) * 100 : 100) + "%"; st.textContent = done + " of " + total + " calls done"; };
+    const step = () => { bar.style.setProperty("--p", total ? done / total : 1); st.textContent = done + " of " + total + " calls done"; };
     step();
     // group by report so each report's answers are written once
     const pending = {};
@@ -1753,8 +1752,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       const full = res.full;
       const tr = h("tr", { class: r.id === detailId ? "sel" : null },
         h("td", null, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, r.app + " #" + r.number), h("div", { class: "small muted" }, r.title.slice(0, 80))),
-        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "chip" + (r.chk[f.k] ? " on" : ""), title: f.name + (r.chk[f.k] ? ": found" : ": not found") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr" }, f.name + (r.chk[f.k] ? " found" : " not found")))))),
-        h("td", null, h("span", { class: "pill" }, outcome(r))),
+        h("td", null, h("div", { class: "chips" }, FIELDS.map((f) => h("span", { class: "label " + (r.chk[f.k] ? "on" : "off"), title: f.name + (r.chk[f.k] ? ": found" : ": not found") }, h("span", { "aria-hidden": "true" }, f.short), h("span", { class: "sr-only" }, f.name + (r.chk[f.k] ? " found" : " not found")))))),
+        h("td", null, h("span", { class: "label" }, outcome(r))),
         conds.map((c) => {
           const a = res[c];
           if (!T.applies(r, c, r.chk)) return h("td", { class: "muted small" }, "n/a");
@@ -1767,8 +1766,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       return tr;
     });
     const rt = h("table", null,
-      h("caption", null, "Every report in this run"),
-      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Report"), h("th", { scope: "col" }, "Details in report"), h("th", { scope: "col" }, "GitHub outcome"), conds.map((c) => h("th", { scope: "col" }, T.CONDITIONS[c].short)), h("th", { scope: "col" }, h("span", { class: "sr" }, "Open")))),
+      h("caption", null, "Every report in this run", h("br"), h("span", { class: "legendline" }, "Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot.")),
+      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Report"), h("th", { scope: "col" }, "Details in report"), h("th", { scope: "col" }, "GitHub outcome"), conds.map((c) => h("th", { scope: "col" }, T.CONDITIONS[c].short)), h("th", { scope: "col" }, h("span", { class: "sr-only" }, "Open")))),
       h("tbody", null, rowsEl));
 
     const exportRow = h("div", { class: "row" },
@@ -1781,7 +1780,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       h("p", { class: "small muted", id: "run-progress" }, prog.answered + " of " + (run.meta.total || "?") + " calls answered" + (prog.errors ? " · " + prog.errors + " failed (unreadable or refused; Finish this run retries them)" : "") + " · " + (run.meta.tier === "quick" ? "Quick" : "Default") + " model · " + (run.meta.scope === "all" ? "all reports" : "reports with steps or version")),
       finding,
       h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "What Claude said, by condition" }, mt),
-      Object.keys(S.paired).length ? h("div", { class: "card pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
+      Object.keys(S.paired).length ? h("div", { class: "box pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
       human,
       detailId ? detailPanel(BY_ID[detailId], run, conds) : null,
       h("div", { class: "tablewrap", tabindex: "0", role: "region", "aria-label": "Every report in this run" }, rt),
@@ -1793,7 +1792,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     const cards = conds.filter((c) => res[c] && !res[c].error).map((c) => verdictCard(T.CONDITIONS[c].label, res[c]));
     const show = T.applies(r, "no_steps", r.chk) ? "no_steps" : "neither";
     const cut = T.variant(r, show);
-    return h("section", { class: "card pad stack", id: "detail", tabindex: "-1", "aria-label": "Details for " + r.app + " #" + r.number },
+    return h("section", { class: "box pad stack", id: "detail", tabindex: "-1", "aria-label": "Details for " + r.app + " #" + r.number },
       h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, r.app + " #" + r.number + ": " + r.title), h("button", { class: "btn", onclick: () => { detailId = null; renderResults(); } }, "Close")),
       h("p", { class: "small muted" }, h("a", { href: gh(r), target: "_blank", rel: "noopener" }, "Open on GitHub"), " · " + outcome(r) + " · " + r.comments + (r.comments === 1 ? " comment" : " comments")),
       cards.length ? h("div", { class: "verdicts" }, cards) : h("p", { class: "muted" }, "Not triaged in this run yet."),
@@ -1918,7 +1917,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       const nextUnlabelled = () => { const L = myLabels(); const i = order.findIndex((x, j) => j > labIndex && !L[keyOf(x.id, labCond)]); return i >= 0 ? i : order.findIndex((x) => !L[keyOf(x.id, labCond)]); };
       card.replaceChildren(...[
         controls,
-        h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "eyebrow" }, "Report " + (labIndex + 1) + " of " + order.length + (labCond === "full" ? " · as filed" : " · " + T.CONDITIONS[labCond].label.toLowerCase())), h("span", { class: "pill" }, done + " labelled")),
+        h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "eyebrow" }, "Report " + (labIndex + 1) + " of " + order.length + (labCond === "full" ? " · as filed" : " · " + T.CONDITIONS[labCond].label.toLowerCase())), h("span", { class: "label" }, done + " labelled")),
         h("h3", null, r.app + " #" + r.number + ": " + r.title),
         labCond === "full" ? h("p", { class: "small muted" }, APPS[r.app].name + " · ", h("a", { href: gh(r), target: "_blank", rel: "noopener" }, "GitHub")) : h("p", { class: "small muted" }, APPS[r.app].name + " · shortened copy, shown exactly as Claude saw it"),
         seenFull ? h("p", { class: "notice small" }, "You already labelled the full version of this report, so you may remember what was removed. If you can, have someone who hasn't read it label this version.") : null,
