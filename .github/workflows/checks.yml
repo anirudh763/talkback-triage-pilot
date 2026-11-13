@@ -23,12 +23,14 @@ jobs:
         run: npm ci
       - name: Answer parser and statistics
         run: node test/core.test.js
-      - name: Report checker, issue form and workflow guards
+      - name: Report checker, issue form, workflow guards, slow-input and triage-call tests
         run: |
           node test/checker.test.js
           node test/workflow.test.js
           node test/copy.test.js
           node test/issue-form.test.js
+          node test/redos.test.js
+          node test/triage-call.test.js
       - name: Checklist and clean-copy check
         run: node scripts/check.js --quiet
       - name: Rebuild generated files

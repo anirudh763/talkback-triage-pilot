@@ -63,31 +63,10 @@ const readItem = (rid) => (fs.existsSync(itemPath(rid)) ? JSON.parse(fs.readFile
 const todo = tasks.filter(({ r, c }) => { const a = readItem(r.id)[c]; return !a || a.error; });
 console.log("Run " + id + ": " + tasks.length + " calls planned, " + (tasks.length - todo.length) + " already done, " + todo.length + " to go. Model " + model + ".");
 
-// ---- one call, with retries for rate limits and overload ----
-const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-async function triage(title, body, appName) {
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await fetch(base + "/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model, max_tokens: 700, messages: [{ role: "user", content: T.prompt(title, body, appName) }] }),
-    });
-    if (res.status === 429 || res.status === 529 || res.status >= 500) {
-      const wait = Number(res.headers.get("retry-after")) * 1000 || Math.min(60000, 2000 * 2 ** attempt);
-      process.stdout.write("  (" + res.status + ", waiting " + Math.round(wait / 1000) + "s)\n");
-      await sleep(wait);
-      continue;
-    }
-    const j = await res.json();
-    if (!res.ok) throw new Error("API error " + res.status + ": " + (j.error && j.error.message || JSON.stringify(j)));
-    const text = (j.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
-    const a = T.parseAnswer(text);
-    if (!a) return { error: "invalid_json", raw: text.slice(0, 500) };
-    a.model = j.model || model;
-    return a;
-  }
-  return { error: "rate_limited" };
-}
+// ---- one call, with retries for rate limits and overload (scripts/triage-call.js) ----
+const { triageCall } = require("./triage-call.js");
+const triage = (title, body, appName) => triageCall({ fetch, base, key, model, prompt: T.prompt(title, body, appName), parseAnswer: T.parseAnswer,
+  log: (m) => process.stdout.write(m) });
 
 // ---- run ----
 let done = 0, failed = 0;
@@ -101,7 +80,7 @@ async function worker() {
     const answers = Object.assign(readItem(r.id), { [c]: a });
     fs.writeFileSync(itemPath(r.id), JSON.stringify({ answers, at: new Date().toISOString() }, null, 1) + "\n");
     done++; if (a.error) failed++;
-    process.stdout.write("\r  " + done + "/" + todo.length + " done" + (failed ? ", " + failed + " unreadable" : "") + "   ");
+    process.stdout.write("\r  " + done + "/" + todo.length + " done" + (failed ? ", " + failed + " failed (rerun with the same --id to retry them)" : "") + "   ");
   }
 }
 await Promise.all(Array.from({ length: concurrency }, worker));

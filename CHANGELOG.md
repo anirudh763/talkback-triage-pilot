@@ -4,6 +4,12 @@
 
 0.2.0 was never tagged before this date, so this entry covers every change since 0.1.0, newest first.
 
+### Fix: slow input and the API runner
+
+- Two regular expressions backtracked badly on runs of spaces or stars. The Steps heading rule is in `src/core.js`, and the rule for steps written on the label's own line is in `src/checker.js`. "Steps" + 2,000 spaces + "x" took about 8 s to check, and a 2,723-character share link blocked the tab for about 3.6 s. Both rules now run in linear time and accept exactly the same text. The heading rule takes each run of spaces or stars once. The inline rule finds the first character after "steps" and measures from there. Heading lines over 500 characters are no longer tested. The study's classifications are unchanged: the checker snapshot and every `results/` file are byte-identical.
+- `test/redos.test.js`: six adversarial inputs (including a 64k paste and a 2,723-character share link) must each finish in under 200 ms. It also checks that the old and new rules agree on 30,000 random headings and 30,000 random bodies.
+- `scripts/run-triage.mjs`: each API call has a timeout (`AbortSignal.timeout`, 120 s). A network error or timeout is saved as that report's error, and a rerun with the same `--id` retries it; before, it ended the run. A failed answer is checked with `res.ok` before its body is parsed, so an HTML error page now gives "API error 401: ..." instead of a JSON parse error. The call is in `scripts/triage-call.js`, and `test/triage-call.test.js` tests it with a stubbed `fetch`.
+
 ### Design standard
 
 The checker's rules, scoring, `data/` and `results/` are unchanged.

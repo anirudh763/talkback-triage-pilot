@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-+XOWMh+KHr+a7325Jv2WMpR5jXUl2l670fL/bEr6tx8=' 'sha256-i0eDyl7wI8DH8WHMkJkXg5ITjc5U202hCWSyASO+DMg='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-8rrvp3IlKpx7OC3Z4x7PLm4TD7SUo9IRxFA04K08lXQ=' 'sha256-i0eDyl7wI8DH8WHMkJkXg5ITjc5U202hCWSyASO+DMg='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#151b23" media="(prefers-color-scheme: dark)">
@@ -478,7 +478,16 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const TB = /\b(talk ?back|screen ?readers?|screenreaders?)\b/i;
   const GESTURE = /\b(swip\w*|double[- ]?tap\w*|focus\w*|explore by touch|read from top|four fingers|hover\w*|announc\w*|read aloud|reads?\b|spoken|selection)\b/i;
   const STEP_LINE = /^\s*(\d+[.)]|[-*•])\s+\S/;
-  const STEPS_HEAD = /^\s*(#{1,6}\s*|\*\*)?\s*steps(\s+to\s+reproduce(\s+the\s+behaviou?r)?)?\s*:?\**\s*:?\s*$/i;
+  // A "Steps" heading line. Same strings as the original
+  //   /^\s*(#{1,6}\s*|\*\*)?\s*steps(\s+to\s+reproduce(\s+the\s+behaviou?r)?)?\s*:?\**\s*:?\s*$/i
+  // but each run of spaces or stars is matched once: (?=(\s*))\1 takes the whole run and never gives part of it
+  // back. Every token after a run is optional, so taking the whole run never loses a match; the original's
+  // adjacent \s* runs backtracked over every split ("Steps" + 2,000 spaces + "x" took seconds).
+  // test/redos.test.js checks both regexes agree on random lines.
+  const STEPS_HEAD = /^(?=(\s*))\1(?:(?:#{1,6}|\*\*)(?=(\s*))\2)?steps(?:\s+to\s+reproduce(?:\s+the\s+behaviou?r)?)?(?=(\s*))\3:?(?=(\**))\4(?=(\s*))\5:?\s*$/i;
+  // A heading is a short line; a longer one is never tested as a heading (a second guard against slow input).
+  const MAX_HEAD_LINE = 500;
+  const isStepsHead = (line) => line.length <= MAX_HEAD_LINE && STEPS_HEAD.test(line);
   const HEAD = /^\s*(#{1,6}\s+\S|\*\*[^*]+\*\*:?\s*$)/;
 
   const APP_VERSION = [
@@ -508,7 +517,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     const L = lines(body);
     const blocks = [];
     for (let i = 0; i < L.length; i++) {
-      if (STEPS_HEAD.test(L[i])) {
+      if (isStepsHead(L[i])) {
         let j = i + 1;
         while (j < L.length && !(HEAD.test(L[j]) && !STEP_LINE.test(L[j]))) {
           if (/^\s*(\*\*result|#{1,6}\s|<sup>|\[image\]|\[video\]|\*\*expected|\*\*current)/i.test(L[j])) break;
@@ -582,7 +591,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     const L = lines(body);
     const drops = new Set();
     for (const [a, b] of stepBlocks(body)) {
-      const headed = STEPS_HEAD.test(L[a]);
+      const headed = isStepsHead(L[a]);
       if (headed) drops.add(a);
       let started = false, para = false;
       for (let j = headed ? a + 1 : a; j < b; j++) {
@@ -843,7 +852,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     return { rows, paired };
   }
 
-  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, prompt, parseAnswer, cohenKappa, formatKappa, runProgress, mcnemar, summarize, stepBlocks };
+  const api = { parseRaw, check, strip, variant, applies, pairCheck, stepDrops, FIELD_KEYS, CONDITIONS, MISSING_KEYS, MAX_BODY, STEPS_HEAD, isStepsHead, prompt, parseAnswer, cohenKappa, formatKappa, runProgress, mcnemar, summarize, stepBlocks };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBT = api;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -1010,17 +1019,40 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   }
 
   const MAX_INPUT = 64000;
-  const INLINE_STEPS = /^[ \t]*(?:#{1,6}[ \t]*)?\**[ \t]*steps(?:[ \t]+to[ \t]+reproduce)?[ \t]*:?\**[ \t]*:?[ \t]*\S[^\n]{40,}$/im;
+  // Steps written on the label's own line. Returns what
+  //   body.match(/^[ \t]*(?:#{1,6}[ \t]*)?\**[ \t]*steps(?:[ \t]+to[ \t]+reproduce)?[ \t]*:?\**[ \t]*:?[ \t]*\S[^\n]{40,}$/im)
+  // returned (the first such line, or null), in linear time. That regex backtracked over every split of a run of
+  // spaces or stars, on every line: a 64k paste of "Steps" lines stalled the page for seconds.
+  // Why this is the same test: before "steps" only [ \t#*] can appear, so the label start is fixed. After it, the
+  // earliest place the text can start is the first character that is not a space or tab; any later start (after
+  // "to reproduce", a colon or stars) leaves less text, and [^\n]{40,}$ only needs enough text before the next "\n".
+  // So the line matches when that character is \S and it starts at least 41 characters before the next "\n".
+  // test/redos.test.js checks this against the regex on random text.
+  const INLINE_LABEL = /(?=([ \t]*))\1(?:#{1,6}(?=([ \t]*))\2)?(?=(\**))\3(?=([ \t]*))\4steps(?=([ \t]*))\5/iy;
+  function inlineSteps(body) {
+    let nl = -1;   // index of the next "\n" at or after the current line start (-1: not looked up yet)
+    for (let i = 0; i <= body.length; i++) {
+      // ^ in a multiline regex matches at the start and after \n, \r, \u2028 and \u2029
+      if (i > 0 && !/[\n\r\u2028\u2029]/.test(body[i - 1])) continue;
+      INLINE_LABEL.lastIndex = i;
+      if (!INLINE_LABEL.test(body)) continue;
+      const q = INLINE_LABEL.lastIndex;
+      if (nl < q) { nl = body.indexOf("\n", q); if (nl < 0) nl = body.length; }
+      if (q < body.length && /\S/.test(body[q]) && nl - q >= 41) return [body.slice(i, nl)];
+    }
+    return null;
+  }
   function analyze(report) {
     const title = String((report && report.title) || "");
     const raw = String((report && report.body) || "");
-    // the rules read at most MAX_INPUT characters, so a huge paste can't stall the page; the rewrite quotes it all
+    // the rules read at most MAX_INPUT characters and run in time linear in it (test/redos.test.js), so a huge
+    // paste can't stall the page; the rewrite quotes it all
     const truncated = raw.length > MAX_INPUT;
     const body = clean(truncated ? raw.slice(0, MAX_INPUT) : raw);   // what the rules read
     const all = title.slice(0, 1000) + "\n" + body;
     const c = Object.assign({}, T.check({ title, body, labels: [] }));
     // steps written on the label's own line: "**Steps to reproduce:** Open the app, swipe right twice, ..."
-    const inline = !c.hasSteps && body.match(INLINE_STEPS);
+    const inline = !c.hasSteps && inlineSteps(body);
     if (inline) c.hasSteps = true;
     const items = [];
     const add = (key, name, status, found, hint, required) => items.push({ key, name, status, found: found ? clip(found, 70) : null, hint, required: required !== false });
@@ -1160,7 +1192,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     } catch (e) { return null; }
   }
 
-  const api = { analyze, encodeState, decodeState, MAX_LINK_CHARS, MAX_INPUT };
+  const api = { analyze, encodeState, decodeState, inlineSteps, MAX_LINK_CHARS, MAX_INPUT };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TBC = api;
 })(typeof window !== "undefined" ? window : globalThis);
