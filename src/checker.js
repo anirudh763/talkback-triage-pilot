@@ -72,7 +72,8 @@
   const cleanWhere = (v) => v.replace(LEAD, "").trim();
   const namesSomething = (v) => /\S\s+\S|>/.test(cleanWhere(v));
   const SR_CASE = (v) => (/^talk ?back$/i.test(v) ? "TalkBack" : v);
-  const androidLabel = (v) => (v && /^\d/.test(v) ? "Android " + v : v);
+  // "Android version: 14" -> "Android 14", so the rewrite does not print the label twice
+  const androidLabel = (v) => { if (!v) return v; v = v.replace(/^android\s+(?:os\s+)?version[\s*_:=]*/i, ""); return /^\d/.test(v) ? "Android " + v : v; };
   const clip = (s, n) => { s = String(s).replace(/\s+/g, " ").replace(/[*`#]+/g, "").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 
   // The report as the rules should read it: HTML comments, unfilled template placeholders ("_No response_",

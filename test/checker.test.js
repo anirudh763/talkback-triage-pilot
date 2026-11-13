@@ -183,4 +183,12 @@ const emb = safeJson(nasty);
 assert.ok(!emb.includes("<"), "no raw < in embedded JSON");
 assert.deepStrictEqual(JSON.parse(emb), nasty);
 
+// "Android version: 14" is shown once, not as "Android version: Android version: 14" (supervisor review, round 3)
+{
+  const a = C.analyze({ title: "x", body: "Android version: 14\nDevice: Pixel 8" });
+  assert.strictEqual(status(a, "device"), "present");
+  assert.ok(!/Android version:\s*Android version/i.test(a.rewrite || JSON.stringify(a)), "label printed twice in the rewrite");
+  assert.ok(/- Android version: Android 14\b/.test(a.rewrite || JSON.stringify(a)), "rewrite shows Android 14");
+}
+
 console.log("checker tests passed");
