@@ -19,6 +19,8 @@ const MODE='${mode}';
 if(MODE!=='none'){const DB=mockDb(MODE==='guest');
 window.claude={use:async(n)=>{
  if(n==='sample'){const f=async(input,opts)=>{window.__calls++;await new Promise(r=>setTimeout(r,10));
+   if(MODE==='apifail'&&!window.__fixed)throw{code:'rate_limited'};
+   if((MODE==='broken'||(MODE==='flaky'&&window.__calls%3===0))&&!window.__fixed)return{text:'Sorry, I cannot help with that.',truncated:false,modelTierApplied:opts.modelTier};
    const body=(input.split('<<<')[1]||'');const steps=/\\n\\s*(\\d+[.)]|-)\\s/.test(body);const ver=/\\d+\\.\\d+/.test(body);
    const a={task_impact:/crash|can't|cannot|unable|skips/i.test(input)?'blocks_task':'slows_task',evidence:steps?'actionable':'needs_more_evidence',missing:[...(steps?[]:['talkback_steps']),...(ver?[]:['app_version'])],reason:'Mock reason.',ask_reporter:steps?'':'What steps did you take with TalkBack on?'};
    return{text:JSON.stringify(a),truncated:false,modelTierApplied:opts.modelTier}};return f}
@@ -68,11 +70,16 @@ const server = http.createServer((req, res) => {
     const imp = JSON.stringify({ labels: { 'WP-20770': { impact: 'blocks_task', evidence: 'actionable' }, 'WP-20150': { impact: 'slows_task', evidence: 'actionable' }, 'WP-20770~no_steps': { impact: 'blocks_task', evidence: 'needs_more_evidence' } } });
     await page.fill('#imp-name', 'Second rater'); await page.fill('#imp-json', imp); await page.click('#btn-import'); await page.waitForTimeout(150);
     console.log('[owner] import:', await page.textContent('#lab-status'));
-    console.log('[owner] agree:', (await page.textContent('#lab-agree')).replace(/\s+/g, ' ').slice(0, 220));
+    const agreeText = (await page.textContent('#lab-agree')).replace(/\s+/g, ' ');
+    console.log('[owner] agree:', agreeText.slice(0, 260));
+    // across both versions the two raters used two categories, so kappa is defined (1.00 here)
+    if (!/Enough to start reproducing100% agree · κ = 1\.00/.test(agreeText)) errors.push('two-category kappa should be 1.00: ' + agreeText.slice(0, 200));
     await page.click('#tab-pilot'); await page.waitForTimeout(100);
     const agreeTable = await page.locator('caption:has-text("same version")').locator('xpath=..').textContent().catch(() => 'MISSING');
     for (const v of ['check', 'pilot', 'label', 'about']) { await page.click('#tab-' + v); if (await page.evaluate(() => document.body.innerText.split('\n').some((l) => l.trim() === 'null'))) errors.push('stray "null" text on the ' + v + ' tab'); }
     console.log('[owner] agreement table:', agreeTable.replace(/\s+/g, ' ').slice(0, 300));
+    // as filed, Claude and the people all said "enough to start reproducing": one category, so kappa is undefined, not 1.00
+    if (!/As filed100% · κ undefined \(all labels in one category\) \(2\)/.test(agreeTable.replace(/\s+/g, ' '))) errors.push('one-category kappa should be shown as undefined: ' + agreeTable.replace(/\s+/g, ' ').slice(0, 300));
     await ctx.close();
   }
 
@@ -105,6 +112,47 @@ const server = http.createServer((req, res) => {
     await page.screenshot({ path: path.join(__dirname, 'shot-mobile-label.png') });
     await ctx.close();
   }
+  // ---- error states: unreadable AI replies (all, or some) and an API failure ----
+  for (const mode of ['broken', 'flaky']) {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await ctx.newPage(); watch(page, mode);
+    await page.goto(base + mode + '#pilot'); await page.waitForTimeout(300);
+    await page.click('#btn-run');
+    await page.waitForFunction(() => /Finished|stopped|calls finished/i.test(document.querySelector('#run-status').textContent), null, { timeout: 60000 });
+    const st = await page.textContent('#run-status'), prog = await page.textContent('#run-progress');
+    console.log('[' + mode + '] run:', st, '| progress:', prog);
+    if (!/Finished with failures/.test(st)) errors.push(mode + ': a run with failed calls was reported as finished cleanly: ' + st);
+    if (!(await page.isVisible('#btn-resume'))) errors.push(mode + ': Finish this run is hidden although calls failed');
+    if (mode === 'broken' && !/^0 of \d+ calls answered · \d+ failed/.test(prog)) errors.push('broken: progress counts errors as answers: ' + prog);
+    if (mode === 'flaky' && !/^[1-9]\d* of \d+ calls answered · [1-9]\d* failed/.test(prog)) errors.push('flaky: progress wrong: ' + prog);
+    // the failures were temporary: retrying finishes the run
+    if (!(await page.isVisible('#btn-resume'))) { await ctx.close(); continue; }
+    await page.evaluate(() => { window.__fixed = true; });
+    await page.click('#btn-resume');
+    await page.waitForFunction(() => /^Finished: /.test(document.querySelector('#run-status').textContent), null, { timeout: 60000 });
+    const after = await page.textContent('#run-progress');
+    console.log('[' + mode + '] after retry:', after, '| resume visible:', await page.isVisible('#btn-resume'));
+    const m = after.match(/^(\d+) of (\d+) calls answered/);
+    if (!m || m[1] !== m[2] || /failed/.test(after) || (await page.isVisible('#btn-resume'))) errors.push(mode + ': retry did not complete the run: ' + after);
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await ctx.newPage(); watch(page, 'apifail');
+    await page.goto(base + 'apifail'); await page.waitForTimeout(300);
+    await page.click('#btn-triage');
+    await page.waitForFunction(() => document.querySelector('#triage-status').classList.contains('err'));
+    const st = await page.textContent('#triage-status');
+    console.log('[apifail] triage:', st);
+    if (!/Too many Claude calls/.test(st)) errors.push('apifail: API failure not explained: ' + st);
+    await page.click('#tab-pilot'); await page.click('#btn-run');
+    await page.waitForFunction(() => document.querySelector('#run-status').classList.contains('err'), null, { timeout: 30000 });
+    const rs = await page.textContent('#run-status');
+    console.log('[apifail] run:', rs, '| resume visible:', await page.isVisible('#btn-resume'));
+    if (!/Finish this run/.test(rs) || !(await page.isVisible('#btn-resume'))) errors.push('apifail: run failure offers no way to continue: ' + rs);
+    await ctx.close();
+  }
+
   await browser.close(); server.close();
   console.log('\nERRORS:', errors.length ? errors.join('\n') : 'none');
   process.exitCode = errors.length ? 1 : 0;

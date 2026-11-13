@@ -98,6 +98,7 @@
   <div class="lede">
     <h2>Two-app pilot</h2>
     <p class="muted" id="pilot-lede"></p>
+    <p class="small muted">Exploratory: one AI run, no human labels yet. Shortened copies pass an automated check, which has known gaps (see How the study works).</p>
   </div>
 
   <div class="tablewrap" id="coverage"></div>
@@ -182,7 +183,7 @@
     <ol class="steps">
       <li><div><h3>Collect real reports</h3><p class="muted">Public GitHub issues from two open-source Android apps, fetched on 9 November 2026. WordPress for Android: issues labelled <code>Accessibility</code> that mention TalkBack or a screen reader (51). AntennaPod: every issue labelled <code>Area: Accessibility</code> (24). Images and videos become <code>[image]</code> and <code>[video]</code>, template checklists are dropped, and bodies are cut at about 1,200 characters.</p></div></li>
       <li><div><h3>Check each report</h3><p class="muted">Pattern rules flag six details: TalkBack reproduction steps, app version, Android version or device, expected vs. actual behaviour, what TalkBack said, and a recording or screenshot. The rules are deterministic, so anyone can rerun them.</p></div></li>
-      <li><div><h3>Make controlled copies</h3><p class="muted">"TalkBack steps removed" drops only the action steps: the steps heading and the list items under it. It keeps steps that report what happened (for example "Notice it crashes"), anything TalkBack said, recordings, notes, workarounds and "Tested on" lines. "Version removed" drops the app version, Android version, device and app source. Each copy is checked: if the checker sees that any other detail was lost, that copy is not run. Every removal is listed line by line in <code>results/pair_review.md</code>, and the report view shows it with strike-through.</p></div></li>
+      <li><div><h3>Make controlled copies</h3><p class="muted">"TalkBack steps removed" drops only the action steps: the steps heading and the list items under it. It keeps steps that report what happened (for example "Notice it crashes"), anything TalkBack said, recordings, notes, workarounds and "Tested on" lines. "Version removed" drops the app version, Android version, device and app source. Each copy is checked: if the checker sees that any other detail was lost, that copy is not run. Every removal is listed line by line in <code>results/pair_review.md</code>, and the report view shows it with strike-through. This check is automated pattern matching: it confirms the other measured details are still there, not that nothing else changed in meaning. Two known cases: WordPress-Android #21127's copy without steps still has a sentence that describes how to reproduce the bug ("When Talkback is enabled, scrolling to a page where the remove button is offscreen..."), and AntennaPod #8145's copy drops a step that reports what happened ("Screens auto advance without a next/previous").</p></div></li>
       <li><div><h3>Ask Claude about each copy</h3><p class="muted">Each copy goes to Claude in its own call with the same instructions. Claude answers two questions: could a developer start reproducing this with the information here, and could a TalkBack user finish the task. It also says what is missing. No confidence score is shown, because a model's self-reported confidence isn't calibrated.</p></div></li>
       <li><div><h3>Compare, then check against people</h3><p class="muted">The pilot counts how often Claude's answer changes between a report and its shortened copy, with an exact McNemar test on the pairs. People label reports in the Label tab, blind to Claude's answers, using the same rubric. Each version is scored only against labels of that same version. A simple checklist rule (enough to start reproducing when the text has steps) is scored the same way, to see whether Claude adds anything over the checklist.</p></div></li>
     </ol>
@@ -192,6 +193,7 @@
       <h3>What the results can and can't show</h3>
       <ul>
         <li>The removal comparison shows whether Claude's answer depends on those lines. It doesn't show that Claude is right.</li>
+        <li>The "clean copy" check is automated. It doesn't prove a copy differs only in the removed detail; see WordPress-Android #21127 and AntennaPod #8145 above.</li>
         <li>Whether Claude is right needs two people labelling independently. Start with five reports, compare, tighten the rubric, then label more.</li>
         <li>Many WordPress issues were written by the app team as audits, not by end users. Report the two apps separately.</li>
         <li>Model answers vary between runs. Repeat runs, and keep the model setting fixed within a comparison.</li>
@@ -682,7 +684,9 @@
     // never let a slow save hold the page in "running"
     const settle = (pr) => Promise.race([pr.catch(() => {}), new Promise((r) => setTimeout(r, 8000))]);
     await settle(writes);
-    const status = failed || signal.aborted ? "stopped" : "done";
+    // a run is done only when every planned call has an answer; unreadable or refused replies can be retried
+    const prog = T.runProgress(run.items, run.meta.total);
+    const status = failed || signal.aborted ? "stopped" : prog.complete ? "done" : "incomplete";
     run.meta.status = status;
     // mark the run finished after its answers are saved, without holding the page
     if (db && !run.local) writes.then(() => db.doc("runs/" + runId).update({ status })).catch(() => db.doc("runs/" + runId).set(Object.assign({}, run.meta, { status })).catch(() => {}));
@@ -692,6 +696,7 @@
     updateCallCount();
     if (failed) { st.textContent = errText(failed) + " " + done + " of " + total + " calls finished; use Finish this run to continue later."; st.classList.add("err"); }
     else if (signal.aborted) st.textContent = "Stopped after " + done + " of " + total + " calls. Use Finish this run to continue.";
+    else if (prog.errors) { st.textContent = "Finished with failures: " + prog.answered + " of " + prog.total + " calls answered, " + prog.errors + " came back unreadable or refused. Use Finish this run to retry them."; st.classList.add("err"); }
     else st.textContent = "Finished: " + done + " calls.";
     // shortcut: counts only saves that failed before the 8-second wait above ended
     if (unsaved) { st.textContent += " Answers for " + unsaved + (unsaved === 1 ? " report were" : " reports were") + " not saved with this page and will be gone after a reload. Download the CSV now."; st.classList.add("err"); }
@@ -744,10 +749,11 @@
     for (const rid in run.items) { results[rid] = {}; for (const c in run.items[rid]) if (!run.items[rid][c].error) results[rid][c] = run.items[rid][c]; }
     const reports = (run.meta.scope === "all" ? REPORTS : eligible);
     const S = T.summarize(reports, results, conds);
-    const doneCalls = Object.values(run.items).reduce((s, x) => s + Object.keys(x).length, 0);
-    if (!running && run.meta.total && doneCalls >= run.meta.total) run.meta.status = "done";
-    const incomplete = !running && doneCalls < (run.meta.total || 0);
-    $("#btn-resume").hidden = !incomplete;
+    // count answers and failed calls separately: a saved error is not an answer
+    const prog = T.runProgress(run.items, run.meta.total);
+    if (!running && prog.complete) run.meta.status = "done";
+    const incomplete = !running && !prog.complete && prog.total > 0;
+    $("#btn-resume").hidden = !(incomplete && sample);
 
     // run picker
     const picker = h("select", { id: "run-pick", "aria-label": "Saved run" }, ids.map((id) => {
@@ -826,7 +832,7 @@
 
     box.replaceChildren(...[
       h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Results"), h("label", { class: "row small", for: "run-pick" }, "Run", picker)),
-      h("p", { class: "small muted" }, doneCalls + " of " + (run.meta.total || "?") + " calls answered · " + (run.meta.tier === "quick" ? "Quick" : "Default") + " model · " + (run.meta.scope === "all" ? "all reports" : "reports with steps or version")),
+      h("p", { class: "small muted", id: "run-progress" }, prog.answered + " of " + (run.meta.total || "?") + " calls answered" + (prog.errors ? " · " + prog.errors + " failed (unreadable or refused; Finish this run retries them)" : "") + " · " + (run.meta.tier === "quick" ? "Quick" : "Default") + " model · " + (run.meta.scope === "all" ? "all reports" : "reports with steps or version")),
       finding,
       h("div", { class: "tablewrap" }, mt),
       Object.keys(S.paired).length ? h("div", { class: "card pad stack" }, h("h3", null, "Paired comparison"), pairedList) : null,
@@ -1006,9 +1012,9 @@
       parts.push(both.length
         ? h("dl", { class: "kv" },
           h("dt", null, "Labelled by both"), h("dd", null, String(both.length)),
-          h("dt", null, "Enough to start reproducing"), h("dd", null, Math.round(ke.po * 100) + "% agree · κ = " + ke.k.toFixed(2)),
-          h("dt", null, "Blocks the task, yes/no"), h("dd", null, Math.round(kb.po * 100) + "% agree · κ = " + kb.k.toFixed(2)),
-          h("dt", null, "Task impact, 4 levels"), h("dd", null, Math.round(ki.po * 100) + "% agree · κ = " + ki.k.toFixed(2)))
+          h("dt", null, "Enough to start reproducing"), h("dd", null, Math.round(ke.po * 100) + "% agree · κ = " + T.formatKappa(ke)),
+          h("dt", null, "Blocks the task, yes/no"), h("dd", null, Math.round(kb.po * 100) + "% agree · κ = " + T.formatKappa(kb)),
+          h("dt", null, "Task impact, 4 levels"), h("dd", null, Math.round(ki.po * 100) + "% agree · κ = " + T.formatKappa(ki)))
         : h("p", { class: "small muted" }, nameOf(a) + " and " + nameOf(b) + " haven't labelled the same reports yet."));
       if (both.length && both.length < 20) parts.push(h("p", { class: "small muted" }, "With fewer than about 20 shared labels, kappa moves a lot with each disagreement. Use it to find where the rubric is unclear, not as a result."));
     } else parts.push(h("p", { class: "small muted" }, "Agreement appears once two people have labelled the same reports."));
@@ -1037,7 +1043,7 @@
     const ref = referenceLabels();
     const n = Object.keys(ref).length;
     if (!n) return h("div", { class: "notice" }, "Agreement with people appears here once reports are labelled in the Label reports tab. Each version is compared only with labels of that same version.");
-    const cellK = (k) => h("td", null, k && k.n ? Math.round(k.po * 100) + "% · κ " + k.k.toFixed(2) + " (" + k.n + ")" : "–");
+    const cellK = (k) => h("td", null, k && k.n ? Math.round(k.po * 100) + "% · κ " + T.formatKappa(k) + " (" + k.n + ")" : "–");
     const rows = conds.map((c) => {
       const pB = [], pE = [], pR = [];
       for (const r of reports) {

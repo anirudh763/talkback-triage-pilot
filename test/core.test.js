@@ -17,6 +17,22 @@ for (const [a, b, n] of [["y", "y", 20], ["y", "n", 5], ["n", "y", 10], ["n", "n
 near(T.cohenKappa(pairs).k, 0.4);
 near(T.cohenKappa(pairs).po, 0.7);
 assert.strictEqual(T.cohenKappa([]), null);
+// all labels in one category: chance agreement is 1, so kappa is undefined, not 1 (review 2, item 4)
+const same = T.cohenKappa([["y", "y"], ["y", "y"], ["y", "y"], ["y", "y"], ["y", "y"]]);
+assert.strictEqual(same.k, null);
+assert.strictEqual(same.po, 1);
+assert.strictEqual(same.n, 5);
+assert.ok(/one category|chance/i.test(same.reason), "says why kappa is undefined");
+assert.strictEqual(T.formatKappa(same), "undefined (all labels in one category)");
+assert.strictEqual(T.formatKappa(T.cohenKappa(pairs)), "0.40");
+
+// run progress counts answered calls and failed calls separately (review 2, item 3)
+const ok1 = { impact: "minor", evidence: "actionable", missing: [] };
+const mixed = T.runProgress({ A: { full: ok1, no_steps: { error: "invalid_json" } }, B: { full: ok1 } }, 4);
+assert.deepStrictEqual(mixed, { total: 4, attempted: 3, answered: 2, errors: 1, remaining: 2, complete: false });
+const allErr = T.runProgress({ A: { full: { error: "refused" }, no_steps: { error: "invalid_json" } } }, 2);
+assert.deepStrictEqual(allErr, { total: 2, attempted: 2, answered: 0, errors: 2, remaining: 2, complete: false });
+assert.strictEqual(T.runProgress({ A: { full: ok1 } }, 1).complete, true);
 
 // the answer parser reads plain and fenced JSON
 const good = { task_impact: "blocks_task", evidence: "actionable", missing: ["app_version", "not_a_key"], reason: "r", ask_reporter: "q" };

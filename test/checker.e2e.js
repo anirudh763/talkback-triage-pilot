@@ -166,6 +166,55 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await ctx.close();
   }
 
+  // ---- keyboard only: reach and use the checker without a pointer, with a visible focus ring ----
+  console.log("keyboard, zoom and error states");
+  {
+    const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] });
+    const focusOutline = () => page.evaluate(() => { const s = getComputedStyle(document.activeElement); return s.outlineStyle !== "none" && parseFloat(s.outlineWidth) >= 2; });
+    const tabTo = async (id, max) => { for (let i = 0; i < (max || 40); i++) { await page.keyboard.press("Tab"); if (await page.evaluate((x) => document.activeElement.id === x, id)) return true; } return false; };
+    ok(await tabTo("btn-sample"), "keyboard: Tab reaches \"Try a sample report\"");
+    ok(await focusOutline(), "keyboard: focused button shows a focus ring");
+    const before = await page.inputValue("#in-title");
+    await page.keyboard.press("Enter");
+    ok((await page.inputValue("#in-title")) !== before && (await page.locator('#checklist li[data-status="notfound"]').count()) >= 1, "keyboard: Enter loads the next sample and checks it");
+    ok(await tabTo("in-body"), "keyboard: Tab reaches the report box");
+    await page.keyboard.press("Control+A"); await page.keyboard.type("1. Open the Episodes screen\n2. Tap Play\nApp version: 9");
+    await page.waitForTimeout(300);
+    ok(/App version/.test(await page.textContent("#checklist")) && (await page.locator('#checklist li[data-key="appVersion"]').getAttribute("data-status")) === "present", "keyboard: typed text is checked as you type");
+    ok(await tabTo("btn-copy-tpl"), "keyboard: Tab reaches Copy report");
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.querySelector("#copy-tpl-status").textContent);
+    ok((await page.evaluate(() => navigator.clipboard.readText())).includes("App version: 9"), "keyboard: Enter on Copy report copies the rewrite");
+    await ctx.close();
+  }
+  // ---- 200% zoom: a 1280px window at 200% is a 640px-wide CSS viewport with 2x pixels ----
+  {
+    const { ctx, page } = await open({ viewport: { width: 640, height: 450 }, deviceScaleFactor: 2 });
+    for (const v of ["check", "pilot", "label", "about"]) {
+      await page.click("#tab-" + v); await page.waitForTimeout(60);
+      const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      ok(over <= 0, "200% zoom " + v + ": no horizontal page scroll (overflow " + over + "px)");
+    }
+    await page.click("#tab-check");
+    const cut = await page.$$eval("#checklist .name, #checklist .state, .tab, #btn-sample, #btn-copy-tpl", (els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > window.innerWidth).map((e) => e.textContent));
+    ok(!cut.length, "200% zoom: labels and buttons are not cut off" + (cut.length ? ": " + cut.join(", ") : ""));
+    await ctx.close();
+  }
+  // ---- error states: empty input, a report too long for a link, a broken link ----
+  {
+    const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] });
+    await page.click("#btn-clear");
+    await page.waitForTimeout(100);
+    ok(/Nothing to check yet/.test(await page.textContent("#chk-score")) && /Paste a report/.test(await page.textContent("#ex-source")), "empty input: says what to do");
+    await page.fill("#in-body", "x".repeat(13000));
+    await page.click("#btn-link");
+    await page.waitForFunction(() => document.querySelector("#link-status").textContent);
+    ok(/too long to put in a link/.test(await page.textContent("#link-status")), "too long for a link: says so and suggests copying the rewrite");
+    await page.goto(base + "#check?text=AAAA"); await page.waitForTimeout(150);
+    ok(/couldn't be read/.test(await page.textContent("#ex-source")), "a link with an unreadable report says so");
+    await ctx.close();
+  }
+
   // ---- Content Security Policy: the page can't send data to another site ----
   {
     const ctx = await browser.newContext();
