@@ -36,7 +36,7 @@ contrast:   # WCAG relative luminance, computed from the hex values above
   - { fg: accent, bg: bg-subtle, light: 6.00, dark: 5.59, need: 4.5 }       # header "Source on GitHub"
   - { fg: accent-fg, bg: accent, light: 6.39, dark: 6.11, need: 4.5 }       # primary button
   - { fg: accent-fg, bg: "accent at brightness(.92)", light: 7.20, dark: 5.24, need: 4.5 }  # primary hover, sRGB multiply
-  - { fg: accent-fg, bg: "accent at brightness(.9)", light: 7.42, dark: 5.03, need: 4.5 }   # primary active
+  - { fg: accent-fg, bg: "accent at brightness(.85)", light: 8.00, dark: 4.55, need: 4.5 }  # primary active (tightest pair)
   - { fg: fg, bg: accent-subtle, light: 13.79, dark: 14.30, need: 4.5 }     # found tag, selected row
   - { fg: ok, bg: bg, light: 5.08, dark: 7.45, need: 4.5 }
   - { fg: warn, bg: bg, light: 4.87, dark: 7.50, need: 4.5 }
@@ -59,10 +59,10 @@ elevation: { page: flat, boxes: "1px border, no shadow", dialog: "none (the app 
 motion:
   default: none
   allowed:
-    - { name: ".btn background/border", duration: 120ms, easing: ease, iterations: 1, reduce: off, src: "ui.css:26" }
+    - { name: ".btn background/border", duration: 120ms, easing: ease, iterations: 1, reduce: off, src: "ui.css:40" }
     - { name: ".progress > i transform", duration: 200ms, easing: linear, iterations: 1, reduce: off, src: "app.css:142" }
 components:
-  app-header:   { base: "ui.css:35-36 + app.css:24-29", parts: "h1.name, tablist nav, a.repo", states: [focus-visible] }
+  app-header:   { base: "ui.css:35-38 + app.css:24-29", parts: "h1.name, tablist nav, a.repo", states: [focus-visible] }
   tab:          { base: "app.css:31-33", radius: none, minTarget: "auto x 44", states: [hover, selected (2px accent underline + fg), focus-visible] }
   btn:          { base: "ui.css:23-27", radius: md, minTarget: "auto x 32", states: [hover, active, focus-visible, disabled] }
   btn.link:     { base: "app.css:57", minTarget: "auto x 24", states: [focus-visible], use: "Details in the per-report table" }
@@ -109,7 +109,7 @@ Off by default. Two transitions, both one-shot and both inside `prefers-reduced-
 
 ## Components
 - Tabs: ARIA tablist, arrow keys move, URL hash follows the tab. Selected tab has a 2px accent underline and full-strength text.
-- Buttons: ui.css `.btn` (32px). Hover and active use `bg-inset`; the primary button darkens with `brightness(.92)` on hover and `.9` when pressed. Disabled is 55% opacity with a not-allowed cursor.
+- Buttons: ui.css `.btn` (32px). Hover and active use `bg-inset`; the primary button darkens with `brightness(.92)` on hover and `.85` when pressed (4.55:1 in dark, the tightest pair). ui.css also styles `.btn[aria-pressed="true"]`; this app has no toggle buttons, so it is unused here. Disabled is 55% opacity with a not-allowed cursor.
 - Checklist rows: icon + word + colour + the matched text.
 - Labels (`.label`): impact (Blocks the task = bad, Slows the task = warn, Minor = ok, Can't tell = plain) and evidence (Enough to start reproducing = accent, Needs more evidence = warn). The word is always the label's text.
 - Detail tags in "Every report in this run": a found tag is solid with an accent border and fill; a not-found tag is dashed, struck through and muted. The caption explains this and spells out the codes; each tag also has visually hidden "<detail> found / not found" text and a `title`.
@@ -131,7 +131,8 @@ Off by default. Two transitions, both one-shot and both inside `prefers-reduced-
 
 ## Known gaps
 - `style-src` keeps `'unsafe-inline'`: the build inlines CSS into `<style>` blocks (scripts stay hash-only), and the bar cells in the coverage and results tables still set `width` through a `style` attribute (static, not animated).
-- `src/ui.css` here already includes the cross-app changes from the 2026-11-13 design audit (`.app-header .repo`, `.btn` hover/active, root size in %). The canonical shared copy must get the same lines or the five apps drift.
+- `src/ui.css` is a byte-for-byte copy of the shared base as of 2026-11-13 (with the cross-app audit fixes). Change it only by copying the shared file again.
+- The primary button's pressed state in dark mode is 4.55:1, just above 4.5.
 - `border-strong` on `bg-subtle` is 3.24:1 light / 3.26:1 dark: it passes 3:1 but has little margin. Inputs sit on `bg` (3.45 / 3.57).
 - Contrast for the primary button's hover and active states is computed by multiplying sRGB channels; the browser's filter result may differ slightly.
 - Checks are automated (axe-core, Playwright). A manual screen-reader pass has not been run.

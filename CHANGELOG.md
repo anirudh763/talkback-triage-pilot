@@ -15,7 +15,7 @@ The checker's rules, scoring, `data/` and `results/` are unchanged.
 - Report text, the rewritten report and the report viewer are .875rem; form fields are 16px on touch devices so iOS does not zoom.
 - Notices and the no-JavaScript message lost their coloured left stripe.
 - The pilot's progress bar scales with a transform instead of animating its width.
-- `src/ui.css`: root size 93.75% (a larger browser default font now applies), buttons get a pressed state and primary buttons a hover state, colour transitions only when reduced motion is off, and `.app-header .repo` is shared.
+- `src/ui.css` is the updated shared base, copied unchanged: root size 93.75% (a larger browser default font now applies), buttons get a pressed state and primary buttons a hover state, colour transitions only when reduced motion is off, `.app-header .repo` and `.btn[aria-pressed="true"]` are shared.
 - Tests: `test/checker.e2e.js` checks that found and not-found tags differ by more than colour (light and dark); `test/e2e.js` checks the finished progress bar is a full transform with no width transition.
 
 ### Usability: install, offline and a ready-made issue form
