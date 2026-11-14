@@ -1,4 +1,4 @@
-/* Shared UI base, round 4 (root-approved light-first system, 2026-11-13). App-specific styles go in app.css.
+/* TalkBack writing-desk base. App-specific composition lives in app.css.
    LIGHT by default, also when the OS prefers dark: there is no prefers-color-scheme switch. Dark applies only
    when the person chooses it ([data-theme="dark"] on <html>, set by the labelled toggle). WCAG 2.2 AA:
    text >= 4.5:1, borders/focus >= 3:1, 44px targets, status colours always paired with text. */
@@ -6,27 +6,30 @@
 @font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-display:swap;src:url(atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
 :root{
   /* tokens */
-  --canvas:#f7f8fa; --bg:#ffffff; --rail:#f0f3f5; --fg:#152536; --fg-muted:#4b5e6f;
-  --border-strong:#748694; --border:#dce2e8; --accent:#006b5e; --accent-fg:#ffffff; --accent-subtle:#e3f1ee;
-  --ok:#12633c; --warn:#925400; --bad:#b42318; --ok-subtle:#e6f2eb; --bad-subtle:#fbeae8; --warn-subtle:#fbf1e0;
+  --canvas:#fff9ef; --bg:#fffdf8; --rail:#fff9ef; --fg:#302737; --fg-muted:#66586b;
+  --border-strong:#8e7b91; --border:#e2d7db; --accent:#592b86; --accent-fg:#ffffff; --accent-subtle:#eee4f4;
+  --ok:#326146; --warn:#855006; --bad:#9b354e; --ok-subtle:#e9f1e9; --bad-subtle:#f8e9ed; --warn-subtle:#fcf0d9;
   /* derived */
-  --bg-subtle:#f7f8fa; --bg-inset:#eceff2; --focus:#006b5e;
-  --radius:7px; --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg-subtle:#f7f0e7; --bg-inset:#eee5e2; --focus:#592b86;
+  --radius:5px; --font:system-ui,-apple-system,"Segoe UI",Roboto,"Atkinson Hyperlegible",sans-serif;
+  --document:Georgia,"Times New Roman",serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:32px; --target:44px;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --canvas:#0f1720; --bg:#16202a; --rail:#131c25; --fg:#e7edf2; --fg-muted:#a9b7c4;
-  --border-strong:#8696a4; --border:#2d3b48; --accent:#5fd0be; --accent-fg:#0a1f1c; --accent-subtle:#14302c;
-  --ok:#72d49e; --warn:#e9ba62; --bad:#ff998a; --ok-subtle:#132a1e; --bad-subtle:#33191a; --warn-subtle:#2e2414;
-  --bg-subtle:#1b2631; --bg-inset:#22303c; --focus:#5fd0be;
+  --canvas:#211b26; --bg:#2c2432; --rail:#211b26; --fg:#f5edf5; --fg-muted:#c5b6c9;
+  --border-strong:#a58eac; --border:#514356; --accent:#d4aff4; --accent-fg:#2c153d; --accent-subtle:#45314f;
+  --ok:#a0d4ad; --warn:#f0c579; --bad:#f1a7b9; --ok-subtle:#293d30; --bad-subtle:#492936; --warn-subtle:#46351f;
+  --bg-subtle:#332a39; --bg-inset:#413448; --focus:#d4aff4;
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{font-size:100%} body{margin:0;background:var(--canvas);color:var(--fg);font-family:var(--font);font-size:1rem;line-height:1.5}
 code,kbd,pre,.mono{font-family:var(--mono);font-size:.875rem}
 a{color:var(--accent);text-underline-offset:2px} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+a[href],button,summary,select,label[for],label:has(input[type="checkbox"],input[type="radio"]),input[type="checkbox"],input[type="radio"]{cursor:pointer}
+a:hover{text-decoration-thickness:2px} a:active{opacity:.8}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:30;background:var(--bg);padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--target);padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;line-height:1.25;cursor:pointer;text-decoration:none}
 .btn:hover{background:var(--bg-inset)} .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
