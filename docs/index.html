@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-A9aR1WB4oRh7WdXzdJyHg42o6WdmUxBWDg2F4HEAiCU=' 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-8rrvp3IlKpx7OC3Z4x7PLm4TD7SUo9IRxFA04K08lXQ=' 'sha256-wRlrf3jA2wiTioKp9vCUYehjPFRiZlOPP+uUEnLB6/c='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-A9aR1WB4oRh7WdXzdJyHg42o6WdmUxBWDg2F4HEAiCU=' 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-8rrvp3IlKpx7OC3Z4x7PLm4TD7SUo9IRxFA04K08lXQ=' 'sha256-Mtw9EwbOW6qGX8JgaIfmK9WRzS4Y+QUBVOtg4eYXfdg='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <meta name="theme-color" content="#fff9ef">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -1839,7 +1839,9 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   let inputTimer = null;
   ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => {
     clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
-    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text."; }
+    if (shownId) { shownId = null; exSel.value = ""; }
+    $("#ex-source").textContent = $("#in-title").value.trim() || $("#in-body").value.trim()
+      ? "Your own text." : "Cleared. Paste a report to check it.";
     if (current() === "check") setHash("check");
     // keep the tab's copy current even before the debounced check runs
     session.set({ title: $("#in-title").value, body: $("#in-body").value, id: null });
