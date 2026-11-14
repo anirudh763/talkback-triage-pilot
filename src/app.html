@@ -707,7 +707,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     const body = $("#in-body");
     body.value = body.value.replace(/\s+$/, "") + GAPS[it.key].add(v) + "\n";
     delete gapDraft[it.key];
-    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text, starting from a dataset report."; if (current() === "check") setHash("check"); }
+    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text, starting from a dataset report."; }
+    if (current() === "check") setHash("check");
     updateChecklist(true);
     const now = lastResult.items.find((x) => x.key === it.key);
     $("#gap-status").textContent = now && now.status === "present" ? "Added " + GAPS[it.key].label.toLowerCase() + " to the report. The checker now finds it."
@@ -760,7 +761,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   let inputTimer = null;
   ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => {
     clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
-    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text."; if (current() === "check") setHash("check"); }
+    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text."; }
+    if (current() === "check") setHash("check");
     // keep the tab's copy current even before the debounced check runs
     session.set({ title: $("#in-title").value, body: $("#in-body").value, id: null });
   }));
