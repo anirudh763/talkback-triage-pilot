@@ -770,7 +770,9 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   let inputTimer = null;
   ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => {
     clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
-    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text."; }
+    if (shownId) { shownId = null; exSel.value = ""; }
+    $("#ex-source").textContent = $("#in-title").value.trim() || $("#in-body").value.trim()
+      ? "Your own text." : "Cleared. Paste a report to check it.";
     if (current() === "check") setHash("check");
     // keep the tab's copy current even before the debounced check runs
     session.set({ title: $("#in-title").value, body: $("#in-body").value, id: null });

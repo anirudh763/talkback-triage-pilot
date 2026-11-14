@@ -234,6 +234,9 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.click("#btn-clear");
     await page.waitForTimeout(100);
     ok(/Nothing to check yet/.test(await page.textContent("#chk-score")) && /Paste a report/.test(await page.textContent("#ex-source")), "empty input: says what to do");
+    await page.fill("#in-body", "App version: 1.2.3\nAndroid 15, Pixel 8\nEnable TalkBack.\n1. Open Settings.\n2. Swipe to Save.\nExpected: Save is announced.\nActual: Save is skipped.");
+    await page.waitForFunction(() => !document.querySelector("#chk-score").textContent.includes("Nothing to check yet"));
+    ok((await page.textContent("#ex-source")) === "Your own text.", "typing after Clear replaces the empty-source instruction");
     await page.fill("#in-body", "x".repeat(13000));
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
