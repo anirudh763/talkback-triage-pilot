@@ -156,8 +156,10 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   }); }
   await guard("block at line 125", async () => {
     const { ctx, page } = await open({ viewport: { width: 1440, height: 900 } }, "#/check");
-    ok(!(await page.getByRole("button", { name: "Menu", exact: true }).isVisible()) && (await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), "1440px: permanent 216px rail, no Menu button");
-    ok(Math.round((await page.locator("#rail").boundingBox()).width) === 216, "1440px: rail is 216px wide");
+    ok(!(await page.getByRole("button", { name: "Menu", exact: true }).isVisible()) && (await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), "1440px: top route tabs, no Menu button");
+    const navBox = await page.locator("#rail").boundingBox();
+    const sheetBox = await page.locator(".document-sheet").first().boundingBox();
+    ok(navBox.width === 1440 && navBox.height < 120 && sheetBox.y > navBox.y + navBox.height, "1440px: full-width compact navigation above the document sheet");
     await ctx.close();
   });
 
@@ -298,16 +300,16 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   await guard("block at line 189", async () => {
     const { ctx, page } = await open({ colorScheme: "dark" }, "#/check");
     const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    ok((await bg()) === "rgb(247, 248, 250)", "OS prefers dark, first visit: canvas is light #f7f8fa (" + (await bg()) + ")");
+    ok((await bg()) === "rgb(255, 249, 239)", "OS prefers dark, first visit: canvas is light ivory #fff9ef (" + (await bg()) + ")");
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") !== "dark"), "no dark theme attribute by default");
     const btn = page.getByRole("button", { name: "Dark theme" });
     ok((await btn.getAttribute("aria-pressed")) === "false", "an explicit, labelled Dark theme toggle (aria-pressed=false)");
     await btn.click(); await page.waitForTimeout(60);
-    ok((await btn.getAttribute("aria-pressed")) === "true" && (await bg()) !== "rgb(247, 248, 250)", "the toggle switches to dark (" + (await bg()) + ")");
+    ok((await btn.getAttribute("aria-pressed")) === "true" && (await bg()) !== "rgb(255, 249, 239)", "the toggle switches to dark (" + (await bg()) + ")");
     await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" });
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") === "dark"), "the dark choice is remembered after a reload");
     await page.getByRole("button", { name: "Dark theme" }).click(); await page.waitForTimeout(60);
-    ok((await bg()) === "rgb(247, 248, 250)", "toggling again returns to light");
+    ok((await bg()) === "rgb(255, 249, 239)", "toggling again returns to light");
     await ctx.close();
   });
 

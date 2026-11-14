@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-A9aR1WB4oRh7WdXzdJyHg42o6WdmUxBWDg2F4HEAiCU=' 'sha256-SAg9twp00yCf7otyFgCyoS+e4A5/DcrvQBHdz2pLGGM=' 'sha256-8rrvp3IlKpx7OC3Z4x7PLm4TD7SUo9IRxFA04K08lXQ=' 'sha256-wRlrf3jA2wiTioKp9vCUYehjPFRiZlOPP+uUEnLB6/c='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
-<meta name="theme-color" content="#f7f8fa">
+<meta name="theme-color" content="#fff9ef">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -13,7 +13,7 @@
 </head>
 <body>
 <title>Check a report – TalkBack Triage</title>
-<style>/* Shared UI base, round 4 (root-approved light-first system, 2026-11-13). App-specific styles go in app.css.
+<style>/* TalkBack writing-desk base. App-specific composition lives in app.css.
    LIGHT by default, also when the OS prefers dark: there is no prefers-color-scheme switch. Dark applies only
    when the person chooses it ([data-theme="dark"] on <html>, set by the labelled toggle). WCAG 2.2 AA:
    text >= 4.5:1, borders/focus >= 3:1, 44px targets, status colours always paired with text. */
@@ -21,27 +21,30 @@
 @font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-display:swap;src:url(atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
 :root{
   /* tokens */
-  --canvas:#f7f8fa; --bg:#ffffff; --rail:#f0f3f5; --fg:#152536; --fg-muted:#4b5e6f;
-  --border-strong:#748694; --border:#dce2e8; --accent:#006b5e; --accent-fg:#ffffff; --accent-subtle:#e3f1ee;
-  --ok:#12633c; --warn:#925400; --bad:#b42318; --ok-subtle:#e6f2eb; --bad-subtle:#fbeae8; --warn-subtle:#fbf1e0;
+  --canvas:#fff9ef; --bg:#fffdf8; --rail:#fff9ef; --fg:#302737; --fg-muted:#66586b;
+  --border-strong:#8e7b91; --border:#e2d7db; --accent:#592b86; --accent-fg:#ffffff; --accent-subtle:#eee4f4;
+  --ok:#326146; --warn:#855006; --bad:#9b354e; --ok-subtle:#e9f1e9; --bad-subtle:#f8e9ed; --warn-subtle:#fcf0d9;
   /* derived */
-  --bg-subtle:#f7f8fa; --bg-inset:#eceff2; --focus:#006b5e;
-  --radius:7px; --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg-subtle:#f7f0e7; --bg-inset:#eee5e2; --focus:#592b86;
+  --radius:5px; --font:system-ui,-apple-system,"Segoe UI",Roboto,"Atkinson Hyperlegible",sans-serif;
+  --document:Georgia,"Times New Roman",serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:32px; --target:44px;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --canvas:#0f1720; --bg:#16202a; --rail:#131c25; --fg:#e7edf2; --fg-muted:#a9b7c4;
-  --border-strong:#8696a4; --border:#2d3b48; --accent:#5fd0be; --accent-fg:#0a1f1c; --accent-subtle:#14302c;
-  --ok:#72d49e; --warn:#e9ba62; --bad:#ff998a; --ok-subtle:#132a1e; --bad-subtle:#33191a; --warn-subtle:#2e2414;
-  --bg-subtle:#1b2631; --bg-inset:#22303c; --focus:#5fd0be;
+  --canvas:#211b26; --bg:#2c2432; --rail:#211b26; --fg:#f5edf5; --fg-muted:#c5b6c9;
+  --border-strong:#a58eac; --border:#514356; --accent:#d4aff4; --accent-fg:#2c153d; --accent-subtle:#45314f;
+  --ok:#a0d4ad; --warn:#f0c579; --bad:#f1a7b9; --ok-subtle:#293d30; --bad-subtle:#492936; --warn-subtle:#46351f;
+  --bg-subtle:#332a39; --bg-inset:#413448; --focus:#d4aff4;
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{font-size:100%} body{margin:0;background:var(--canvas);color:var(--fg);font-family:var(--font);font-size:1rem;line-height:1.5}
 code,kbd,pre,.mono{font-family:var(--mono);font-size:.875rem}
 a{color:var(--accent);text-underline-offset:2px} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+a[href],button,summary,select,label[for],label:has(input[type="checkbox"],input[type="radio"]),input[type="checkbox"],input[type="radio"]{cursor:pointer}
+a:hover{text-decoration-thickness:2px} a:active{opacity:.8}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:30;background:var(--bg);padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--target);padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;line-height:1.25;cursor:pointer;text-decoration:none}
 .btn:hover{background:var(--bg-inset)} .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -59,67 +62,72 @@ th{font-size:.875rem;color:var(--fg-muted);font-weight:700;background:var(--bg-s
 @media (prefers-reduced-motion:no-preference){.btn{transition:background-color 120ms,border-color 120ms}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<style>/* TalkBack Triage: app styles on top of ui.css. Light-first developer tool (round 4):
-   216px left rail + compact white location header + one task per screen, 32px workspace gutter, ~1100px max.
-   Under 1000px there is no permanent rail: a labelled Menu button opens the rail as a sheet. */
-:root { --removed-bg: var(--bad-subtle); --removed-ink: var(--bad); --mark-add-bg: #fbe4e1; --mark-add-fg: #8f1d14; --mark-opt-bg: #eceff2; --mark-opt-fg: #3a4a59; }
-:root[data-theme="dark"] { --mark-add-bg: #3c1618; --mark-add-fg: #ffb0a6; --mark-opt-bg: #22303c; --mark-opt-fg: #d2dbe3; }
+<style>/* TalkBack's writing desk: top route tabs, a document sheet, and a working review margin. */
+:root { --removed-bg: var(--bad-subtle); --removed-ink: var(--bad); --mark-add-bg: #f8e1e8; --mark-add-fg: #8f2947; --mark-opt-bg: #eee5e2; --mark-opt-fg: #514357; }
+:root[data-theme="dark"] { --mark-add-bg: #492936; --mark-add-fg: #f1a7b9; --mark-opt-bg: #413448; --mark-opt-fg: #e6d8e9; }
 h1, h2, h3 { margin: 0; }
-h1 { font-size: 1.875rem; line-height: 1.2; }
-h2 { font-size: 1.25rem; line-height: 1.3; }
+h1 { font-family: var(--document); font-size: clamp(1.875rem, 2.5vw, 2.5rem); font-weight: 400; line-height: 1.15; letter-spacing: -.035em; }
+h2 { font-family: var(--document); font-size: 1.375rem; font-weight: 400; line-height: 1.3; }
 h3 { font-size: 1rem; line-height: 1.35; }
 p { margin: 0; }
 .small { font-size: .875rem; }
 .eyebrow { font-size: .875rem; color: var(--fg-muted); font-weight: 700; }
 
 /* ---------- shell ---------- */
-.shell { display: grid; grid-template-columns: 216px minmax(0, 1fr); min-height: 100vh; }
-.rail { background: var(--rail); border-right: 1px solid var(--border); padding: var(--s4) var(--s3); position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s4); }
-.wordmark { font-size: 1.375rem; font-weight: 700; line-height: 1.2; color: var(--fg); text-decoration: none; display: inline-flex; min-height: var(--target); align-items: center; }
-.purpose { font-size: .875rem; color: var(--fg-muted); }
-.rail nav { display: grid; gap: var(--s3); }
-.rail .group { font-size: .875rem; color: var(--fg-muted); padding: 0 12px; margin-bottom: var(--s1); }
-.rail ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.rail nav a { display: flex; align-items: center; min-height: var(--target); padding: 8px 12px; border-radius: var(--radius); color: var(--fg); text-decoration: none; border-left: 3px solid transparent; }
+.shell { min-height: 100vh; }
+.rail { background: var(--rail); border-bottom: 1px solid var(--border); padding: 16px max(32px, calc((100vw - 1280px) / 2)); display: flex; align-items: center; gap: 40px; }
+.wordmark { font-family: var(--document); font-size: 1.375rem; font-weight: 700; line-height: 1.2; color: var(--accent); text-decoration: none; display: inline-flex; min-height: var(--target); align-items: center; }
+.purpose { font-size: .8125rem; color: var(--fg-muted); margin-top: -5px; }
+.rail nav { display: flex; gap: var(--s2); align-self: stretch; align-items: center; }
+.rail .group { display: none; }
+.rail ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
+.rail nav a { display: flex; align-items: center; min-height: var(--target); padding: 10px 14px; color: var(--fg-muted); text-decoration: none; border-bottom: 3px solid transparent; }
 .rail nav a:hover { background: var(--bg-inset); }
-.rail nav a[aria-current="page"] { background: var(--bg); border-left-color: var(--accent); color: var(--accent); font-weight: 700; }
-.rail-foot { margin-top: auto; display: grid; gap: var(--s2); font-size: .875rem; color: var(--fg-muted); }
-.rail-foot .btn { justify-content: flex-start; font-weight: 400; background: transparent; }
+.rail nav a[aria-current="page"] { border-bottom-color: var(--accent); color: var(--accent); font-weight: 700; }
+.rail-foot { margin-left: auto; font-size: .875rem; color: var(--fg-muted); }
+.rail-foot > p { display: none; }
+.rail-foot .btn { font-size: .875rem; font-weight: 400; background: transparent; white-space: nowrap; }
 .menu-close { display: none; }
 .main-col { min-width: 0; display: flex; flex-direction: column; }
-.loc { background: var(--bg); border-bottom: 1px solid var(--border); min-height: 56px; padding: 6px var(--s5); display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.loc { min-height: 52px; width: 100%; max-width: 1344px; margin: 0 auto; padding: 8px var(--s5); display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
 .menu-btn { display: none; }
-.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: .9375rem; color: var(--fg-muted); }
+.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: .8125rem; color: var(--fg-muted); }
 .crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--fg-muted); }
 .crumbs a { color: var(--fg-muted); }
 .crumbs [aria-current="page"] { color: var(--fg); }
 .back { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--target); padding: 0 4px; font-weight: 700; }
-main { padding: var(--s5); flex: 1; }
-.screen { max-width: 1100px; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
+main { padding: 14px var(--s5) 40px; flex: 1; width: 100%; max-width: 1344px; margin: 0 auto; }
+.screen { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .screen > header { display: grid; gap: var(--s2); }
 /* the H1 takes focus after a route change so screen readers start there; it is not a control, so no ring */
 .screen h1:focus, .screen h1:focus-visible { outline: none; }
 .lede { color: var(--fg-muted); max-width: 72ch; }
-.sitefoot { padding: var(--s3) var(--s5) var(--s5); }
-.sitefoot p { max-width: 1100px; font-size: .875rem; color: var(--fg-muted); }
+.sitefoot { padding: var(--s3) var(--s5) var(--s5); width: 100%; max-width: 1344px; margin: 0 auto; border-top: 1px solid var(--border); }
+.sitefoot p { max-width: 100ch; font-size: .8125rem; color: var(--fg-muted); }
 .scrim { display: none; }
 
 @media (max-width: 999px) {
-  .shell { display: block; }
   .rail { display: none; }
   .menu-btn { display: inline-flex; }
-  .loc { padding: 6px var(--s4); position: sticky; top: 0; z-index: 5; }
+  .loc { padding: 6px var(--s4); position: sticky; top: 0; z-index: 5; background: var(--canvas); border-bottom: 1px solid var(--border); }
   main { padding: var(--s4); }
   .sitefoot { padding: var(--s3) var(--s4) var(--s4); }
-  .rail.open { display: flex; position: fixed; inset: 0 auto 0 0; width: min(320px, 86vw); height: 100%; z-index: 20; border-right: 1px solid var(--border-strong); }
+  .rail.open { display: flex; flex-direction: column; align-items: stretch; gap: var(--s4); padding: var(--s4); position: fixed; inset: 0 auto 0 0; width: min(320px, 86vw); height: 100%; overflow-y: auto; z-index: 20; border-right: 1px solid var(--border-strong); }
+  .rail nav { display: grid; align-self: stretch; gap: var(--s3); }
+  .rail ul { display: grid; }
+  .rail .group { display: block; font-size: .8125rem; color: var(--fg-muted); padding: 0 14px; }
+  .rail nav a { border-bottom-width: 2px; }
+  .rail-foot { margin: auto 0 0; display: grid; gap: var(--s2); }
+  .rail-foot > p { display: block; }
   .rail.open .menu-close { display: inline-flex; }
-  .scrim.open { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(21, 37, 54, .45); }
+  .scrim.open { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(48, 39, 55, .45); }
 }
 @media (max-width: 599px) {
   .loc { padding: 6px var(--s3); gap: var(--s2); }
+  .crumbs li + li { display: none; }
   main { padding: var(--s4) var(--s3); }
   .sitefoot { padding: var(--s3); }
-  h1 { font-size: 1.625rem; }
+  h1 { font-size: 1.875rem; }
 }
 .rail-head { display: grid; gap: var(--s1); }
 .rail-head .menu-close { justify-self: start; margin-top: var(--s2); }
@@ -129,7 +137,7 @@ main { padding: var(--s5); flex: 1; }
 .row { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
 .pad { padding: var(--s3); }
 .box-header { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
-.box-header h2 { font-size: 1.25rem; }
+.box-header h2 { font-size: 1.375rem; }
 .box-body { padding: var(--s3) var(--s4); }
 .step { font-size: .875rem; color: var(--fg-muted); font-weight: 400; }
 label.field, div.field { display: grid; gap: 6px; font-weight: 700; }
@@ -150,12 +158,38 @@ details > summary { cursor: pointer; font-weight: 700; min-height: var(--target)
 .boxfoot { padding: 10px 16px; border-top: 1px solid var(--border); font-size: .875rem; color: var(--fg-muted); }
 
 /* ---------- Check ---------- */
-.check-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4); align-items: start; }
-@media (max-width: 1179px) { .check-grid { grid-template-columns: minmax(0, 1fr); } }
+.check-heading { display: flex; gap: var(--s4); align-items: center; justify-content: space-between; }
+.check-heading .lede { margin-top: 8px; }
+.desk-intro { font-size: .875rem; color: var(--fg-muted); }
+.check-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 348px); gap: 36px; align-items: start; }
+.document-column { display: grid; gap: var(--s4); min-width: 0; }
+.document-sheet { border-radius: 2px; box-shadow: 0 3px 0 var(--bg-inset); }
+.document-sheet .box-header { padding: 18px 32px; border-radius: 0; }
+.document-sheet .box-body { padding: 20px 32px 28px; }
+.document-sheet .field { font-size: .8125rem; color: var(--fg-muted); font-weight: 600; }
+#in-title { font-family: var(--document); font-size: 1.5rem; line-height: 1.35; border-width: 0 0 1px; border-radius: 0; padding: 10px 0 14px; }
+.review-margin { display: grid; gap: 12px; min-width: 0; padding-top: 17px; }
+.margin-heading { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-strong); }
+.review-margin h2 { color: var(--accent); }
+.check-caveat { max-width: 100ch; }
+@media (min-width: 700px) and (max-width: 1099px) {
+  .check-grid { grid-template-columns: minmax(0, 1fr) minmax(240px, 280px); gap: 20px; }
+  .document-sheet .box-header { padding: 16px 20px; }
+  .document-sheet .box-body { padding: 16px 20px 24px; }
+  .check-heading .focal { flex-direction: column; align-items: stretch; gap: 8px; min-width: 148px; }
+}
+@media (max-width: 699px) {
+  .check-heading { align-items: flex-start; flex-direction: column; gap: 16px; }
+  .check-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .document-sheet .box-header { padding: 14px 16px; }
+  .document-sheet .box-body { padding: 16px; }
+  .review-margin { padding-top: 0; }
+  #in-title { font-size: 1.25rem; }
+}
 /* the live preview: the report as GitHub shows it to a maintainer */
-.issue { border: 1px solid var(--border); border-radius: var(--radius); padding: var(--s3); display: grid; gap: 10px; overflow-wrap: anywhere; max-height: 640px; overflow: auto; }
-.issue-title { font-size: 1.25rem; font-weight: 700; line-height: 1.3; padding-bottom: var(--s2); border-bottom: 1px solid var(--border); }
-.issue .md-h { font-size: 1.0625rem; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.issue { padding: 12px 0; display: grid; gap: 12px; overflow-wrap: anywhere; max-height: 640px; overflow: auto; line-height: 1.65; }
+.issue-title { font-family: var(--document); font-size: 1.5rem; font-weight: 400; line-height: 1.3; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.issue .md-h { font-family: var(--document); font-size: 1.125rem; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
 .issue .md-list { margin: 0; padding-left: 1.5em; display: grid; gap: 2px; }
 .issue .md-quote { margin: 0; padding: 0 12px; border-left: 3px solid var(--border-strong); color: var(--fg-muted); }
 .issue .md-code { margin: 0; padding: 10px 12px; background: var(--bg-inset); border-radius: var(--radius); white-space: pre-wrap; }
@@ -163,9 +197,9 @@ details > summary { cursor: pointer; font-weight: 700; min-height: var(--target)
 mark.hit { background: var(--accent-subtle); color: var(--fg); border-bottom: 2px solid var(--accent); border-radius: 2px; padding: 0 1px; }
 .gaps-h { font-size: 1rem; margin-top: var(--s2); }
 #gaps { display: grid; gap: 12px; }
-.gap { border: 1px dashed var(--border-strong); border-left: 3px solid var(--bad); border-radius: var(--radius); padding: 12px; display: grid; gap: 6px; background: var(--bg); }
-.gap[data-status="partial"] { border-left-color: var(--warn); }
-.gap[data-status="optional"] { border-left-color: var(--border-strong); }
+.gap { border: 1px solid var(--border); border-top: 2px solid var(--bad); border-radius: 2px; padding: 16px; display: grid; gap: 10px; background: var(--bad-subtle); }
+.gap[data-status="partial"] { border-top-color: var(--warn); background: var(--warn-subtle); }
+.gap[data-status="optional"] { border-top-color: var(--border-strong); background: var(--bg); }
 .gap label { font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
 .gap-state { font-size: .875rem; color: var(--bad); }
 .gap[data-status="partial"] .gap-state { color: var(--warn); }
@@ -174,13 +208,13 @@ mark.hit { background: var(--accent-subtle); color: var(--fg); border-bottom: 2p
 .gap-err { color: var(--bad); font-size: .875rem; font-weight: 700; }
 .gaps-opt > summary { font-size: .9375rem; }
 .form { display: grid; gap: var(--s3); }
-#in-body { min-height: 260px; }
+#in-body { min-height: 340px; padding: 16px; color: var(--fg); font-size: .9375rem; line-height: 1.7; border-radius: 2px; }
 .hint { font-size: .875rem; color: var(--fg-muted); }
 .src { font-size: .875rem; color: var(--fg-muted); overflow-wrap: anywhere; }
-.tools { display: flex; flex-wrap: wrap; gap: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--border); }
-/* the one primary action stays in view while the editor is on screen (sticky to the viewport bottom) */
-.focal { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; position: sticky; bottom: 0; z-index: 2; background: var(--bg); padding: 12px 0; border-top: 1px solid var(--border); }
-/* keep keyboard focus from landing under the sticky action row (WCAG 2.4.11) */
+.tools { display: flex; flex-wrap: wrap; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--border); }
+.tools .btn { font-size: .8125rem; padding: 8px 10px; font-weight: 500; }
+.focal { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; flex-shrink: 0; }
+.focal > a:not(.btn) { display: inline-flex; min-height: var(--target); align-items: center; font-size: .875rem; }
 html { scroll-padding-bottom: 96px; }
 /* under 1000px the location header is sticky too: keep focused controls from scrolling under it */
 @media (max-width: 999px) { html { scroll-padding-top: 80px; } }
@@ -202,10 +236,15 @@ html { scroll-padding-bottom: 96px; }
 .lint [data-status="na"] .ico, .lint [data-status="na"] .state { color: var(--fg-muted); }
 
 /* ---------- Draft ---------- */
-.tpl { margin: 0; padding: var(--s3) var(--s4); font-family: var(--font); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 80ch; }
+.tpl { margin: 0; padding: 28px 40px 40px; font-family: var(--font); font-size: 1rem; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 80ch; }
+#draft-box { max-width: 920px; border-radius: 2px; box-shadow: 0 3px 0 var(--bg-inset); }
+#draft-box .box-header { padding: 18px 40px; }
+#draft-box .box-body { padding: 20px 40px; }
+@media (max-width: 599px) { .tpl, #draft-box .box-header, #draft-box .box-body { padding: 16px; } }
 .tpl mark { border-radius: 3px; padding: 0 2px; font-weight: 700; }
 .tpl mark.add { background: var(--mark-add-bg); color: var(--mark-add-fg); }
 .tpl mark.optional { background: var(--mark-opt-bg); color: var(--mark-opt-fg); font-weight: 400; }
+#in-body, .issue, .tpl { font-family: "Atkinson Hyperlegible", var(--font); }
 .copybox { width: 100%; min-height: 120px; }
 .gaps { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 
@@ -222,7 +261,7 @@ html { scroll-padding-bottom: 96px; }
 .meter { height: 8px; border-radius: 4px; background: var(--bg-inset); overflow: hidden; }
 .verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .verdict { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: grid; gap: 10px; background: var(--bg); align-content: start; }
-.label { white-space: nowrap; }
+.label { white-space: nowrap; border-radius: 3px; }
 .label.accent { color: var(--accent); border-color: currentColor; }
 .verdict .label { font-weight: 700; }
 .kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: .875rem; margin: 0; }
@@ -283,7 +322,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   <aside class="rail" id="rail" aria-label="Navigation and settings">
     <div class="rail-head">
       <a class="wordmark" href="#/check">TalkBack Triage</a>
-      <p class="purpose">A clearer Android accessibility report</p>
+      <p class="purpose">The accessibility report desk</p>
       <button class="btn menu-close" id="btn-menu-close" type="button">Close menu</button>
     </div>
     <nav aria-label="Main">
@@ -304,7 +343,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </nav>
     <div class="rail-foot">
       <button class="btn" id="btn-theme" type="button" aria-pressed="false">Dark theme</button>
-      <p>Version 0.3.0. Runs in your browser; report text is not sent anywhere.</p>
+      <p>Runs in your browser; report text is not sent anywhere.</p>
       <p><a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a></p>
     </div>
   </aside>
@@ -325,15 +364,28 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 <!-- ============ CHECK ============ -->
 <section class="screen" id="check" aria-labelledby="h-check" hidden>
   <header>
-    <h1 id="h-check" tabindex="-1">Check a TalkBack report</h1>
-    <p class="lede">Start with the report. Review the draft on a separate screen.</p>
-    <p class="small muted"><strong>Report preparation, rules not AI.</strong> It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
+    <div class="check-heading">
+      <div><h1 id="h-check" tabindex="-1">Check a TalkBack report</h1>
+      <p class="lede">Write the report. Fill the gaps. Review your draft.</p></div>
+      <div class="focal">
+        <a class="btn primary" href="#/draft" id="btn-review">Review draft</a>
+        <a href="#/examples">Browse examples</a>
+      </div>
+    </div>
+    <p class="desk-intro">A rule-based review of the details in your report. Your words stay yours.</p>
   </header>
 
   <div class="check-grid">
-    <section class="box" aria-labelledby="paste-h">
+    <div class="document-column">
+    <section class="box document-sheet" aria-labelledby="paste-h">
       <div class="box-header"><h2 id="paste-h">Your report</h2><span class="step">Step 1 of 2</span></div>
       <div class="box-body form">
+        <div class="tools">
+          <button class="btn" id="btn-sample" type="button">Try a sample report</button>
+          <button class="btn" id="btn-clear" type="button">Clear</button>
+          <button class="btn" id="btn-link" type="button">Copy link to this check</button>
+        </div>
+        <p class="src" id="ex-source" aria-live="polite"></p>
         <label class="field" for="in-title">Issue title
           <input type="text" id="in-title" autocomplete="off" spellcheck="false">
         </label>
@@ -341,12 +393,6 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
           <textarea id="in-body" spellcheck="false" aria-describedby="body-hint"></textarea>
         </label>
         <p class="hint" id="body-hint">Include what you did, what TalkBack announced, and what you expected. Markdown or plain text; the details list updates as you type.</p>
-        <p class="src" id="ex-source" aria-live="polite"></p>
-        <div class="tools">
-          <button class="btn" id="btn-sample" type="button">Try a sample report</button>
-          <button class="btn" id="btn-clear" type="button">Clear</button>
-          <button class="btn" id="btn-link" type="button">Copy link to this check</button>
-        </div>
         <p class="small muted" id="link-hint">A link to pasted text carries the full report text inside the link, so anyone who gets the link can read the report.</p>
         <p class="small muted" id="link-status" role="status"></p>
         <details class="more">
@@ -355,23 +401,24 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
             <select id="ex-select"></select>
           </label>
         </details>
-        <div class="focal">
-          <a class="btn primary" href="#/draft" id="btn-review">Review draft</a>
-          <a href="#/examples">Browse examples</a>
-        </div>
         <p class="privacy">Your text stays in this tab. Nothing is sent anywhere.</p>
       </div>
     </section>
 
-    <section class="box preview" aria-labelledby="pv-h">
-      <div class="box-header"><h2 id="pv-h">Live preview</h2><span class="step">Plain Markdown preview</span></div>
+    <section class="box preview document-sheet" aria-labelledby="pv-h">
+      <div class="box-header"><h2 id="pv-h">Passage review</h2><span class="step">Live Markdown preview</span></div>
       <div class="box-body stack">
-        <p class="summary" id="chk-score" role="status" aria-live="polite"></p>
-        <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> text is what the checker matched for a detail. Details it did not find are listed after the report, with a box to add them in your own words.</p>
+        <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> passages are what the checker matched for a detail. The review notes have fields for details it did not find; add them in your own words.</p>
         <article class="issue" id="preview" aria-labelledby="pv-h" tabindex="0"></article>
+      </div>
+    </section>
+    </div>
+
+    <section class="review-margin" aria-labelledby="notes-h">
+      <div class="margin-heading"><h2 id="notes-h">Review notes</h2><p class="summary" id="chk-score" role="status" aria-live="polite"></p></div>
+      <p class="hint">The passage review shows what was found. Add the details below to the same report.</p>
         <div id="gaps"></div>
         <p class="status" id="gap-status" role="status" aria-live="polite"></p>
-      </div>
     </section>
   </div>
 
@@ -380,6 +427,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     <ul class="lint" id="checklist" aria-labelledby="chk-h"></ul>
     <p class="boxfoot">Pattern rules can miss or over-match. Steps, version and device use the same rules as the study's checklist, plus extra rules for other apps.</p>
   </section>
+  <p class="small muted check-caveat"><strong>Report preparation, rules not AI.</strong> It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
 </section>
 
 <!-- ============ DRAFT ============ -->
@@ -598,7 +646,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 </section>
 </main>
 <footer class="sitefoot">
-  <p>Source code, data and method: <a href="https://github.com/anirudh763/talkback-triage-pilot">github.com/anirudh763/talkback-triage-pilot</a>. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
+  <p>Version 0.3.0. <a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a>: code, data and method. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
 </footer>
   </div>
 </div>

@@ -46,7 +46,7 @@ const csp = ["default-src 'self'", "script-src " + hashes.join(" "), "style-src 
 const doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
   '<meta http-equiv="Content-Security-Policy" content="' + csp + '">\n' +
   '<meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">\n' +
-  '<meta name="theme-color" content="#f7f8fa">\n' +
+  '<meta name="theme-color" content="#fff9ef">\n' +
   '<link rel="icon" href="icon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="icon-192.png">\n<link rel="manifest" href="manifest.webmanifest">\n' +
   "<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n" + page + "\n</body>\n</html>\n";
 fs.mkdirSync(rel("docs"), { recursive: true });

@@ -12,7 +12,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   <aside class="rail" id="rail" aria-label="Navigation and settings">
     <div class="rail-head">
       <a class="wordmark" href="#/check">TalkBack Triage</a>
-      <p class="purpose">A clearer Android accessibility report</p>
+      <p class="purpose">The accessibility report desk</p>
       <button class="btn menu-close" id="btn-menu-close" type="button">Close menu</button>
     </div>
     <nav aria-label="Main">
@@ -33,7 +33,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </nav>
     <div class="rail-foot">
       <button class="btn" id="btn-theme" type="button" aria-pressed="false">Dark theme</button>
-      <p>Version /*VERSION*/. Runs in your browser; report text is not sent anywhere.</p>
+      <p>Runs in your browser; report text is not sent anywhere.</p>
       <p><a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a></p>
     </div>
   </aside>
@@ -54,15 +54,28 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 <!-- ============ CHECK ============ -->
 <section class="screen" id="check" aria-labelledby="h-check" hidden>
   <header>
-    <h1 id="h-check" tabindex="-1">Check a TalkBack report</h1>
-    <p class="lede">Start with the report. Review the draft on a separate screen.</p>
-    <p class="small muted"><strong>Report preparation, rules not AI.</strong> It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
+    <div class="check-heading">
+      <div><h1 id="h-check" tabindex="-1">Check a TalkBack report</h1>
+      <p class="lede">Write the report. Fill the gaps. Review your draft.</p></div>
+      <div class="focal">
+        <a class="btn primary" href="#/draft" id="btn-review">Review draft</a>
+        <a href="#/examples">Browse examples</a>
+      </div>
+    </div>
+    <p class="desk-intro">A rule-based review of the details in your report. Your words stay yours.</p>
   </header>
 
   <div class="check-grid">
-    <section class="box" aria-labelledby="paste-h">
+    <div class="document-column">
+    <section class="box document-sheet" aria-labelledby="paste-h">
       <div class="box-header"><h2 id="paste-h">Your report</h2><span class="step">Step 1 of 2</span></div>
       <div class="box-body form">
+        <div class="tools">
+          <button class="btn" id="btn-sample" type="button">Try a sample report</button>
+          <button class="btn" id="btn-clear" type="button">Clear</button>
+          <button class="btn" id="btn-link" type="button">Copy link to this check</button>
+        </div>
+        <p class="src" id="ex-source" aria-live="polite"></p>
         <label class="field" for="in-title">Issue title
           <input type="text" id="in-title" autocomplete="off" spellcheck="false">
         </label>
@@ -70,12 +83,6 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
           <textarea id="in-body" spellcheck="false" aria-describedby="body-hint"></textarea>
         </label>
         <p class="hint" id="body-hint">Include what you did, what TalkBack announced, and what you expected. Markdown or plain text; the details list updates as you type.</p>
-        <p class="src" id="ex-source" aria-live="polite"></p>
-        <div class="tools">
-          <button class="btn" id="btn-sample" type="button">Try a sample report</button>
-          <button class="btn" id="btn-clear" type="button">Clear</button>
-          <button class="btn" id="btn-link" type="button">Copy link to this check</button>
-        </div>
         <p class="small muted" id="link-hint">A link to pasted text carries the full report text inside the link, so anyone who gets the link can read the report.</p>
         <p class="small muted" id="link-status" role="status"></p>
         <details class="more">
@@ -84,23 +91,24 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
             <select id="ex-select"></select>
           </label>
         </details>
-        <div class="focal">
-          <a class="btn primary" href="#/draft" id="btn-review">Review draft</a>
-          <a href="#/examples">Browse examples</a>
-        </div>
         <p class="privacy">Your text stays in this tab. Nothing is sent anywhere.</p>
       </div>
     </section>
 
-    <section class="box preview" aria-labelledby="pv-h">
-      <div class="box-header"><h2 id="pv-h">Live preview</h2><span class="step">Plain Markdown preview</span></div>
+    <section class="box preview document-sheet" aria-labelledby="pv-h">
+      <div class="box-header"><h2 id="pv-h">Passage review</h2><span class="step">Live Markdown preview</span></div>
       <div class="box-body stack">
-        <p class="summary" id="chk-score" role="status" aria-live="polite"></p>
-        <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> text is what the checker matched for a detail. Details it did not find are listed after the report, with a box to add them in your own words.</p>
+        <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> passages are what the checker matched for a detail. The review notes have fields for details it did not find; add them in your own words.</p>
         <article class="issue" id="preview" aria-labelledby="pv-h" tabindex="0"></article>
+      </div>
+    </section>
+    </div>
+
+    <section class="review-margin" aria-labelledby="notes-h">
+      <div class="margin-heading"><h2 id="notes-h">Review notes</h2><p class="summary" id="chk-score" role="status" aria-live="polite"></p></div>
+      <p class="hint">The passage review shows what was found. Add the details below to the same report.</p>
         <div id="gaps"></div>
         <p class="status" id="gap-status" role="status" aria-live="polite"></p>
-      </div>
     </section>
   </div>
 
@@ -109,6 +117,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     <ul class="lint" id="checklist" aria-labelledby="chk-h"></ul>
     <p class="boxfoot">Pattern rules can miss or over-match. Steps, version and device use the same rules as the study's checklist, plus extra rules for other apps.</p>
   </section>
+  <p class="small muted check-caveat"><strong>Report preparation, rules not AI.</strong> It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
 </section>
 
 <!-- ============ DRAFT ============ -->
@@ -327,7 +336,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 </section>
 </main>
 <footer class="sitefoot">
-  <p>Source code, data and method: <a href="https://github.com/anirudh763/talkback-triage-pilot">github.com/anirudh763/talkback-triage-pilot</a>. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
+  <p>Version /*VERSION*/. <a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a>: code, data and method. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
 </footer>
   </div>
 </div>
