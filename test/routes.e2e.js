@@ -199,6 +199,46 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await ctx.close();
   });
 
+  console.log("edits after shared links survive Back and reload");
+  for (const change of ["body", "title", "gap"]) await guard("shared link edit: " + change, async () => {
+    const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] }, "#/check");
+    const title = "Shared report: Save has no label";
+    const body = "1. Turn on TalkBack\n2. Open Settings\nTalkBack says Button on Save.";
+    await page.fill("#in-title", title);
+    await page.fill("#in-body", body);
+    await page.waitForTimeout(250);
+    await page.click("#btn-link");
+    await page.waitForFunction(() => location.hash.includes("?text="));
+    if (change === "title") {
+      // Legacy shared links must open normally, then detach when their text is edited.
+      const legacy = (await page.evaluate(() => location.hash)).replace("#/check", "#check");
+      await goHash(page, legacy);
+    }
+    ok((await page.inputValue("#in-title")) === title && (await page.inputValue("#in-body")) === body,
+      change + ": the shared link opens its original report");
+    if (change === "body") await page.fill("#in-body", body + "\nExact gesture: swipe right twice.");
+    else if (change === "title") await page.fill("#in-title", title + " after swiping right twice");
+    else {
+      await page.fill("#gap-appVersion", "9.9.1");
+      await page.locator('.gap[data-key="appVersion"]').getByRole("button", { name: "Add to report" }).click();
+    }
+    await page.waitForTimeout(250);
+    const editedTitle = await page.inputValue("#in-title"), editedBody = await page.inputValue("#in-body");
+    ok((await page.evaluate(() => location.hash)) === "#/check",
+      change + ": editing detaches the frozen link without putting private edits in the URL");
+    await page.getByRole("link", { name: "Review draft" }).click();
+    await page.waitForTimeout(100);
+    ok((await page.textContent("#tpl")).includes(change === "title" ? editedTitle : change === "gap" ? "9.9.1" : "swipe right twice"),
+      change + ": Draft contains the new fact");
+    await page.goBack(); await page.waitForTimeout(100);
+    ok((await page.inputValue("#in-title")) === editedTitle && (await page.inputValue("#in-body")) === editedBody,
+      change + ": browser Back keeps the exact edited title and body");
+    await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" });
+    ok((await page.inputValue("#in-title")) === editedTitle && (await page.inputValue("#in-body")) === editedBody,
+      change + ": reload keeps the exact edited title and body");
+    await ctx.close();
+  });
+
   console.log("primary action in view, unknown report links");
   await guard("Review draft in view", async () => {
     const { ctx, page } = await open({ viewport: { width: 1440, height: 900 } }, "#/check?report=AP-3563");
