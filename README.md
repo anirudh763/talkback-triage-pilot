@@ -21,7 +21,7 @@ Below the checker, this repository holds an exploratory study: does removing Tal
 
 ## Report checker
 
-![The report composer on AntennaPod #3563: the report text beside a live preview with the app version highlighted, and prompts for the details not found](docs/screenshots/check-1440.png)
+![The writing desk on AntennaPod #3563: the original report beside review notes and editable prompts for missing details](docs/screenshots/check-1440.png)
 
 The [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. It opens on **Check a report** (`#/check`) with a real, incomplete issue from the dataset; press **Try a sample report** for another, or paste your own.
 
