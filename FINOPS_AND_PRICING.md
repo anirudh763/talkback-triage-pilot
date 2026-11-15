@@ -11,8 +11,8 @@ Claude access is available only in the Claude app runtime or through the separat
 | Plan | Proposed price | Availability |
 |---|---:|---|
 | Offline sandbox | $0 | Available now: static checker, 75 public examples, cached study results. |
-| Indie | $29 | Proposed only. Billing period and included usage are undecided. |
-| QA Team | $149 | Proposed only. Billing period, seat count, included usage, support, and retention terms are undecided. |
+| Indie | $29/month | Proposed only. Included usage is undecided. |
+| QA Team | $149/month | Proposed only. Seat count, included usage, support, and retention terms are undecided. |
 
 There is no checkout, subscription, account, email capture, or paid provisioning. These numbers are planning placeholders, not validated prices or a commitment to deliver a service.
 

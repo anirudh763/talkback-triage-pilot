@@ -12,7 +12,7 @@ This log distinguishes current behavior from Phase 2 proposals. A proposal is no
 | Use direct bounded public GitHub issue import. | Current | User-initiated request to `api.github.com`, 10-second timeout, 256 KiB response cap, no CueReport credentials. |
 | Store drafts locally as readable text with a reset action and disclosure. | Current | Drafts survive reload without a server. Users should not enter secrets or private details. |
 | Offer a public GitHub issue draft for plan feedback. | Current UI | The user follows a public link and chooses whether to submit. No email capture or report submission is performed by CueReport. |
-| Price Indie at $29 and QA Team at $149. | Proposed | Billing period, included usage, tax, support, margins, and willingness to pay are not validated. Do not present these as purchasable plans. |
+| Price Indie at $29/month and QA Team at $149/month. | Proposed | Included usage, tax, support, margins, and willingness to pay are not validated. Do not present these as purchasable plans. |
 | Use Step Functions, Bedrock, and a human review queue. | Proposed | Architecture direction only; no resources or integrations are deployed. It needs data-retention, authorization, cost, and operational review first. |
 | Allow model suggestions to post automatically. | Not adopted | Public changes need human review and an explicit user action; current app has no team service or posting backend. |
 
