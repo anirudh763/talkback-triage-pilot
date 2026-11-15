@@ -11,6 +11,7 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       # Actions are pinned to full commit SHAs (tag in the comment) so a moved tag can't change what runs.
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -18,7 +19,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version: 22
       - name: Install dev dependencies
         run: npm ci
       - name: Answer parser and statistics
@@ -27,6 +28,7 @@ jobs:
         run: |
           node test/checker.test.js
           node test/workflow.test.js
+          node test/talkback-action.test.js
           node test/copy.test.js
           node test/issue-form.test.js
           node test/redos.test.js

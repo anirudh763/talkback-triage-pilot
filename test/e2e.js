@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
 (async () => {
   await new Promise((r) => server.listen(0, r));
   const base = 'http://127.0.0.1:' + server.address().port + '/?mode=';
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
   const errors = [];
   const watch = (page, tag) => { page.on('pageerror', (e) => errors.push(tag + ' pageerror: ' + e.message)); page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(tag + ' console: ' + m.text()); }); };
   const block = async (ctx) => { await ctx.route('https://fonts.googleapis.com/**', r => r.abort()); await ctx.route('https://fonts.gstatic.com/**', r => r.abort()); };

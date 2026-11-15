@@ -1,0 +1,84 @@
+name: TalkBack report check
+
+on:
+  issues:
+    types: [opened, edited]
+  workflow_call:
+    inputs:
+      post_comment:
+        description: "Post the deterministic checklist result on the issue (requires issues: write in the caller)."
+        type: boolean
+        required: false
+        default: false
+      source_ref:
+        description: Reviewed 40-character commit SHA to use for the checker source.
+        type: string
+        required: true
+      apply_label:
+        description: "Add the configured needs: talkback-details label when required details are missing."
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      checked: ${{ steps.audit.outputs.checked }}
+      missing: ${{ steps.audit.outputs.missing }}
+      composer: ${{ steps.audit.outputs.composer }}
+    steps:
+      - name: Require an immutable checker source
+        env:
+          SOURCE_REF: ${{ inputs.source_ref || github.sha }}
+        run: node -e 'if (!/^[0-9a-f]{40}$/i.test(process.env.SOURCE_REF || "")) { console.error("Use a 40-character commit SHA for the checker source."); process.exit(1); }'
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: anirudh763/talkback-triage-pilot
+          ref: ${{ inputs.source_ref || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - id: audit
+        name: Run the local deterministic checker
+        run: node scripts/talkback-action.js
+
+  optional-feedback:
+    if: inputs.post_comment || inputs.apply_label
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          MISSING: ${{ needs.check.outputs.missing }}
+          CHECKED: ${{ needs.check.outputs.checked }}
+          COMPOSER: ${{ needs.check.outputs.composer }}
+          POST_COMMENT: ${{ inputs.post_comment }}
+          APPLY_LABEL: ${{ inputs.apply_label }}
+        with:
+          script: |
+            const missing = (process.env.MISSING || "").split(",").filter(Boolean);
+            const number = context.payload.issue && context.payload.issue.number;
+            if (!Number.isSafeInteger(number)) throw new Error("An issue event is required.");
+            if (process.env.POST_COMMENT === "true" && process.env.CHECKED === "true") {
+              const summary = missing.length
+                ? "Required details to review: " + missing.join(", ") + "."
+                : "No required report details were marked missing by the deterministic checker.";
+              const link = process.env.COMPOSER ? "\n\n[Review this issue in the CueReport composer]({{url}})".replace("{{url}}", process.env.COMPOSER) : "";
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: number,
+                body: "CueReport's deterministic completeness check ran. " + summary + link + "\n\nThis does not determine impact or confirm reproduction. Review the issue and edit it if needed."
+              });
+            }
+            if (process.env.APPLY_LABEL === "true" && process.env.CHECKED === "true" && missing.length) {
+              await github.rest.issues.addLabels({ ...context.repo, issue_number: number, labels: ["needs: talkback-details"] });
+            }
