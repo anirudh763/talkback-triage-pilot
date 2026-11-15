@@ -2,8 +2,8 @@
 :root { --removed-bg: var(--bad-subtle); --removed-ink: var(--bad); --mark-add-bg: #f8e1e8; --mark-add-fg: #8f2947; --mark-opt-bg: #eee5e2; --mark-opt-fg: #514357; }
 :root[data-theme="dark"] { --mark-add-bg: #492936; --mark-add-fg: #f1a7b9; --mark-opt-bg: #413448; --mark-opt-fg: #e6d8e9; }
 h1, h2, h3 { margin: 0; }
-h1 { font-family: var(--document); font-size: clamp(1.875rem, 2.5vw, 2.5rem); font-weight: 400; line-height: 1.15; letter-spacing: -.035em; }
-h2 { font-family: var(--document); font-size: 1.375rem; font-weight: 400; line-height: 1.3; }
+h1 { font-family: var(--font); font-size: 1.75rem; font-weight: 700; line-height: 1.15; letter-spacing: -.035em; }
+h2 { font-family: var(--font); font-size: 1.125rem; font-weight: 650; line-height: 1.3; }
 h3 { font-size: 1rem; line-height: 1.35; }
 p { margin: 0; }
 .small { font-size: .875rem; }
@@ -12,7 +12,7 @@ p { margin: 0; }
 /* ---------- shell ---------- */
 .shell { min-height: 100vh; }
 .rail { background: var(--rail); border-bottom: 1px solid var(--border); padding: 16px max(32px, calc((100vw - 1280px) / 2)); display: flex; align-items: center; gap: 40px; }
-.wordmark { font-family: var(--document); font-size: 1.375rem; font-weight: 700; line-height: 1.2; color: var(--accent); text-decoration: none; display: inline-flex; min-height: var(--target); align-items: center; }
+.wordmark { font-family: var(--font); font-size: 1.375rem; font-weight: 700; line-height: 1.2; color: var(--accent); text-decoration: none; display: inline-flex; min-height: var(--target); align-items: center; }
 .purpose { font-size: .8125rem; color: var(--fg-muted); margin-top: -5px; }
 .rail nav { display: flex; gap: var(--s2); align-self: stretch; align-items: center; }
 .rail .group { display: none; }
@@ -101,11 +101,11 @@ details > summary { cursor: pointer; font-weight: 700; min-height: var(--target)
 .desk-intro { font-size: .875rem; color: var(--fg-muted); }
 .check-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 348px); gap: 36px; align-items: start; }
 .document-column { display: grid; gap: var(--s4); min-width: 0; }
-.document-sheet { border-radius: 2px; box-shadow: 0 3px 0 var(--bg-inset); }
+.document-sheet { border-radius: var(--radius); }
 .document-sheet .box-header { padding: 18px 32px; border-radius: 0; }
 .document-sheet .box-body { padding: 20px 32px 28px; }
 .document-sheet .field { font-size: .8125rem; color: var(--fg-muted); font-weight: 600; }
-#in-title { font-family: var(--document); font-size: 1.5rem; line-height: 1.35; border-width: 0 0 1px; border-radius: 0; padding: 10px 0 14px; }
+#in-title { font-family: var(--font); font-size: 1.125rem; line-height: 1.35; border-width: 0 0 1px; border-radius: 0; padding: 10px 0 14px; }
 .review-margin { display: grid; gap: 12px; min-width: 0; padding-top: 17px; }
 .margin-heading { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-strong); }
 .review-margin h2 { color: var(--accent); }
@@ -126,8 +126,8 @@ details > summary { cursor: pointer; font-weight: 700; min-height: var(--target)
 }
 /* the live preview: the report as GitHub shows it to a maintainer */
 .issue { padding: 12px 0; display: grid; gap: 12px; overflow-wrap: anywhere; max-height: 640px; overflow: auto; line-height: 1.65; }
-.issue-title { font-family: var(--document); font-size: 1.5rem; font-weight: 400; line-height: 1.3; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.issue .md-h { font-family: var(--document); font-size: 1.125rem; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.issue-title { font-family: var(--font); font-size: 1.25rem; font-weight: 650; line-height: 1.3; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.issue .md-h { font-family: var(--font); font-size: 1.125rem; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
 .issue .md-list { margin: 0; padding-left: 1.5em; display: grid; gap: 2px; }
 .issue .md-quote { margin: 0; padding: 0 12px; border-left: 3px solid var(--border-strong); color: var(--fg-muted); }
 .issue .md-code { margin: 0; padding: 10px 12px; background: var(--bg-inset); border-radius: var(--radius); white-space: pre-wrap; }

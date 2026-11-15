@@ -58,7 +58,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   {
     const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] });
     ok((await page.locator("#checklist li").count()) === 7, "first screen already shows a checked sample (7 checklist rows)");
-    await page.getByRole("button", { name: "Try a sample report" }).click();
+    await page.getByRole("button", { name: "Load sample" }).click();
     const st = await statuses(page);
     const missing = page.locator('#checklist li[data-status="notfound"]');
     ok((await missing.count()) >= 1, "sample has at least one item not found: " + st.join(" "));
@@ -69,9 +69,9 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok(tpl.startsWith("### Summary") && tpl.includes("### Steps to reproduce") && tpl.includes("[ADD:"), "rewritten report template appears with [ADD: ...] placeholders");
     ok((await page.locator("#tpl mark.add").count()) >= 1, "placeholders are highlighted");
     ok(/of \d found/.test(await page.textContent("#chk-score")), "summary: " + (await page.textContent("#chk-score")));
-    ok(/Sample \d of 3/.test(await page.textContent("#ex-source")), "source line names the real issue: " + (await page.textContent("#ex-source")));
+    ok(/WordPress-Android #\d+|AntennaPod #\d+/.test(await page.textContent("#ex-source")), "source line names the real issue: " + (await page.textContent("#ex-source")));
     ok(/^#\/check\?report=[A-Z]+-\d+$/.test(await page.evaluate(() => location.hash)), "URL holds the sample: " + (await page.evaluate(() => location.hash)));
-    await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(80);
+    await page.locator("#btn-review").click(); await page.waitForTimeout(80);
     await page.click("#btn-copy-tpl");
     await page.waitForFunction(() => document.querySelector("#copy-tpl-status").textContent);
     const clip = await page.evaluate(() => navigator.clipboard.readText());
@@ -110,10 +110,10 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok(/couldn't be read/.test(await bad.textContent("#ex-source")), "a broken link says so instead of failing");
 
     await page.click("#btn-clear");
-    ok((await page.textContent("#chk-score")).startsWith("Nothing to check yet"), "Clear empties the report and says what to do");
+    ok((await page.textContent("#chk-score")).trim() === "No report.", "Clear empties the report and shows its empty state");
     ok(await page.evaluate(() => document.activeElement.id === "in-body"), "Clear moves focus to the report box");
     ok((await page.locator("#ai-card").isHidden()), "AI study tool is hidden when no AI is available");
-    ok(/carries the full report text/.test(await page.textContent("#link-hint")), "the page warns that a link carries the report text");
+    ok(/include the full report text/.test(await page.textContent("#link-hint")), "the page warns that a link carries the report text");
     await goView(page, "pilot");
     ok((await page.locator("#run-card").isHidden()) && (await page.locator("#run-off").isVisible()), "the pilot's run controls are hidden outside the Claude app, with a note instead");
     await ctx.close();
@@ -160,7 +160,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.focus("#skip"); await page.keyboard.press("Tab");
     ok(await page.evaluate(() => document.activeElement.classList.contains("wordmark")), "keyboard: after the skip link, the rail comes first");
     await page.locator("#rail").getByRole("link", { name: "Research" }).click(); await page.waitForTimeout(80);
-    await page.locator("#rail").getByRole("link", { name: "Check a report" }).click(); await page.waitForTimeout(80);
+    await page.locator("#rail").getByRole("link", { name: "Report", exact: true }).click(); await page.waitForTimeout(80);
     ok(/^#\/check\?report=/.test(await page.evaluate(() => location.hash)), "returning to the checker keeps its report in the URL");
     // WCAG 2.5.8 target size on every tab. Radio buttons and checkboxes are measured by their label (the click target);
     // the only exception taken is links inside a sentence (the "inline" exception).
@@ -181,7 +181,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] });
     const focusOutline = () => page.evaluate(() => { const s = getComputedStyle(document.activeElement); return s.outlineStyle !== "none" && parseFloat(s.outlineWidth) >= 2; });
     const tabTo = async (id, max) => { for (let i = 0; i < (max || 40); i++) { await page.keyboard.press("Tab"); if (await page.evaluate((x) => document.activeElement.id === x, id)) return true; } return false; };
-    ok(await tabTo("btn-sample"), "keyboard: Tab reaches \"Try a sample report\"");
+    ok(await tabTo("btn-sample"), "keyboard: Tab reaches \"Load sample\"");
     ok(await focusOutline(), "keyboard: focused button shows a focus ring");
     const before = await page.inputValue("#in-title");
     await page.keyboard.press("Enter");
@@ -190,7 +190,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.keyboard.press("Control+A"); await page.keyboard.type("1. Open the Episodes screen\n2. Tap Play\nApp version: 9");
     await page.waitForTimeout(300);
     ok(/App version/.test(await page.textContent("#checklist")) && (await page.locator('#checklist li[data-key="appVersion"]').getAttribute("data-status")) === "present", "keyboard: typed text is checked as you type");
-    ok(await tabTo("btn-review"), "keyboard: Tab reaches Review draft");
+    ok(await tabTo("btn-review"), "keyboard: Tab reaches Preview");
     await page.keyboard.press("Enter"); await page.waitForTimeout(80);
     ok(await tabTo("btn-copy-tpl"), "keyboard: on the Draft screen, Tab reaches Copy draft");
     await page.keyboard.press("Enter");
@@ -233,10 +233,10 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"] });
     await page.click("#btn-clear");
     await page.waitForTimeout(100);
-    ok(/Nothing to check yet/.test(await page.textContent("#chk-score")) && /Paste a report/.test(await page.textContent("#ex-source")), "empty input: says what to do");
+    ok((await page.textContent("#chk-score")).trim() === "No report." && (await page.textContent("#ex-source")).trim() === "Cleared.", "empty input has a concise empty state");
     await page.fill("#in-body", "App version: 1.2.3\nAndroid 15, Pixel 8\nEnable TalkBack.\n1. Open Settings.\n2. Swipe to Save.\nExpected: Save is announced.\nActual: Save is skipped.");
-    await page.waitForFunction(() => !document.querySelector("#chk-score").textContent.includes("Nothing to check yet"));
-    ok((await page.textContent("#ex-source")) === "Your own text.", "typing after Clear replaces the empty-source instruction");
+    await page.waitForFunction(() => document.querySelector("#chk-score").textContent.trim() !== "No report.");
+    ok((await page.textContent("#ex-source")) === "Custom report.", "typing after Clear updates the source state");
     await page.fill("#in-body", "x".repeat(13000));
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
@@ -273,7 +273,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.waitForTimeout(200);
     await page.evaluate(() => { const r = document.querySelector("#results"); window.scrollTo(0, r.getBoundingClientRect().top + window.scrollY - 16); });
     await page.screenshot({ path: path.join(dir, "study-results.png") });
-    await goView(page, "check"); await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(150);
+    await goView(page, "check"); await page.locator("#btn-review").click(); await page.waitForTimeout(150);
     await page.screenshot({ path: path.join(dir, "draft-1280.png") });
     await ctx.close();
     const m = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: "light" }, "#/check?report=AP-3563");
