@@ -40,7 +40,7 @@ const page = tpl
 // scripts, listed by hash; it can't send requests anywhere. Inline styles stay allowed (style attributes).
 const hashes = [...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + crypto.createHash("sha256").update(m[1], "utf8").digest("base64") + "'");
 const csp = ["default-src 'self'", "script-src " + hashes.join(" "), "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data:",
-  "connect-src 'self'", "worker-src 'self'", "manifest-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'none'"].join("; ");
+  "connect-src 'self' https://api.github.com", "worker-src 'self'", "manifest-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'none'"].join("; ");
 
 // The template has no <html>/<head>/<body>: wrap it so it is a complete page on GitHub Pages.
 const doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +

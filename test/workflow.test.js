@@ -5,6 +5,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
+const yaml = require("js-yaml");
 
 const dir = path.join(__dirname, "..", ".github", "workflows");
 const files = fs.readdirSync(dir).filter((f) => /\.ya?ml$/.test(f));
@@ -17,4 +18,10 @@ for (const f of files) {
   assert.ok(!/\$\{\{\s*github\.(event|head_ref)/.test(y), f + ": don't put event text into run: scripts");
   assert.ok(!/npm install\b/.test(y), f + ": use npm ci with the committed lockfile");
 }
+const triage = fs.readFileSync(path.join(dir, "talkback-triage.yml"), "utf8");
+const triageYaml = yaml.load(triage);
+assert.ok(triageYaml.on.issues && triageYaml.on.workflow_call.inputs.source_ref.required, "workflow parses and reusable callers must pass the reviewed source SHA");
+assert.ok(/post_comment:[\s\S]*?default:\s*false/.test(triage) && /apply_label:[\s\S]*?default:\s*false/.test(triage), "comments and labels are off unless a reusable-workflow caller opts in");
+assert.ok(/optional-feedback:[\s\S]*?permissions:\s*\n\s+issues:\s*write/.test(triage), "issue write permission is scoped to the explicit feedback job");
+assert.ok(/run: node scripts\/talkback-action\.js/.test(triage), "the issue event runs the local deterministic checker directly");
 console.log("workflow tests passed (" + files.length + " file)");

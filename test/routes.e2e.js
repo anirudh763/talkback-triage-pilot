@@ -3,7 +3,7 @@
 // change, the Menu sheet (Escape closes it and returns focus), Back/Forward and deep links restoring screen and
 // state (title/body after Draft, the Examples filter), old #check?report= / #pilot / #label / #about links,
 // light by default even when the OS prefers dark, an explicit remembered dark toggle, no page overflow at
-// 320/768/1440, axe-core 0 violations in light and dark at 1280 and 320, a real Not found screen.
+// 320/768/1440, axe-core on every route in light/dark at all three widths, and the native Plans dialog.
 //   node test/routes.e2e.js        (needs Playwright and axe-core)
 "use strict";
 const { chromium } = require("playwright");
@@ -38,10 +38,11 @@ const SCREENS = [
   ["#/research/labels", "Label reports", "Label reports", "Research"],
   ["#/research/methods", "Research methods", "Research methods", "Research"],
 ];
-const APP = "TalkBack Triage";
+const APP = "CueReport";
 
 let failures = 0;
 let browser = null;
+let expectedGithubFailure = false;
 const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); if (!cond) failures++; };
 const h1Text = (page) => page.evaluate(() => { const h = [...document.querySelectorAll("main h1")].find((e) => e.offsetParent || e.getClientRects().length); return h ? h.textContent.trim() : null; });
 const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollWidth - window.innerWidth);
@@ -49,7 +50,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
 (async () => {
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
   const base = "http://127.0.0.1:" + server.address().port + "/";
-  browser = await chromium.launch();
+  browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
   const errors = [];
   async function open(opts, hash, dark) {
     const ctx = await browser.newContext(Object.assign({ viewport: { width: 1280, height: 900 } }, opts));
@@ -57,7 +58,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const page = await ctx.newPage();
     page.setDefaultTimeout(4000); // a missing control fails fast instead of waiting 30 s
     page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
-    page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text()); });
+    page.on("console", (m) => { if (m.type() === "error" && !(expectedGithubFailure && /Failed to load resource: the server responded with a status of (403|404|429)/.test(m.text()))) errors.push("console: " + m.text()); });
     await page.goto(base + (hash || ""));
     await page.waitForSelector("#checklist li", { state: "attached" });
     await page.waitForTimeout(60);
@@ -160,6 +161,35 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const navBox = await page.locator("#rail").boundingBox();
     const sheetBox = await page.locator(".document-sheet").first().boundingBox();
     ok(navBox.width === 1440 && navBox.height < 120 && sheetBox.y > navBox.y + navBox.height, "1440px: full-width compact navigation above the document sheet");
+    await ctx.close();
+  });
+
+  console.log("Team QA plans native dialog");
+  for (const width of [320, 768, 1440]) await guard("plans dialog " + width, async () => {
+    const { ctx, page } = await open({ viewport: { width, height: 900 } }, "#/check");
+    const trigger = page.getByRole("button", { name: "Team QA plans" });
+    await trigger.click();
+    const dialog = page.getByRole("dialog", { name: "Team QA plans" });
+    ok(await dialog.isVisible(), width + "px: Team QA plans opens as a named native dialog");
+    ok(/free, offline report checker today/.test(await dialog.textContent()) && /\$29/.test(await dialog.textContent()) && /\$149/.test(await dialog.textContent()) && /proposals; there is no checkout/.test(await dialog.textContent()), width + "px: available sandbox and proposed prices are distinguished; no checkout is claimed");
+    ok(/no AWS resources.*are deployed/.test(await dialog.textContent()) && /public GitHub issue draft/.test(await dialog.textContent()) && /Do not include private reports or email addresses/.test(await dialog.textContent()), width + "px: proposed AWS status and public-feedback privacy warning are visible");
+    ok((await dialog.locator("input, textarea, form, a[href^='mailto:']").count()) === 0, width + "px: plans dialog has no fake capture form or email link");
+    const bounds = await dialog.boundingBox();
+    ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= width && bounds.y >= 0 && bounds.y + bounds.height <= 900, width + "px: modal stays within the viewport");
+    await page.evaluate(AXE);
+    const violations = await page.evaluate(async () => (await window.axe.run(document, { resultTypes: ["violations"] })).violations.map((v) => v.id));
+    ok(violations.length === 0, width + "px: axe reports 0 violations with the modal open" + (violations.length ? " (" + violations.join(", ") + ")" : ""));
+    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: opening places focus on Close");
+    await page.keyboard.press("Tab");
+    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-feedback"), width + "px: Tab reaches the public feedback link");
+    await page.keyboard.press("Shift+Tab");
+    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: Shift+Tab returns from the link to Close");
+    await page.keyboard.press("Shift+Tab");
+    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-feedback"), width + "px: Shift+Tab wraps from Close to the last modal action");
+    await page.keyboard.press("Tab");
+    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: Tab wraps from the public link to Close");
+    await page.keyboard.press("Escape");
+    ok(!(await dialog.isVisible()) && await page.evaluate(() => document.activeElement.id === "btn-plans"), width + "px: Escape closes the modal and returns focus to its trigger");
     await ctx.close();
   });
 
@@ -302,20 +332,20 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     ok((await bg()) === "rgb(255, 249, 239)", "OS prefers dark, first visit: canvas is light ivory #fff9ef (" + (await bg()) + ")");
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") !== "dark"), "no dark theme attribute by default");
-    const btn = page.getByRole("button", { name: "Dark theme" });
+    const btn = page.locator("#btn-theme");
     ok((await btn.getAttribute("aria-pressed")) === "false", "an explicit, labelled Dark theme toggle (aria-pressed=false)");
     await btn.click(); await page.waitForTimeout(60);
     ok((await btn.getAttribute("aria-pressed")) === "true" && (await bg()) !== "rgb(255, 249, 239)", "the toggle switches to dark (" + (await bg()) + ")");
     await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" });
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") === "dark"), "the dark choice is remembered after a reload");
-    await page.getByRole("button", { name: "Dark theme" }).click(); await page.waitForTimeout(60);
+    await page.getByRole("button", { name: /^Light theme/ }).click(); await page.waitForTimeout(60);
     ok((await bg()) === "rgb(255, 249, 239)", "toggling again returns to light");
     await ctx.close();
   });
 
-  console.log("axe-core, light and dark, 1280 and 320");
+  console.log("axe-core, light and dark, 1440, 768 and 320");
   const axeCounts = {};
-  for (const width of [1280, 320]) for (const theme of ["light", "dark"]) { await guard("block at line 207", async () => {
+  for (const width of [1440, 768, 320]) for (const theme of ["light", "dark"]) { await guard("block at line 207", async () => {
     const { ctx, page } = await open({ viewport: { width, height: 900 } }, "#/check", theme === "dark");
     for (const [hash] of SCREENS.concat([["#/no-such-screen"]])) {
       await goHash(page, hash);
@@ -330,6 +360,110 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     if (theme === "dark") ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") === "dark"), width + "px: the dark run really used the dark theme");
     await ctx.close();
   }); }
+
+  console.log("local draft, GitHub import and issue link privacy");
+  await guard("local draft autosave", async () => {
+    const { ctx, page } = await open();
+    await page.fill("#in-title", "Saved offline title"); await page.fill("#in-body", "A local draft with no credentials.");
+    await page.waitForFunction(() => localStorage.getItem("cuer-report-draft-v1") && document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
+    const reopened = await ctx.newPage(); await reopened.goto(base); await reopened.waitForSelector("#checklist li", { state: "attached" });
+    ok((await reopened.inputValue("#in-title")) === "Saved offline title" && (await reopened.inputValue("#in-body")) === "A local draft with no credentials.", "versioned local draft restores in a fresh tab");
+    await reopened.fill("#in-title", ""); await reopened.fill("#in-body", "");
+    await reopened.waitForTimeout(450);
+    ok(await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "manually erasing both fields removes the saved copy");
+    const erased = await ctx.newPage(); await erased.goto(base); await erased.waitForSelector("#checklist li", { state: "attached" });
+    ok((await erased.inputValue("#in-title")) !== "Saved offline title" &&
+      (await erased.inputValue("#in-body")) !== "A local draft with no credentials." &&
+      !(await erased.textContent("#draft-save-status")).includes("Restored saved draft"), "a fresh tab shows the public sample instead of manually erased report text");
+    await erased.close();
+    await reopened.fill("#in-title", "Reset this draft");
+    await reopened.waitForFunction(() => document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
+    await reopened.getByRole("button", { name: "Reset saved draft" }).click();
+    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "Reset saved draft clears fields and removes local copy");
+    await ctx.close();
+  });
+  for (const [name, errorName, message] of [["blocked", "SecurityError", /storage is blocked/], ["quota", "QuotaExceededError", /storage is full/]]) { await guard(name + " storage", async () => {
+    const ctx = await browser.newContext();
+    await ctx.addInitScript((type) => {
+      const set = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === "cuer-report-draft-v1") throw new DOMException("blocked for test", type);
+        return set.call(this, key, value);
+      };
+    }, errorName);
+    const page = await ctx.newPage(); await page.goto(base); await page.waitForSelector("#checklist li", { state: "attached" });
+    await page.fill("#in-title", "Unsaved title");
+    await page.waitForFunction(() => /storage is (blocked|full)/.test(document.querySelector("#draft-save-status").textContent));
+    ok(message.test(await page.textContent("#draft-save-status")), name + " storage failure has an explicit status");
+    await ctx.close();
+  }); }
+  await guard("malformed draft storage", async () => {
+    const ctx = await browser.newContext(); await ctx.addInitScript(() => localStorage.setItem("cuer-report-draft-v1", "{bad"));
+    const page = await ctx.newPage(); await page.goto(base); await page.waitForSelector("#checklist li", { state: "attached" });
+    await page.waitForFunction(() => /invalid or too large/.test(document.querySelector("#draft-save-status").textContent));
+    ok(/invalid or too large/.test(await page.textContent("#draft-save-status")), "malformed saved JSON is ignored with a status");
+    await page.getByRole("button", { name: "Reset saved draft" }).click();
+    ok(await page.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "reset removes malformed data");
+    await ctx.close();
+  });
+  await guard("strict GitHub issue import", async () => {
+    const { ctx, page } = await open(); let calls = [];
+    await page.route("https://api.github.com/**", async (route) => {
+      calls.push(route.request().url());
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
+        number: 42, title: "<img src=x onerror=alert(1)>", body: "TalkBack says <script>not markup</script>.\n" + "x".repeat(20),
+      }) });
+    });
+    await page.locator(".github-import summary").click();
+    await page.fill("#github-issue-url", "https://github.com/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click();
+    await page.waitForFunction(() => /Issue imported/.test(document.querySelector("#import-status").textContent));
+    ok(calls.length === 1 && calls[0] === "https://api.github.com/repos/acme/accessibility/issues/42", "valid public URL maps only to the fixed GitHub REST endpoint");
+    ok((await page.locator("#preview img, #preview script").count()) === 0 && (await page.locator("#in-title").inputValue()).startsWith("<img"), "hostile title and body remain report text, not HTML");
+    ok((await page.inputValue("#github-repo")) === "acme/accessibility", "imported repository pre-fills the new issue target");
+    await page.fill("#github-issue-url", "https://github.com.evil.example/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click();
+    ok(calls.length === 1 && /Enter a public issue URL/.test(await page.textContent("#import-status")), "lookalike host is rejected before network access");
+    await page.fill("#github-issue-url", "https://reporter:token@github.com/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click();
+    ok(calls.length === 1 && /Enter a public issue URL/.test(await page.textContent("#import-status")), "credential-bearing URLs are rejected before network access");
+    await ctx.close();
+  });
+  for (const [status, pattern] of [[403, /rate-limited/], [404, /could not find/], [429, /rate-limited/]]) { await guard("GitHub import " + status, async () => {
+    const { ctx, page } = await open(); await page.route("https://api.github.com/**", (route) => route.fulfill({ status, contentType: "application/json", body: "{}" }));
+    expectedGithubFailure = true;
+    await page.locator(".github-import summary").click(); await page.fill("#github-issue-url", "https://github.com/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click(); await page.waitForFunction((source) => new RegExp(source).test(document.querySelector("#import-status").textContent), pattern.source);
+    ok(pattern.test(await page.textContent("#import-status")), status + " response has an actionable import message"); expectedGithubFailure = false; await ctx.close();
+  }); }
+  await guard("GitHub import response size", async () => {
+    const { ctx, page } = await open();
+    const payload = JSON.stringify({ title: "Too large", body: "x".repeat(270 * 1024) });
+    await page.route("https://api.github.com/**", (route) => route.fulfill({ status: 200, contentType: "application/json", body: payload }));
+    await page.locator(".github-import summary").click(); await page.fill("#github-issue-url", "https://github.com/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click(); await page.waitForFunction(() => /256 KiB import limit/.test(document.querySelector("#import-status").textContent));
+    ok(/256 KiB import limit/.test(await page.textContent("#import-status")), "streamed GitHub response is stopped above the 256 KiB cap");
+    await ctx.close();
+  });
+  await guard("stale GitHub import", async () => {
+    const { ctx, page } = await open();
+    await page.route("https://api.github.com/**", async (route) => { await new Promise((r) => setTimeout(r, 180)); await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ title: "Old response", body: "Old body" }) }).catch(() => {}); });
+    await page.locator(".github-import summary").click(); await page.fill("#github-issue-url", "https://github.com/acme/accessibility/issues/42");
+    await page.getByRole("button", { name: "Import issue" }).click(); await page.fill("#in-title", "Typed after request"); await page.waitForTimeout(240);
+    ok((await page.inputValue("#in-title")) === "Typed after request" && /cancelled because the report changed/.test(await page.textContent("#import-status")), "a stale request cannot replace newer user text");
+    await ctx.close();
+  });
+  await guard("prefilled GitHub link and length fallback", async () => {
+    const { ctx, page } = await open({}, "#/check?report=AP-3563"); await page.getByRole("link", { name: "Review draft" }).click();
+    const link = page.locator("#btn-open-github-issue");
+    await page.waitForFunction(() => document.querySelector("#btn-open-github-issue").href.startsWith("https://github.com/"));
+    const href = await link.getAttribute("href");
+    ok(!(await link.isHidden()) && /^https:\/\/github\.com\/AntennaPod\/AntennaPod\/issues\/new\?/.test(href || ""), "sample repository gets a user-initiated prefilled new-issue link (" + (href || "no href") + ")");
+    await goHash(page, "#/check"); await page.fill("#in-title", "Large report"); await page.fill("#in-body", "x".repeat(8000)); await page.waitForTimeout(400); await goHash(page, "#/draft");
+    ok(await link.isHidden() && /longer than 7,000/.test(await page.textContent("#github-link-status")) &&
+      await page.locator("#btn-copy-tpl").isVisible() && await page.locator("#btn-dl-tpl").isVisible(), "overlong prefill is disabled while Copy and Download stay available");
+    await ctx.close();
+  });
 
   console.log("report composer: matched spans and gap prompts");
   await guard("composer", async () => {

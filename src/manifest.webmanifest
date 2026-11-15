@@ -1,6 +1,6 @@
 {
-  "name": "TalkBack Triage Pilot: report checker",
-  "short_name": "Report checker",
+  "name": "CueReport: accessibility report composer",
+  "short_name": "CueReport",
   "description": "Check an Android accessibility bug report for the details a developer needs. Rule-based, runs offline in the browser.",
   "start_url": "./",
   "scope": "./",
@@ -8,8 +8,23 @@
   "background_color": "#fff9ef",
   "theme_color": "#fff9ef",
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

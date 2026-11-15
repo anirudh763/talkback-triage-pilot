@@ -1,8 +1,8 @@
-# TalkBack Triage Pilot
+# CueReport
 
 **A report checker for Android accessibility bug reports, and the small pilot study behind it.**
 
-Paste a bug report and the checker lists which of seven details it can find: steps, TalkBack or screen-reader steps, app version, device and Android version, expected vs. actual behavior, the screen or element, and screen-reader settings. It then gives you the report rewritten with `[ADD: ...]` where something was not found. It is a heuristic completeness check (rules, not AI), runs in your browser, and works offline once loaded.
+Paste a bug report and the checker lists which of seven report details it can find (screen-reader settings are optional and assistive steps depend on the report): steps, TalkBack or screen-reader steps, app version, device and Android version, expected vs. actual behavior, the screen or element, and screen-reader settings. It then gives you the report rewritten with `[ADD: ...]` where something was not found. It is a heuristic completeness check (rules, not AI), runs in your browser, and works offline once loaded.
 
 **Try it:** open https://anirudh763.github.io/talkback-triage-pilot/ and press **Try a sample report**, or paste your own. Limits: it finds missing sections only, and it has no user validation. See [What it is not](#what-it-is-not).
 
@@ -29,6 +29,12 @@ Check is a report composer: the report text beside a plain Markdown preview of t
 
 **Review draft** (`#/draft`) opens the draft on its own screen: your report rearranged under the headings a developer looks for, with what to add marked `[ADD: ...]`, ready to copy or download as Markdown. **Examples** (`#/examples`) lists the 75 dataset reports with filters (app, a detail not found, title text); each opens in Check and links to its GitHub issue. The study is under **Research** (`#/research`, `#/research/labels`, `#/research/methods`). The page is light by default, including when your system prefers dark; **Dark theme** in the menu switches and is remembered. Old links (`#check?report=…`, `#pilot`, `#label`, `#about`) still work.
 
+Check autosaves a bounded, versioned draft as readable text in this browser's local storage; **Reset saved draft** removes it. Do not enter passwords, tokens or private details. **Import a public GitHub issue** accepts only a `github.com/owner/repository/issues/number` URL and, after you press Import, reads that issue from the fixed `api.github.com` REST endpoint. It does not send your report to CueReport or submit anything on GitHub. On Review draft, enter an `owner/repository` to open a user-initiated, pre-filled GitHub new-issue form; links over 7,000 characters use the existing Copy/Download actions instead. Review and submit issues on GitHub yourself.
+
+**Team QA plans** opens a local summary of the free offline sandbox and two proposed prices ($29 Indie and $149 QA Team). Those prices have no decided billing period and cannot be purchased. AWS Bedrock, Step Functions and human-review integrations are proposals only; no accounts, checkout, team backend, email capture or paid services are running. Its feedback link opens a public GitHub issue draft with a generic title. Do not put private reports or email addresses in public feedback.
+
+The Phase 2 proposal and current boundaries are documented in [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md), [FAILURE_MODES.md](FAILURE_MODES.md), and [FINOPS_AND_PRICING.md](FINOPS_AND_PRICING.md).
+
 | Detail | What counts |
 |---|---|
 | Steps to reproduce | A numbered or bulleted list, or a "Steps" section with text in it |
@@ -47,13 +53,28 @@ It finds missing sections only. A report with every section is not necessarily r
 
 ### Privacy, offline use, accessibility and security
 
-**Privacy.** The page's Content Security Policy lets it load only its own files and blocks requests to other sites; the browser test checks that such a request is refused. A dataset report has its own link (`#/check?report=WP-21127`). **Copy link to this check** puts the whole pasted report into the link after `#`. Browsers don't send that part to the server, but anyone who gets the link can read the report.
+**Privacy.** The page's Content Security Policy loads its own files and allows one extra connection host, `api.github.com`, for the public issue import initiated by the user. It blocks requests to other hosts. Report text can be saved locally as readable text or copied into a share link; browsers do not send text after `#` to the server, but anyone who gets a share link can read it. Avoid passwords, tokens and private details.
 
 **Offline and install.** After one visit the page works without a network: a service worker keeps the page, its fonts and icons in a versioned cache. Online it always fetches the latest page first. It has a web app manifest and SVG and PNG icons, so browsers that support installing web apps can offer to install it; installing has not been tried by hand. The browser test turns the network off, reloads, and checks a sample. Without JavaScript the page shows a message pointing here.
 
-**Accessibility.** Passes automated axe-core checks with 0 violations on every screen, at 1280, 375 and 320 px wide, in the default light theme and the opt-in dark theme. Playwright also checks keyboard-only use, focus moving to each screen's heading, the Menu sheet (Escape closes it and returns focus), Back/Forward keeping the report, 320/768/1440 px widths without sideways scrolling, 200% zoom, 24px minimum targets (controls are built at 44px) and error states. A manual screen-reader check has not been run.
+**Accessibility.** Playwright runs axe-core on every route with 0 violations at 1440, 768 and 320 px, in the default light theme and the opt-in dark theme; the Team QA plans dialog is also checked at all three widths. Browser checks cover keyboard-only use, focus moving to each screen's heading, Menu and Plans dialogs (Escape closes and focus returns; tab stays inside), Back/Forward keeping the report, no sideways scrolling, 200% zoom, 24px minimum targets (controls are built at 44px) and error states. A manual screen-reader check has not been run.
 
-**Security.** Checked with `npm audit` (0 vulnerabilities) and a manual review of every place the page shows pasted or dataset text and of the CI workflow; no high-severity findings. semgrep ran with the committed rule file `.semgrep/dom-sinks.yml` (HTML-string sinks: `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, `new Function`, string `setTimeout`, `createContextualFragment`) over `src/`, `scripts/` and the page's inline scripts: 0 findings. Command: `node scripts/inline-scripts.js /tmp/app-inline.js && semgrep --metrics=off --config .semgrep/dom-sinks.yml /tmp/app-inline.js src scripts`. Its registry rule packs could not be downloaded in the environment used. Hardening: a Content Security Policy, data embedded in the page escapes every `<`, the CI workflow uses a read-only token and actions pinned to commit SHAs, and pasted text is only ever shown as text (tested).
+**Security.** The public issue importer validates the GitHub URL shape, requests only `api.github.com`, omits credentials, rejects redirects, times out after 10 seconds and bounds the response to 256 KiB. Imported strings are rendered as text. The workflow `.github/workflows/talkback-triage.yml` runs the repository's deterministic checker in dry-run mode on opened/edited issues and can also be called by another workflow. To post a comment or add the `needs: talkback-details` label, explicitly opt into `post_comment` or `apply_label`; the caller must grant `issues: write`, and the label must already exist. Actions are pinned to full commit SHAs. No issue text is interpolated into shell commands; the checker logs only the issue number and fixed result keys.
+
+To call the workflow from your own issue workflow, pin it to a reviewed 40-character commit SHA (replace the placeholder below). Leave both inputs false for dry-run behavior; the example explicitly opts into a public comment. Grant `issues: write` only when you opt into a comment or label:
+
+```yaml
+jobs:
+  report-check:
+    permissions:
+      contents: read
+      issues: write
+    uses: anirudh763/talkback-triage-pilot/.github/workflows/talkback-triage.yml@<reviewed-40-character-commit-sha>
+    with:
+      source_ref: <same-reviewed-40-character-commit-sha>
+      post_comment: true
+      apply_label: false
+```
 
 ## Use it in your own repo
 
@@ -193,6 +214,8 @@ The saved run addresses RQ1. RQ2 and RQ3 need human labels. The labelling screen
 | `docs/index.html` | The whole web app in one file, served by GitHub Pages. Built from `src/`. |
 | `src/core.js` | All the logic, with no user interface: the parser, the checklist, the removal rules, the clean-copy check, the AI prompt, the answer parser and the statistics (Cohen's kappa, exact McNemar test). Shared by the app and the scripts. |
 | `src/app.html` | The app's interface (template). |
+| `ARCHITECTURE.md`, `DECISIONS.md` | Current static design and the clearly marked Phase 2 proposal. |
+| `FAILURE_MODES.md`, `FINOPS_AND_PRICING.md` | Data-handling limits, proposed prices and unmeasured costs. |
 | `data/` | The 75 GitHub issues as fetched (`raw_*.txt`), and parsed (`issues.json`). See [DATA.md](DATA.md). |
 | `results/runs/<id>/` | Saved AI runs: `meta.json` plus one file of answers per report. |
 | `results/pair_review.md` | Every line each shortened copy removes, for hand-checking. |
@@ -257,7 +280,7 @@ This is an accessibility-issue sample, not only bug reports: by their GitHub typ
 Images and videos become `[image]` and `[video]`, template checklists are dropped, and long bodies are cut at about 1,200 characters. Full details are in [DATA.md](DATA.md).
 
 ### 2. Checklist
-Deterministic text rules (`check()` in `src/core.js`) flag six details in each report:
+The research checklist is separate from the seven-row report composer. Deterministic study rules (`check()` in `src/core.js`) flag six study features in each report:
 
 | Detail | Example of what counts |
 |---|---|

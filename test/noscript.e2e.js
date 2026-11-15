@@ -22,7 +22,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
 (async () => {
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
   const base = "http://127.0.0.1:" + server.address().port + "/";
-  browser = await chromium.launch();
+  browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
   for (const width of [1280, 375]) {
     for (const scheme of ["light", "dark"]) {
       const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width, height: 800 }, colorScheme: scheme });

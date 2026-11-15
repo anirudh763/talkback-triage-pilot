@@ -32,6 +32,8 @@ p { margin: 0; }
 .crumbs a { color: var(--fg-muted); }
 .crumbs [aria-current="page"] { color: var(--fg); }
 .back { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--target); padding: 0 4px; font-weight: 700; }
+.plans-trigger { margin-left: auto; flex: 0 0 auto; }
+#back-link:not([hidden]) + .plans-trigger { margin-left: 0; }
 main { padding: 14px var(--s5) 40px; flex: 1; width: 100%; max-width: 1344px; margin: 0 auto; }
 .screen { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .screen > header { display: grid; gap: var(--s2); }
@@ -78,7 +80,7 @@ main { padding: 14px var(--s5) 40px; flex: 1; width: 100%; max-width: 1344px; ma
 .step { font-size: .875rem; color: var(--fg-muted); font-weight: 400; }
 label.field, div.field { display: grid; gap: 6px; font-weight: 700; }
 div.field > select, div.field > input { font-weight: 400; }
-input[type="text"], textarea, select { width: 100%; min-width: 0; font-weight: 400; }
+input[type="text"], input[type="url"], textarea, select { width: 100%; min-width: 0; font-weight: 400; }
 select { width: auto; max-width: 100%; }
 textarea { line-height: 1.5; resize: vertical; }
 .btn.link { border: 0; background: none; padding: 4px 2px; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; font-weight: 700; }
@@ -155,6 +157,8 @@ html { scroll-padding-bottom: 96px; }
 /* under 1000px the location header is sticky too: keep focused controls from scrolling under it */
 @media (max-width: 999px) { html { scroll-padding-top: 80px; } }
 .privacy { font-size: .875rem; color: var(--fg-muted); }
+.github-import { display: grid; gap: var(--s2); border-top: 1px solid var(--border); padding-top: var(--s2); }
+#import-status, #draft-save-status { min-height: 1.4em; }
 #copy-tpl-status:empty, #link-status:empty { display: none; }
 .summary { font-size: .875rem; color: var(--fg-muted); font-weight: 400; }
 .lint { list-style: none; margin: 0; padding: 0; }
@@ -183,6 +187,22 @@ html { scroll-padding-bottom: 96px; }
 #in-body, .issue, .tpl { font-family: "Atkinson Hyperlegible", var(--font); }
 .copybox { width: 100%; min-height: 120px; }
 .gaps { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+/* ---------- proposed Team QA plans ---------- */
+.plans-dialog { width: min(52rem, calc(100vw - 32px)); max-height: min(88dvh, 48rem); overflow-y: auto; margin: auto; padding: 24px; border: 1px solid var(--border-strong); border-radius: 2px; background: var(--bg); color: var(--fg); box-shadow: 0 12px 40px rgba(48, 39, 55, .24); }
+.plans-dialog::backdrop { background: rgba(48, 39, 55, .58); }
+.plans-head { display: flex; align-items: start; justify-content: space-between; gap: var(--s3); padding-bottom: var(--s3); border-bottom: 1px solid var(--border); }
+.plans-head > div { display: grid; gap: 4px; }
+.plans-head h2 { font-size: 1.75rem; }
+.plans-intro { margin: var(--s3) 0; max-width: 72ch; }
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: var(--s2); }
+.plans-card { min-width: 0; padding: var(--s3); border: 1px solid var(--border); border-top: 3px solid var(--accent); background: var(--bg-subtle); display: grid; align-content: start; gap: var(--s2); }
+.plans-card h3 { font-family: var(--document); font-size: 1.125rem; }
+.plans-price { display: grid; gap: 2px; font-size: 1.375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.plans-price span { color: var(--fg-muted); font: 400 .8125rem var(--font); }
+.plans-note, .plans-privacy { margin: var(--s3) 0; padding: var(--s2) var(--s3); border-left: 3px solid var(--border-strong); background: var(--bg-subtle); font-size: .875rem; }
+.plans-privacy { border-left-color: var(--warn); }
+@media (max-width: 599px) { .plans-dialog { width: calc(100vw - 24px); max-height: 90dvh; padding: 16px; } .plans-head h2 { font-size: 1.5rem; } }
 
 /* ---------- Examples ---------- */
 .filters { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: end; }
@@ -238,7 +258,7 @@ tr.sel td { background: var(--accent-subtle); }
 .legendline { font-size: .8125rem; color: var(--fg-muted); font-weight: 400; max-width: 80ch; }
 .noscript { margin: 16px 0; padding: 12px 16px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--fg); max-width: 80ch; }
 .noscript p { margin: 0; }
-@media (pointer: coarse) { input[type="text"], textarea, select { font-size: 16px; } }
+@media (pointer: coarse) { input[type="text"], input[type="url"], textarea, select { font-size: 16px; } }
 /* the saved-run picker's options are long: let the control shrink inside its row */
 label.row { min-width: 0; max-width: 100%; flex-wrap: nowrap; }
 label.row select { flex: 1 1 auto; min-width: 0; }

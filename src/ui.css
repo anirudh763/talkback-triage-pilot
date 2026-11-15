@@ -36,7 +36,7 @@ a:hover{text-decoration-thickness:2px} a:active{opacity:.8}
 .btn.primary:hover{filter:brightness(.92)} .btn.primary:active{filter:brightness(.85)}
 .btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .btn[disabled]{opacity:.55;cursor:not-allowed}
-.input,select,textarea,input[type="text"]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius);padding:9px 12px;min-height:var(--target)}
+.input,select,textarea,input[type="text"],input[type="url"]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius);padding:9px 12px;min-height:var(--target)}
 .label{display:inline-flex;align-items:center;gap:4px;padding:0 8px;border:1px solid var(--border-strong);border-radius:2em;font-size:.875rem;line-height:22px}
 .label.ok{color:var(--ok);border-color:currentColor} .label.bad{color:var(--bad);border-color:currentColor} .label.warn{color:var(--warn);border-color:currentColor}
 .box{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg)}
