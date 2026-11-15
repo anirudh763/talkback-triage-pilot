@@ -62,3 +62,8 @@ Motion is limited to 120ms button feedback and the existing progress transform, 
 Use `npm test`, then the full existing `npm run test:e2e` suite: study flows, checker, offline, no-JavaScript, routes, keyboard focus, Menu, Back/Forward, shared edits, zoom/reflow and axe in light/dark. Layout assertions now check top navigation instead of a 216px rail and ivory instead of the former gray canvas. Behavior assertions remain intact. Generate `docs/` through `scripts/build.js`; do not edit the generated page directly.
 
 Known limits remain: the Markdown preview supports headings, lists, quotes, fenced code and bold, not every GitHub Markdown feature; exact matched-text placement can omit a highlight; style CSP remains inline for the generated build. Automated browser/axe checks are not a manual screen-reader pass. The existing install icons retain their original artwork. No checker core, study data, saved results or AI triage behavior belongs to this visual change.
+
+
+## November 15 interface revision
+
+The owner requested compact application copy: no taglines, tutorial intros, numbered stage badges or repeated instructions. Report, Preview, Examples and Research keep their existing routes. Headings use the UI sans-serif face, and document-card shadows are removed. Contextual errors, privacy, field labels and Methods retain their meanings. Before/after copy and browser evidence are recorded in the November 15 concise-UI audit.

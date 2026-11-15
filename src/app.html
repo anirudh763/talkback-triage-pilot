@@ -1,4 +1,4 @@
-<title>Check a report – CueReport</title>
+<title>Report – CueReport</title>
 <style>/*UICSS*/</style>
 <style>/*APPCSS*/</style>
 <script>
@@ -12,15 +12,15 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   <aside class="rail" id="rail" aria-label="Navigation and settings">
     <div class="rail-head">
       <a class="wordmark" href="#/check">CueReport</a>
-      <p class="purpose">The accessibility report desk</p>
+
       <button class="btn menu-close" id="btn-menu-close" type="button">Close menu</button>
     </div>
     <nav aria-label="Main">
       <div>
         <p class="group" id="g-work">Work</p>
         <ul aria-labelledby="g-work">
-          <li><a href="#/check" data-nav="check">Check a report</a></li>
-          <li><a href="#/draft" data-nav="draft">Draft</a></li>
+          <li><a href="#/check" data-nav="check">Report</a></li>
+          <li><a href="#/draft" data-nav="draft">Preview</a></li>
           <li><a href="#/examples" data-nav="examples">Examples</a></li>
         </ul>
       </div>
@@ -33,7 +33,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </nav>
     <div class="rail-foot">
       <button class="btn" id="btn-theme" type="button" aria-pressed="false">Dark theme</button>
-      <p>Runs in your browser; report text is not sent anywhere.</p>
+
       <p><a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a></p>
     </div>
   </aside>
@@ -43,9 +43,9 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     <header class="loc">
       <button class="btn menu-btn" id="btn-menu" type="button" aria-expanded="false" aria-controls="rail">Menu</button>
       <nav class="crumbs" aria-label="Breadcrumb">
-        <ol><li><a href="#/check">CueReport</a></li><li><span aria-current="page" id="crumb-here">Check a report</span></li></ol>
+        <ol><li><a href="#/check">CueReport</a></li><li><span aria-current="page" id="crumb-here">Report</span></li></ol>
       </nav>
-      <a class="back" id="back-link" href="#/check" hidden><span aria-hidden="true">←&nbsp;</span>Back<span class="sr-only" id="back-to"> to Check a report</span></a>
+      <a class="back" id="back-link" href="#/check" hidden><span aria-hidden="true">←&nbsp;</span>Back<span class="sr-only" id="back-to"> to Report</span></a>
       <button class="btn plans-trigger" id="btn-plans" type="button" aria-label="Team QA plans">Plans</button>
     </header>
 
@@ -56,35 +56,35 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 <section class="screen" id="check" aria-labelledby="h-check" hidden>
   <header>
     <div class="check-heading">
-      <div><h1 id="h-check" tabindex="-1">Check a TalkBack report</h1>
-      <p class="lede">Write the report. Fill the gaps. Review your draft.</p></div>
+      <div><h1 id="h-check" tabindex="-1">Report</h1>
+      </div>
       <div class="focal">
-        <a class="btn primary" href="#/draft" id="btn-review">Review draft</a>
-        <a href="#/examples">Browse examples</a>
+        <a class="btn primary" href="#/draft" id="btn-review">Preview</a>
+        <a href="#/examples">Examples</a>
       </div>
     </div>
-    <p class="desk-intro">A rule-based review of the details in your report. Your words stay yours.</p>
+
   </header>
 
   <div class="check-grid">
     <div class="document-column">
     <section class="box document-sheet" aria-labelledby="paste-h">
-      <div class="box-header"><h2 id="paste-h">Your report</h2><span class="step">Step 1 of 2</span></div>
+      <div class="box-header"><h2 id="paste-h">Issue</h2></div>
       <div class="box-body form">
         <div class="tools">
-          <button class="btn" id="btn-sample" type="button">Try a sample report</button>
+          <button class="btn" id="btn-sample" type="button">Load sample</button>
           <button class="btn" id="btn-clear" type="button">Clear</button>
-          <button class="btn" id="btn-link" type="button">Copy link to this check</button>
-          <button class="btn" id="btn-reset-draft" type="button">Reset saved draft</button>
+          <button class="btn" id="btn-link" type="button">Copy link</button>
+          <button class="btn" id="btn-reset-draft" type="button">Reset draft</button>
         </div>
         <p class="src" id="ex-source" aria-live="polite"></p>
-        <label class="field" for="in-title">Issue title
+        <label class="field" for="in-title">Title
           <input type="text" id="in-title" autocomplete="off" spellcheck="false">
         </label>
-        <label class="field" for="in-body">Report text
-          <textarea id="in-body" spellcheck="false" aria-describedby="body-hint"></textarea>
+        <label class="field" for="in-body">Description
+          <textarea id="in-body" spellcheck="false"></textarea>
         </label>
-        <p class="hint" id="body-hint">Include what you did, what TalkBack announced, and what you expected. Markdown or plain text; the details list updates as you type.</p>
+
         <details class="github-import">
           <summary>Import a public GitHub issue</summary>
           <label class="field" for="github-issue-url">Public issue URL
@@ -95,71 +95,70 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
             <button class="btn" id="btn-cancel-import" type="button" disabled hidden>Cancel import</button>
           </div>
           <p class="small muted" id="import-status" role="status" aria-live="polite"></p>
-          <p class="small muted">Only public issues from github.com are accepted. The issue text is fetched from GitHub into this browser and replaces the current report; it is not sent to CueReport.</p>
+          <p class="small muted">Import replaces the current report.</p>
         </details>
-        <p class="small muted" id="link-hint">A link to pasted text carries the full report text inside the link, so anyone who gets the link can read the report.</p>
+        <p class="small muted" id="link-hint">Shared links include the full report text.</p>
         <p class="small muted" id="link-status" role="status"></p>
         <details class="more">
-          <summary>Load a specific report from the study's dataset</summary>
-          <label class="field" for="ex-select">Report (75 public GitHub issues)
+          <summary>Dataset</summary>
+          <label class="field" for="ex-select">Issue
             <select id="ex-select"></select>
           </label>
         </details>
-        <p class="privacy">Autosave keeps report text in this browser's local storage as readable text. Do not include passwords, tokens, or private details. Imports contact only api.github.com after you choose Import.</p>
+        <details class="more"><summary>Privacy</summary><p>Drafts are stored locally as plain text. Imports fetch public GitHub issues into this browser. Keep passwords and tokens out of reports.</p></details>
         <p class="small muted" id="draft-save-status" role="status" aria-live="polite"></p>
       </div>
     </section>
 
     <section class="box preview document-sheet" aria-labelledby="pv-h">
-      <div class="box-header"><h2 id="pv-h">Passage review</h2><span class="step">Live Markdown preview</span></div>
+      <div class="box-header"><h2 id="pv-h">Matches</h2></div>
       <div class="box-body stack">
-        <p class="small muted" id="pv-legend"><mark class="hit">Highlighted</mark> passages are what the checker matched for a detail. The review notes have fields for details it did not find; add them in your own words.</p>
+
         <article class="issue" id="preview" aria-labelledby="pv-h" tabindex="0"></article>
       </div>
     </section>
     </div>
 
     <section class="review-margin" aria-labelledby="notes-h">
-      <div class="margin-heading"><h2 id="notes-h">Review notes</h2><p class="summary" id="chk-score" role="status" aria-live="polite"></p></div>
-      <p class="hint">The passage review shows what was found. Add the details below to the same report.</p>
+      <div class="margin-heading"><h2 id="notes-h">Checks</h2><p class="summary" id="chk-score" role="status" aria-live="polite"></p></div>
+
         <div id="gaps"></div>
         <p class="status" id="gap-status" role="status" aria-live="polite"></p>
     </section>
   </div>
 
   <section class="box" aria-labelledby="chk-h">
-    <div class="box-header"><h2 id="chk-h">All details</h2></div>
+    <div class="box-header"><h2 id="chk-h">Checklist</h2></div>
     <ul class="lint" id="checklist" aria-labelledby="chk-h"></ul>
-    <p class="boxfoot">Pattern rules can miss or over-match. Steps, version and device use the same rules as the study's checklist, plus extra rules for other apps.</p>
+
   </section>
-  <p class="small muted check-caveat"><strong>Report preparation, rules not AI.</strong> It finds missing sections only. A report with every section can still be impossible to reproduce: <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> had the app version, Android version, device and numbered TalkBack steps, and still took 8 comments of follow-up and was labelled "Needs: Upstream fix" before it was closed.</p>
 </section>
 
 <!-- ============ DRAFT ============ -->
 <section class="screen" id="draft" aria-labelledby="h-draft" hidden>
   <header>
-    <h1 id="h-draft" tabindex="-1">Review draft</h1>
-    <p class="lede">Your report's own text, rearranged under the headings a developer looks for. Each missing detail is marked [ADD: …]: replace it with what you know, or delete it. Nothing is filled in for you.</p>
+    <h1 id="h-draft" tabindex="-1">Preview</h1>
+
   </header>
   <div class="notice" id="draft-empty" hidden>
-    <p><strong>Nothing to draft yet.</strong> Write or paste a report first, or try a sample.</p>
-    <p class="row" style="margin-top:8px"><a class="btn primary" href="#/check">Go to Check a report</a></p>
+    <p>No report.</p>
+    <p class="row" style="margin-top:8px"><a class="btn primary" href="#/check">New report</a></p>
   </div>
   <section class="box" id="draft-box" aria-labelledby="tpl-h">
-    <div class="box-header"><h2 id="tpl-h">Draft report</h2><span class="step">Step 2 of 2</span></div>
+    <div class="box-header"><h2 id="tpl-h">Draft</h2></div>
     <div class="box-body stack">
       <p class="small" id="draft-gaps" role="status"></p>
       <div class="row">
         <button class="btn primary" id="btn-copy-tpl" type="button">Copy draft</button>
-        <button class="btn" id="btn-dl-tpl" type="button">Download as Markdown (.md)</button>
+        <button class="btn" id="btn-dl-tpl" type="button">Download Markdown</button>
         <span class="small muted" id="copy-tpl-status" role="status"></span>
       </div>
-      <label class="field" for="github-repo">GitHub repository for a new issue (optional)
+      <label class="field" for="github-repo">GitHub repository
         <input type="text" id="github-repo" autocomplete="off" spellcheck="false" placeholder="owner/repository" aria-describedby="github-repo-hint">
       </label>
-      <p class="small muted" id="github-repo-hint">Use a public or private GitHub repository you can access. The link opens GitHub; review and submit the issue there yourself.</p>
+      <p class="small muted" id="github-repo-hint">Review and submit on GitHub.</p>
       <div class="row">
-        <a class="btn" id="btn-open-github-issue" href="#" target="_blank" rel="noopener" hidden>Open pre-filled issue on GitHub</a>
+        <a class="btn" id="btn-open-github-issue" href="#" target="_blank" rel="noopener" hidden>Open GitHub draft</a>
         <span class="small muted" id="github-link-status" role="status" aria-live="polite"></span>
       </div>
     </div>
@@ -167,8 +166,8 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   </section>
 
   <section class="box pad stack" id="ai-card" aria-labelledby="ai-h" hidden>
-    <h2 id="ai-h">Study tool: ask Claude to triage this report</h2>
-    <p class="small muted">Part of the research, separate from the checker. It works only when this page runs inside the Claude app. Exploratory: one AI run, no human labels yet; it does not measure triage accuracy.</p>
+    <h2 id="ai-h">Triage</h2>
+    <p class="small muted">Running triage sends the report to Claude. Results are exploratory.</p>
     <div class="row">
       <label class="field" for="ex-app-ai">App the report is about
         <select id="ex-app-ai">
@@ -210,9 +209,9 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </div>
   </div>
   <p class="small muted" id="ex-count" role="status" aria-live="polite"></p>
-  <p class="legendline" id="ex-legend">Details in report: a solid tag was found, a dashed, struck-through tag was not. TB TalkBack steps, VER app version, DEV Android version or device, E/A expected vs. actual, SAID what TalkBack said, MEDIA recording or screenshot.</p>
+
   <div class="tablewrap" tabindex="0" role="region" aria-label="Example reports">
-    <table id="ex-table" aria-describedby="ex-legend">
+    <table id="ex-table">
       <caption>Example reports</caption>
       <thead><tr><th scope="col">Report</th><th scope="col">Details in report</th><th scope="col">GitHub outcome</th></tr></thead>
       <tbody></tbody>
@@ -220,7 +219,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   </div>
   <p class="notice" id="ex-none" hidden>No reports match these filters. <button class="btn link" id="ex-reset" type="button">Show all reports</button></p>
   <section class="box pad stack" aria-labelledby="form-h">
-    <h2 id="form-h">Issue form for your own project</h2>
+    <h2 id="form-h">GitHub issue form</h2>
     <p class="small muted"><a href="https://github.com/anirudh763/talkback-triage-pilot/blob/main/examples/accessibility-bug.yml">examples/accessibility-bug.yml</a> is a GitHub issue form that asks for the checker's seven details, with expected and actual behaviour as two fields. Copy it to <code>.github/ISSUE_TEMPLATE/</code> in your repository.</p>
   </section>
 </section>
@@ -228,19 +227,19 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 <!-- ============ RESEARCH: RESULTS ============ -->
 <section class="screen" id="pilot" aria-labelledby="h-pilot" hidden>
   <header>
-    <h1 id="h-pilot" tabindex="-1">Research results</h1>
+    <h1 id="h-pilot" tabindex="-1">Results</h1>
     <nav class="subnav" aria-label="Research sections" data-sub="research"></nav>
     <p class="lede" id="pilot-lede"></p>
     <p class="small muted">The 75 issues are an accessibility-issue sample, not only bug reports: by their GitHub type labels, 24 are bugs or crashes, 29 are feature requests or enhancements (for example <a href="https://github.com/AntennaPod/AntennaPod/issues/8145" rel="noopener">AntennaPod #8145</a>, an accessibility concern labelled "Type: Feature request"), 1 is a task and 21 have no type label.</p>
-    <p class="small muted">Exploratory: one AI run, no human labels yet. Shortened copies pass an automated check, which has known gaps (see Methods).</p>
+    <p class="small muted">Exploratory study · Human validation pending.</p>
   </header>
 
   <div class="tablewrap" id="coverage" tabindex="0" role="region" aria-label="How often each detail appears in the filed reports"></div>
 
-  <p class="notice" id="run-off">This page shows the saved run. Running the pilot needs the Claude app; to rerun it with your own API key, see <code>scripts/run-triage.mjs</code> in the project's README.</p>
+  <p class="notice" id="run-off">Cached results. Live runs require the Claude app.</p>
   <div class="box pad stack" id="run-card" aria-labelledby="run-h" hidden>
     <h2 id="run-h">Run the ablation</h2>
-    <p class="small muted">Each report is triaged once per version. A shortened version is run only when the report has the detail it removes and the checker confirms nothing else it measures was lost. Calls run two at a time on the account of whoever presses Run.</p>
+    <p class="small muted">Uses the current Claude account.</p>
     <div class="row" style="align-items:stretch">
       <fieldset>
         <legend>Conditions</legend>
@@ -279,7 +278,7 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
   <header>
     <h1 id="h-label" tabindex="-1">Label reports</h1>
     <nav class="subnav" aria-label="Research sections" data-sub="research/labels"></nav>
-    <p class="lede">People's labels are the reference Claude is compared with, once two people agree on them. Start with the five-report starter set, label on your own, then compare with a second person and fix the rubric where you disagree.</p>
+
   </header>
   <div class="grid2">
     <div class="box pad stack" id="lab-card"></div>
@@ -291,17 +290,17 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
       </div>
       <div class="box pad stack">
         <h2>Share labels</h2>
-        <p class="small muted">Copy your labels to send them, or paste labels a collaborator sent you to add them as a second rater.</p>
+
         <div class="row">
           <button class="btn" id="btn-copy-labels">Copy my labels</button>
         </div>
-        <label class="field" for="imp-name">Collaborator's name
-          <input type="text" id="imp-name" autocomplete="off" placeholder="e.g. W. Aljedaani">
+        <label class="field" for="imp-name">Rater name
+          <input type="text" id="imp-name" autocomplete="off" maxlength="80">
         </label>
-        <label class="field" for="imp-json">Their labels (pasted)
+        <label class="field" for="imp-json">Label JSON
           <textarea id="imp-json" style="min-height:90px"></textarea>
         </label>
-        <div class="row"><button class="btn" id="btn-import">Add as a rater</button></div>
+        <div class="row"><button class="btn" id="btn-import">Add rater</button></div>
         <p class="status" id="lab-status" role="status" aria-live="polite"></p>
       </div>
     </div>
@@ -311,22 +310,23 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
 <!-- ============ RESEARCH: METHODS ============ -->
 <section class="screen" id="about" aria-labelledby="h-about" hidden>
   <header>
-    <h1 id="h-about" tabindex="-1">Research methods</h1>
+    <h1 id="h-about" tabindex="-1">Methods</h1>
     <nav class="subnav" aria-label="Research sections" data-sub="research/methods"></nav>
     <p class="lede">The question: when an Android accessibility bug report includes TalkBack reproduction steps and the app version, does an AI judge differently whether a developer could start reproducing it? And do people agree with its judgments?</p>
   </header>
   <div class="box pad">
-    <ol class="steps">
-      <li><div><h2>Collect real reports</h2><p class="muted">Public GitHub issues from two open-source Android apps, fetched on 9 November 2026. WordPress for Android: issues labelled <code>Accessibility</code> that mention TalkBack or a screen reader (51). AntennaPod: every issue labelled <code>Area: Accessibility</code> (24). Images and videos become <code>[image]</code> and <code>[video]</code>, template checklists are dropped, and bodies are cut at about 1,200 characters.</p></div></li>
-      <li><div><h2>Check each report</h2><p class="muted">Pattern rules flag six details: TalkBack reproduction steps, app version, Android version or device, expected vs. actual behaviour, what TalkBack said, and a recording or screenshot. The rules are deterministic, so anyone can rerun them.</p></div></li>
-      <li><div><h2>Make controlled copies</h2><p class="muted">"TalkBack steps removed" drops only the action steps: the steps heading and the list items under it. It keeps steps that report what happened (for example "Notice it crashes"), anything TalkBack said, recordings, notes, workarounds and "Tested on" lines. "Version removed" drops the app version, Android version, device and app source. Each copy is checked: if the checker sees that any other detail was lost, that copy is not run. Every removal is listed line by line in <code>results/pair_review.md</code>, and the report view shows it with strike-through. This check is automated pattern matching: it confirms the other measured details are still there, not that nothing else changed in meaning. Two known cases: WordPress-Android #21127's copy without steps still has a sentence that describes how to reproduce the bug ("When Talkback is enabled, scrolling to a page where the remove button is offscreen..."), and AntennaPod #8145's copy drops a step that reports what happened ("Screens auto advance without a next/previous").</p></div></li>
-      <li><div><h2>Ask Claude about each copy</h2><p class="muted">Each copy goes to Claude in its own call with the same instructions. Claude answers two questions: could a developer start reproducing this with the information here, and could a TalkBack user finish the task. It also says what is missing. No confidence score is shown, because a model's self-reported confidence isn't calibrated.</p></div></li>
-      <li><div><h2>Compare, then check against people</h2><p class="muted">The pilot counts how often Claude's answer changes between a report and its shortened copy, with an exact McNemar test on the pairs. People label reports on the Labels screen, blind to Claude's answers, using the same rubric. Each version is scored only against labels of that same version. A simple checklist rule (enough to start reproducing when the text has steps) is scored the same way, to see whether Claude adds anything over the checklist.</p></div></li>
-    </ol>
+    <div class="stack">
+      <section><h2>Dataset</h2><p class="muted">Issue text belongs to its GitHub authors. Public GitHub issues from two open-source Android apps, fetched on 9 November 2026. WordPress for Android: issues labelled <code>Accessibility</code> that mention TalkBack or a screen reader (51). AntennaPod: every issue labelled <code>Area: Accessibility</code> (24). Images and videos become <code>[image]</code> and <code>[video]</code>, template checklists are dropped, and bodies are cut at about 1,200 characters.</p></section>
+      <section><h2>Checklist</h2><p class="muted">Pattern rules flag six details: TalkBack reproduction steps, app version, Android version or device, expected vs. actual behaviour, what TalkBack said, and a recording or screenshot. The rules are deterministic, so anyone can rerun them.</p></section>
+      <section><h2>Ablations</h2><p class="muted">"TalkBack steps removed" drops only the action steps: the steps heading and the list items under it. It keeps steps that report what happened (for example "Notice it crashes"), anything TalkBack said, recordings, notes, workarounds and "Tested on" lines. "Version removed" drops the app version, Android version, device and app source. Each copy is checked: if the checker sees that any other detail was lost, that copy is not run. Every removal is listed line by line in <code>results/pair_review.md</code>, and the report view shows it with strike-through. This check is automated pattern matching: it confirms the other measured details are still there, not that nothing else changed in meaning. Two known cases: WordPress-Android #21127's copy without steps still has a sentence that describes how to reproduce the bug ("When Talkback is enabled, scrolling to a page where the remove button is offscreen..."), and AntennaPod #8145's copy drops a step that reports what happened ("Screens auto advance without a next/previous").</p></section>
+      <section><h2>Model about each copy</h2><p class="muted">Each copy goes to Claude in its own call with the same instructions. Claude answers two questions: could a developer start reproducing this with the information here, and could a TalkBack user finish the task. It also says what is missing. No confidence score is shown, because a model's self-reported confidence isn't calibrated.</p></section>
+      <section><h2>Compare, then check against people</h2><p class="muted">The pilot counts how often Claude's answer changes between a report and its shortened copy, with an exact McNemar test on the pairs. People label reports on the Labels screen, blind to Claude's answers, using the same rubric. Each version is scored only against labels of that same version. A simple checklist rule (enough to start reproducing when the text has steps) is scored the same way, to see whether Claude adds anything over the checklist.</p></section>
+    </div>
   </div>
   <div class="grid2">
     <div class="box pad prose">
       <h2>What the results can and can't show</h2>
+      <p>The report checker finds missing sections only. Completed fields do not establish reproducibility. <a href="https://github.com/AntennaPod/AntennaPod/issues/6598" rel="noopener">AntennaPod #6598</a> needed further investigation despite complete steps and environment details.</p>
       <ul>
         <li>The removal comparison shows whether Claude's answer depends on those lines. It doesn't show that Claude is right.</li>
         <li>The "clean copy" check is automated. It doesn't prove a copy differs only in the removed detail; see WordPress-Android #21127 and AntennaPod #8145 above.</li>
@@ -355,21 +355,21 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     <h1 id="h-notfound" tabindex="-1">Page not found</h1>
     <p class="lede">There is no screen at this address. It may come from an old or mistyped link.</p>
   </header>
-  <p><a class="btn primary" href="#/check">Go to Check a report</a></p>
+  <p><a class="btn primary" href="#/check">New report</a></p>
 </section>
 </main>
 <footer class="sitefoot">
-  <p>Version /*VERSION*/. <a href="https://github.com/anirudh763/talkback-triage-pilot">Source on GitHub</a>: code, data and method. Code is MIT licensed; report text belongs to its GitHub authors and links back to each issue.</p>
+  <p>v/*VERSION*/ · <a href="https://github.com/anirudh763/talkback-triage-pilot">Source</a> · <a href="https://github.com/anirudh763/talkback-triage-pilot/blob/main/LICENSE">MIT</a> · <a href="#/research/methods">Data</a></p>
 </footer>
   </div>
 </div>
 
 <dialog class="plans-dialog" id="plans-dialog" aria-labelledby="plans-title" aria-describedby="plans-intro">
   <div class="plans-head">
-    <div><p class="eyebrow">PROPOSED PLANS</p><h2 id="plans-title">Team QA plans</h2></div>
+    <div><p class="eyebrow">Unavailable plans</p><h2 id="plans-title">Team QA plans</h2></div>
     <button class="btn" id="btn-plans-close" type="button" autofocus>Close</button>
   </div>
-  <p id="plans-intro" class="plans-intro">CueReport is a free, offline report checker today. The paid plans and team integrations below are proposals; there is no checkout, account, hosted service, or email signup.</p>
+  <p id="plans-intro" class="plans-intro">Free report checker. Paid plans are not available.</p>
   <div class="plans-grid">
     <section class="plans-card" aria-labelledby="plan-free">
       <h3 id="plan-free">Offline sandbox</h3>
@@ -378,18 +378,17 @@ try { if (localStorage.getItem("tbt-theme") === "dark") document.documentElement
     </section>
     <section class="plans-card" aria-labelledby="plan-indie">
       <h3 id="plan-indie">Indie</h3>
-      <p class="plans-price">$29 <span>per month; proposed and unavailable</span></p>
+      <p class="plans-price">$29 <span>per month</span></p>
       <p>Proposed for one maintainer: saved QA checklists, issue links, and optional model-assisted review with human approval.</p>
     </section>
     <section class="plans-card" aria-labelledby="plan-team">
       <h3 id="plan-team">QA Team</h3>
-      <p class="plans-price">$149 <span>per month; proposed and unavailable</span></p>
+      <p class="plans-price">$149 <span>per month</span></p>
       <p>Proposed team queue, reviewer assignments, audit history, and configurable integrations. None are running today.</p>
     </section>
   </div>
-  <p class="plans-note"><strong>Proposed architecture:</strong> AWS Step Functions coordinating Amazon Bedrock with a human review step. This is a design direction only; no AWS resources, model calls, queue, or team backend are deployed. Current optional Claude access works only in the Claude app runtime; the command-line rerun uses a user-supplied API key.</p>
-  <p class="plans-privacy">Feedback link opens a public GitHub issue draft. Do not include private reports or email addresses. The app does not collect or send your report or email; review the draft before submitting it on GitHub.</p>
-  <a class="btn primary" id="btn-plans-feedback" href="https://github.com/anirudh763/talkback-triage-pilot/issues/new?title=Feedback%20on%20CueReport%20Team%20QA%20plans" target="_blank" rel="noopener">Draft public GitHub feedback</a>
+  <p class="plans-privacy">Feedback is public. Exclude private reports and email addresses.</p>
+  <a class="btn primary" id="btn-plans-feedback" href="https://github.com/anirudh763/talkback-triage-pilot/issues/new?title=Feedback%20on%20CueReport%20Team%20QA%20plans" target="_blank" rel="noopener">GitHub feedback</a>
 </dialog>
 
 
@@ -425,7 +424,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const pct = (x) => (x == null ? "–" : Math.round(x * 100) + "%");
   const store = {
     get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
-    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
   };
 
   // ---------- data ----------
@@ -441,12 +440,12 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const gh = (r) => "https://github.com/" + APPS[r.app].repo + "/issues/" + r.number;
   const COND_ORDER = ["full", "no_steps", "no_version", "neither"];
   const FIELDS = [
-    { k: "tbSteps", key: "talkback_steps", name: "TalkBack reproduction steps", short: "TB", why: "Ordered steps that say how TalkBack was used: turned on, gestures, what got focus." },
-    { k: "appVersion", key: "app_version", name: "App version or build", short: "VER", why: "A version number or build id, e.g. 3.1.0 or JPAndroid 24.8." },
-    { k: "osDevice", key: "android_version_or_device", name: "Android version or device", short: "DEV", why: "Android 12, API 24, Pixel 8, Nokia 5.3, an emulator." },
-    { k: "expectedActual", key: "expected_vs_actual", name: "Expected vs. actual behaviour", short: "E/A", why: "Says both what should happen and what does." },
-    { k: "heard", key: "what_talkback_said", name: "What TalkBack said", short: "SAID", why: "Quotes the announcement, e.g. reads as \"Button\"." },
-    { k: "media", key: "recording_or_screenshot", name: "Recording or screenshot", short: "MEDIA", why: "A screen recording, screenshot or video is attached." },
+    { k: "tbSteps", key: "talkback_steps", name: "TalkBack reproduction steps", short: "TalkBack", why: "Ordered steps that say how TalkBack was used: turned on, gestures, what got focus." },
+    { k: "appVersion", key: "app_version", name: "App version or build", short: "Version", why: "A version number or build id, e.g. 3.1.0 or JPAndroid 24.8." },
+    { k: "osDevice", key: "android_version_or_device", name: "Android version or device", short: "Device", why: "Android 12, API 24, Pixel 8, Nokia 5.3, an emulator." },
+    { k: "expectedActual", key: "expected_vs_actual", name: "Expected vs. actual behaviour", short: "Behavior", why: "Says both what should happen and what does." },
+    { k: "heard", key: "what_talkback_said", name: "What TalkBack said", short: "Speech", why: "Quotes the announcement, e.g. reads as \"Button\"." },
+    { k: "media", key: "recording_or_screenshot", name: "Recording or screenshot", short: "Media", why: "A screen recording, screenshot or video is attached." },
   ];
   const IMPACT = {
     blocks_task: { t: "Blocks the task", c: "bad" },
@@ -464,7 +463,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   // ---------- capabilities ----------
   // Inside Claude the page can call the model; anywhere else (GitHub Pages, a local file) it shows saved runs only.
   let aiOff = false;
-  const NO_AI_RUN = "This copy can't call the AI, so it shows saved runs only. To rerun the pilot with your own API key, see scripts/run-triage.mjs in the project's README.";
+  const NO_AI_RUN = "Live triage unavailable. Cached results only.";
   let sample = null, db = null, user = null, downloads = null, me = null;
   const ready = (async () => {
     const use = (n) => (window.claude && window.claude.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null));
@@ -487,12 +486,12 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   // The fragment is never sent to a server. Old links (#check?report=, #pilot, #label, #about) are mapped.
   const APPNAME = "CueReport";
   const ROUTES = {
-    "check": { panel: "check", title: "Check a report", nav: "check" },
-    "draft": { panel: "draft", title: "Review draft", nav: "draft", back: ["#/check", "Check a report"] },
+    "check": { panel: "check", title: "Report", nav: "check" },
+    "draft": { panel: "draft", title: "Preview", nav: "draft", back: ["#/check", "Report"] },
     "examples": { panel: "examples", title: "Examples", nav: "examples" },
-    "research": { panel: "pilot", title: "Research results", nav: "research" },
+    "research": { panel: "pilot", title: "Results", nav: "research" },
     "research/labels": { panel: "label", title: "Label reports", nav: "research" },
-    "research/methods": { panel: "about", title: "Research methods", nav: "research" },
+    "research/methods": { panel: "about", title: "Methods", nav: "research" },
   };
   const LEGACY = { check: "check", pilot: "research", label: "research/labels", about: "research/methods" };
   const PANELS = ["check", "draft", "examples", "pilot", "label", "about", "notfound"];
@@ -519,7 +518,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     if (path === "" && !location.hash.startsWith("#/")) { path = "check"; if (location.hash && location.hash !== "#") history.replaceState(null, "", "#/check"); }
     if (path === "") path = "check";
     const r = ROUTES[path];
-    if (path !== "check" && importController) stopIssueImport("Import cancelled because you left Check a report.");
+    if (path !== "check" && importController) stopIssueImport("Import cancelled because you left Report.");
     const panel = r ? r.panel : "notfound";
     for (const id of PANELS) $("#" + id).hidden = id !== panel;
     for (const a of $$("#rail nav a")) { if (r && a.dataset.nav === r.nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); }
@@ -606,7 +605,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
 
   // ============ CHECK VIEW ============
   const C = window.TBC;
-  // Real, incomplete reports from the dataset; "Try a sample report" steps through them.
+  // Real, incomplete reports from the dataset; "Load sample" steps through them.
   const SAMPLES = ["WP-21127", "AP-3563", "WP-19452"].filter((id) => BY_ID[id]);
   let shownId = null;      // the dataset report in the fields, while unedited
   let lastResult = null;
@@ -631,10 +630,9 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     $("#ex-app-ai").value = APPS[r.app].name;
     $("#github-repo").value = APPS[r.app].repo;
     exSel.value = id;
-    const si = SAMPLES.indexOf(id);
-    $("#ex-source").replaceChildren(si >= 0 ? "Sample " + (si + 1) + " of " + SAMPLES.length + ": " : "From the dataset: ",
+    $("#ex-source").replaceChildren(
       h("a", { href: gh(r), target: "_blank", rel: "noopener" }, APPS[r.app].repo + " #" + r.number),
-      ", a real public issue (shortened in the dataset).");
+      " · Dataset excerpt");
     updateChecklist(true);
     $("#triage-out").replaceChildren(); $("#triage-status").textContent = "";
     if (!$("#check").hidden) setHash("check", checkParams());
@@ -744,7 +742,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       if (!para) { para = h("p"); out.push(para); } else para.append(h("br"));
       para.append(...marked(body, L.start, L.end, spans));
     }
-    if (!body.trim()) out.push(h("p", { class: "muted" }, "The report text will appear here as you type."));
+    if (!body.trim()) out.push(h("p", { class: "muted" }, "No report text."));
     if (all.length > PREVIEW_LINES) out.push(h("p", { class: "small muted" }, "The preview shows the first " + PREVIEW_LINES.toLocaleString("en-US") + " of " + all.length.toLocaleString("en-US") + " lines. The checks and the draft use the whole report."));
     if (rep.body.length > C.MAX_INPUT) out.push(h("p", { class: "small muted" }, "The preview and checks cover the first " + C.MAX_INPUT.toLocaleString("en-US") + " characters."));
     $("#preview").replaceChildren(...out);
@@ -753,7 +751,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   // Gap prompts. Each says what is missing and appends the reporter's own words under a plain heading or label.
   const GAPS = {
     steps: { label: "Steps to reproduce", multi: true, example: "1. Open the app\n2. Go to Settings\n3. Swipe right to the Save button", add: (v) => "\n\n### Steps to reproduce\n" + numbered(v) },
-    srSteps: { label: "When TalkBack is on, and the gestures you used", multi: true, example: "1. Turn on TalkBack\n2. Swipe right until Save has focus\n3. Double-tap", add: (v) => "\n\n### TalkBack steps\n" + numbered(v) },
+    srSteps: { label: "TalkBack steps", multi: true, example: "1. Turn on TalkBack\n2. Swipe right until Save has focus\n3. Double-tap", add: (v) => "\n\n### TalkBack steps\n" + numbered(v) },
     appVersion: { label: "App version", example: "24.8", add: (v) => "\nApp version: " + v },
     device: { label: "Device and Android version", example: "Pixel 8, Android 14", add: (v) => "\nDevice: " + v },
     expectedActual: { label: "Expected and actual behaviour", multi: true, example: "Expected: TalkBack says \"Save, button\".\nActual: TalkBack says \"Button\".", add: (v) => "\n\n" + v },
@@ -765,32 +763,32 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   function gapBox(it) {
     const g = GAPS[it.key]; if (!g) return null;
     const id = "gap-" + it.key;
-    const field = g.multi ? h("textarea", { id, rows: "3", "aria-describedby": id + "-hint " + id + "-err" })
-      : h("input", { type: "text", id, autocomplete: "off", "aria-describedby": id + "-hint " + id + "-err" });
+    const field = g.multi ? h("textarea", { id, rows: "3", "aria-describedby": id + "-err", placeholder: g.example })
+      : h("input", { type: "text", id, autocomplete: "off", "aria-describedby": id + "-err", placeholder: g.example });
     field.value = gapDraft[it.key] || "";
     field.addEventListener("input", () => { gapDraft[it.key] = field.value; if (field.value.trim()) { field.removeAttribute("aria-invalid"); $("#" + id + "-err").hidden = true; } });
     const err = h("p", { class: "gap-err", id: id + "-err", hidden: true });
     return h("div", { class: "gap", "data-key": it.key, "data-status": it.status },
       h("label", { for: id }, h("span", { class: "gap-name" }, g.label), " ", h("span", { class: "gap-state" }, it.status === "partial" ? "Incomplete" : it.status === "optional" ? "Optional" : "Not found")),
-      h("p", { class: "small muted", id: id + "-hint" }, (it.status === "partial" && it.found ? "Found: " + it.found + ". " : "") + it.hint + " Example: " + g.example.replace(/\n/g, " ")),
+
       field, err,
       h("div", { class: "row" }, h("button", { class: "btn", type: "button", onclick: () => addGap(it, field, err) }, "Add to report")));
   }
   function addGap(it, field, err) {
     const v = field.value.trim();
     if (!v) {
-      err.textContent = "Type the " + GAPS[it.key].label.toLowerCase() + " first, in your own words."; err.hidden = false;
+      err.textContent = "Enter " + GAPS[it.key].label.toLowerCase() + "."; err.hidden = false;
       field.setAttribute("aria-invalid", "true"); field.focus(); return;
     }
     const body = $("#in-body");
     body.value = body.value.replace(/\s+$/, "") + GAPS[it.key].add(v) + "\n";
     delete gapDraft[it.key];
-    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Your own text, starting from a dataset report."; }
+    if (shownId) { shownId = null; exSel.value = ""; $("#ex-source").textContent = "Edited dataset issue."; }
     if (current() === "check") setHash("check");
     updateChecklist(true);
     const now = lastResult.items.find((x) => x.key === it.key);
-    $("#gap-status").textContent = now && now.status === "present" ? "Added " + GAPS[it.key].label.toLowerCase() + " to the report. The checker now finds it."
-      : "Added to the report text. The checker still does not recognise it, so check the wording against the hint.";
+    $("#gap-status").textContent = now && now.status === "present" ? "Added " + GAPS[it.key].label.toLowerCase() + "."
+      : "Added. Detail still incomplete.";
     const next = $("#gaps textarea, #gaps input");
     (next || $("#btn-review")).focus();
   }
@@ -798,8 +796,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     const req = a.items.filter((x) => x.required && (x.status === "notfound" || x.status === "partial"));
     const opt = a.items.filter((x) => !x.required && x.status === "optional");
     const parts = [];
-    if (req.length) parts.push(h("h3", { class: "gaps-h" }, req.length === 1 ? "1 detail not found yet" : req.length + " details not found yet"), ...req.map(gapBox).filter(Boolean));
-    else parts.push(h("p", { class: "small" }, "Every required detail was found. The rules can miss or over-match, so read the report through before you file it."));
+    if (req.length) parts.push(...req.map(gapBox).filter(Boolean));
+    else parts.push(h("p", { class: "small" }, "All checklist details found."));
     // progressive disclosure: optional details stay folded until asked for
     if (opt.length) parts.push(h("details", { class: "gaps-opt" }, h("summary", null, "Optional details (" + opt.length + ")"), h("div", { class: "stack" }, opt.map(gapBox).filter(Boolean))));
     $("#gaps").replaceChildren(...parts);
@@ -952,10 +950,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       icon(it.status),
       h("span", { class: "name" }, it.name),
       h("span", { class: "state" }, STATE_TEXT[it.status]),
-      h("p", { class: "detail" },
-        it.status === "na" ? it.found
-          : it.found && it.status !== "notfound" ? ["Found: ", h("code", null, it.found), it.status === "partial" ? ". " + it.hint : ""]
-          : it.hint))));
+      it.found && it.status !== "notfound" ? h("p", { class: "detail" }, h("code", null, it.found)) : null)));
     $("#tpl").replaceChildren(...a.template.map((s) => (s.mark ? h("mark", { class: s.mark }, s.text) : s.text)));
     renderPreview(rep, a);
     renderGaps(a);
@@ -963,7 +958,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     if (!shownId) saveDraft();
     const empty = !rep.title.trim() && !rep.body.trim();
     const S = a.summary;
-    const text = empty ? "Nothing to check yet. Paste a report, or try a sample."
+    const text = empty ? "No report."
       : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "") + (a.truncated ? ". Only the first " + C.MAX_INPUT.toLocaleString("en-US") + " characters were checked" : "");
     clearTimeout(summaryTimer);
     // the summary is a live region: while someone types, announce it only after a pause
@@ -976,7 +971,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
     if (shownId) { shownId = null; exSel.value = ""; }
     $("#ex-source").textContent = $("#in-title").value.trim() || $("#in-body").value.trim()
-      ? "Your own text." : "Cleared. Paste a report to check it.";
+      ? "Custom report." : "Cleared.";
     if (current() === "check") setHash("check");
     // keep the tab's copy current even before the debounced check runs
     session.set({ title: $("#in-title").value, body: $("#in-body").value, id: null });
@@ -992,7 +987,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     $("#in-title").value = ""; $("#in-body").value = "";
     for (const k in gapDraft) delete gapDraft[k];
     resetSavedDraft();
-    $("#ex-source").textContent = "Cleared. Paste a report to check it.";
+    $("#ex-source").textContent = "Cleared.";
     $("#link-status").textContent = ""; $("#gap-status").textContent = "";
     updateChecklist(true); setHash("check");
     $("#in-body").focus();
@@ -1003,7 +998,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     $("#in-title").value = ""; $("#in-body").value = "";
     for (const k in gapDraft) delete gapDraft[k];
     resetSavedDraft();
-    $("#ex-source").textContent = "Cleared. Paste a report to check it.";
+    $("#ex-source").textContent = "Cleared.";
     updateChecklist(true); setHash("check"); $("#in-body").focus();
   });
   $("#btn-link").addEventListener("click", (e) => {
@@ -1079,7 +1074,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
       $("#in-title").value = saved.title || ""; $("#in-body").value = saved.body || "";
       $("#ex-source").textContent = "Your text from earlier in this tab.";
       updateChecklist(true);
-    } else if (saved) { $("#ex-source").textContent = "Cleared. Paste a report to check it."; updateChecklist(true); }
+    } else if (saved) { $("#ex-source").textContent = "Cleared."; updateChecklist(true); }
     else loadExample(SAMPLES[0]);
   }
   function applyCheckParams(params) {
@@ -1108,7 +1103,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
 
   // ---------- Examples screen: the 75 real reports, filterable, each opens in Check ----------
   const nOf = (app) => REPORTS.filter((r) => r.app === app).length;
-  $("#ex-lede").textContent = REPORTS.length + " real accessibility issues from public GitHub repositories, fetched on 9 November 2026 and shortened in the dataset: " + nOf("WP") + " from WordPress for Android and " + nOf("AP") + " from AntennaPod. Open one in the checker to see which details it has. Report text belongs to its GitHub authors.";
+  $("#ex-lede").textContent = REPORTS.length + " issues · WordPress " + nOf("WP") + " · AntennaPod " + nOf("AP");
   for (const f of FIELDS) $("#ex-gap").append(h("option", { value: f.k }, f.name));
   const exRow = (r) => h("tr", null,
     h("td", null, h("a", { href: "#/check?report=" + encodeURIComponent(r.id) }, "Check " + r.app + " #" + r.number), h("div", { class: "small" }, r.title.slice(0, 110))),
@@ -1206,7 +1201,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
         const same = cut.trim() === r.body.trim();
         const [a, b] = await Promise.all([triage(r.title, r.body, app, "default", ctl.signal), same ? null : triage(r.title, cut, app, "default", ctl.signal)]);
         const cards = [verdictCard("As written", a, "Full report")];
-        if (b) cards.push(verdictCard("Steps & version removed", b, "Same report, details taken out"));
+        if (b) cards.push(verdictCard("Steps & version removed", b, ""));
         const changed = b && (a.impact !== b.impact || a.evidence !== b.evidence);
         out.replaceChildren(
           h("div", { class: "verdicts" }, cards),
@@ -1230,7 +1225,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   // ============ PILOT VIEW ============
   const nWP = REPORTS.filter((r) => r.app === "WP").length, nAP = REPORTS.filter((r) => r.app === "AP").length;
   const eligible = REPORTS.filter((r) => COND_ORDER.slice(1).some((c) => T.applies(r, c, r.chk)));
-  $("#pilot-lede").textContent = REPORTS.length + " accessibility issues from GitHub: " + nWP + " from WordPress for Android and " + nAP + " from AntennaPod. " + eligible.length + " of them have TalkBack steps or version details that can be removed for the comparison.";
+  $("#pilot-lede").textContent = REPORTS.length + " issues · WordPress " + nWP + " · AntennaPod " + nAP + " · " + eligible.length + " eligible";
   $("#scope-elig").textContent = "With steps or version (" + eligible.length + ")";
   $("#scope-all").textContent = "All (" + REPORTS.length + ")";
 
@@ -1455,7 +1450,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
         finding = h("div", { class: "stack" },
           h("p", { class: "eyebrow" }, "Exploratory · one run · no human labels yet"),
           h("p", { class: "finding" }, "With " + what + " taken out, Claude changed from \"enough to start reproducing\" to \"needs more evidence\" on " + p.toNeeds + " of " + p.n + " reports, and the other way on " + p.toActionable + "."),
-          h("p", { class: "small muted" }, "This shows Claude's answer depends on those lines. Whether either answer is right needs people's labels (Research > Labels)."));
+          h("p", { class: "small muted" }, "Human validation pending."));
       }
     }
 
@@ -1573,7 +1568,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   const keyOf = (rid, cond) => (cond && cond !== "full" ? rid + "~" + cond : rid);
   const parseKey = (k) => { const [rid, cond] = k.split("~"); return { rid, cond: cond || "full" }; };
   const LS_KEY = "tbt-labels-v2";
-  const storageOK = (() => { try { localStorage.setItem("tbt-probe", "1"); localStorage.removeItem("tbt-probe"); return true; } catch (e) { return false; } })();
+  let storageOK = (() => { try { localStorage.setItem("tbt-probe", "1"); localStorage.removeItem("tbt-probe"); return true; } catch (e) { return false; } })();
   let LABEL_DOCS = {};           // from the page's store: {docId: {labels, name?, imported?}}
   let localLabels = Object.assign({}, store.get("tbt-labels") || {}, store.get(LS_KEY) || {});
   let sharedOK = null;           // null until the first shared save is tried
@@ -1599,15 +1594,15 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
     return list;
   }
   function whereSaved() {
-    if (sharedOK) return "Saved with this page and in this browser.";
-    if (storageOK) return sharedOK === false ? "Saved in this browser only (this page doesn't let you save to it). Use Copy my labels to send them." : "Saved in this browser.";
-    return "This browser isn't keeping labels. Use Copy my labels before you leave this page.";
+    if (sharedOK) return storageOK ? "Saved to page and device." : "Saved to page; local storage unavailable.";
+    if (storageOK) return "Saved locally.";
+    return "Not saved locally. Copy labels before closing.";
   }
   let writing = Promise.resolve();
   function saveMyLabel(key, val) {
     val = Object.assign({}, val, { at: new Date().toISOString() });
     localLabels[key] = val;
-    store.set(LS_KEY, localLabels);
+    storageOK = store.set(LS_KEY, localLabels);
     const k = myKey();
     if (k && sharedOK !== false) {
       const labels = myLabels();
@@ -1748,25 +1743,40 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && windo
   $("#btn-import").addEventListener("click", async () => {
     const st = $("#lab-status");
     const name = $("#imp-name").value.trim();
-    let data = null;
-    try { data = JSON.parse($("#imp-json").value); } catch (e) { data = null; }
-    const labels = data && (data.labels || data);
-    if (!name || !labels || typeof labels !== "object") { st.textContent = "Add a name and paste the labels exactly as they were copied."; return; }
-    const clean = {};
-    for (const k in labels) {
-      const { rid, cond } = parseKey(k);
-      if (BY_ID[rid] && COND_ORDER.includes(cond) && labels[k] && IMPACT[labels[k].impact] && EVID[labels[k].evidence]) clean[k] = { impact: labels[k].impact, evidence: labels[k].evidence, at: labels[k].at || null };
-    }
-    if (!Object.keys(clean).length) { st.textContent = "No usable labels found in what was pasted."; return; }
-    // a name with no Latin letters or digits would leave nothing, and two such raters would share one id
-    const slug = "imported-" + (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || Date.now().toString(36));
-    let saved = false;
-    if (db && user && (await user.isOwner())) {
-      try { await db.doc("labels/" + slug).set({ imported: true, name, labels: clean }); saved = true; } catch (e) { saved = false; }
-    }
-    LABEL_DOCS[slug] = { imported: true, name, labels: clean };
-    st.textContent = "Added " + Object.keys(clean).length + " labels from " + name + (saved ? "." : " for this visit only.");
-    renderLabelView(); renderResults();
+    const button = $("#btn-import");
+    if (button.disabled) return;
+    try {
+      if (!name || name.length > 80) throw new Error("Enter a rater name of 1–80 characters.");
+      if (Object.values(LABEL_DOCS).some((r) => r.imported && typeof r.name === "string" && r.name.trim().toLowerCase() === name.toLowerCase())) throw new Error("Rater already added. Use a different name.");
+      const raw = $("#imp-json").value;
+      if (new TextEncoder().encode(raw).length > 262144) throw new Error("Labels exceed the 256 KiB limit.");
+      let data;
+      try { data = JSON.parse(raw); } catch (e) { throw new Error("Invalid label JSON."); }
+      const record = (v) => v && typeof v === "object" && !Array.isArray(v);
+      if (!record(data) || (Object.hasOwn(data, "version") && data.version !== 2) || (Object.hasOwn(data, "tool") && data.tool !== "talkback-triage-pilot")) throw new Error("Unsupported label file version.");
+      const labels = Object.hasOwn(data, "labels") ? data.labels : data;
+      if (!record(labels) || !Object.keys(labels).length || Object.keys(labels).length > 300) throw new Error("Expected 1–300 labels.");
+      const clean = {};
+      for (const [key, value] of Object.entries(labels)) {
+        const { rid, cond } = parseKey(key);
+        if (!Object.hasOwn(BY_ID, rid) || !COND_ORDER.includes(cond) || key !== keyOf(rid, cond) ||
+            (cond !== "full" && (!T.applies(BY_ID[rid], cond, BY_ID[rid].chk) || !T.pairCheck(BY_ID[rid], cond).clean)) ||
+            !record(value) || !Object.hasOwn(IMPACT, value.impact) || !Object.hasOwn(EVID, value.evidence)) throw new Error("Invalid label or report version: " + key.slice(0, 80));
+        const at = value.at == null ? null : typeof value.at === "string" && value.at.length <= 64 && Number.isFinite(Date.parse(value.at)) && new Date(value.at).toISOString() === value.at ? value.at : false;
+        if (at === false) throw new Error("Invalid label timestamp: " + key.slice(0, 80));
+        clean[key] = { impact: value.impact, evidence: value.evidence, at };
+      }
+      const id = "imported-" + Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) => n.toString(16).padStart(8, "0")).join("");
+      button.disabled = true;
+      let saved = false;
+      if (db && user) {
+        try { if (await user.isOwner()) { await db.doc("labels/" + id).set({ imported: true, name, labels: clean }); saved = true; } } catch (e) { saved = false; }
+      }
+      LABEL_DOCS[id] = { imported: true, name, labels: clean };
+      st.textContent = "Added " + Object.keys(clean).length + " labels from " + name + (saved ? "." : " for this visit only.");
+      renderLabelView(); renderResults();
+    } catch (e) { st.textContent = e.message; }
+    finally { button.disabled = false; }
   });
 
   updateCallCount();

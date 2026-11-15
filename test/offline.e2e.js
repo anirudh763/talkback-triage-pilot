@@ -90,14 +90,14 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   await page.waitForSelector("#checklist li", { timeout: 5000 }).catch(() => null);
   ok((await page.locator("#checklist li").count()) === 7, "offline reload: the checker loads and shows 7 checklist rows");
   page.setDefaultTimeout(3000); // a page that failed to load must fail fast, not wait 30s per step
-  await page.getByRole("button", { name: "Try a sample report" }).click().catch(() => null);
-  ok(/Sample \d of 3/.test(await page.textContent("#ex-source").catch(() => "")), "offline: Try a sample report loads a sample");
+  await page.getByRole("button", { name: "Load sample" }).click().catch(() => null);
+  ok(/WordPress-Android #\d+|AntennaPod #\d+/.test(await page.textContent("#ex-source").catch(() => "")), "offline: Load sample loads an attributed issue");
   ok((await page.locator('#checklist li[data-status="notfound"]').count()) >= 1 && /of \d found/.test(await page.textContent("#chk-score").catch(() => "")), "offline: the sample is analyzed");
   await page.fill("#in-body", "1. Turn on TalkBack\n2. Open the Post list screen\nApp version: 24.8\nPixel 8, Android 14").catch(() => null);
   await page.waitForTimeout(300);
   ok((await page.getAttribute('#checklist li[data-key="appVersion"]', "data-status").catch(() => null)) === "present", "offline: pasted text is checked");
   await page.evaluate(() => { location.hash = "#/draft"; }); await page.waitForTimeout(150);
-  ok((await page.textContent("main h1:visible").catch(() => "")) === "Review draft" && /App version: 24\.8/.test(await page.textContent("#tpl").catch(() => "")), "offline: the Draft screen opens with the pasted report");
+  ok((await page.textContent("main h1:visible").catch(() => "")) === "Preview" && /App version: 24\.8/.test(await page.textContent("#tpl").catch(() => "")), "offline: the Draft screen opens with the pasted report");
   const font = await page.evaluate(() => document.fonts.check('16px "Atkinson Hyperlegible"') && [...document.fonts].some((f) => f.family.includes("Atkinson") && f.status === "loaded"));
   ok(font, "offline: the page's own font loads from the cache");
   await ctx.setOffline(false);

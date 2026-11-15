@@ -31,12 +31,12 @@ const server = http.createServer((req, res) => {
 
 // route -> [visible H1, document title prefix, rail item marked current]
 const SCREENS = [
-  ["#/check", "Check a TalkBack report", "Check a report", "Check a report"],
-  ["#/draft", "Review draft", "Review draft", "Draft"],
+  ["#/check", "Report", "Report", "Report"],
+  ["#/draft", "Preview", "Preview", "Preview"],
   ["#/examples", "Examples", "Examples", "Examples"],
-  ["#/research", "Research results", "Research results", "Research"],
+  ["#/research", "Results", "Results", "Research"],
   ["#/research/labels", "Label reports", "Label reports", "Research"],
-  ["#/research/methods", "Research methods", "Research methods", "Research"],
+  ["#/research/methods", "Methods", "Methods", "Research"],
 ];
 const APP = "CueReport";
 
@@ -104,7 +104,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok(await page.evaluate(() => document.activeElement.tagName === "H1" && document.activeElement.textContent.trim() === "Examples"), "rail link moves focus to the new screen's H1");
     ok(await page.evaluate(() => document.activeElement.getAttribute("tabindex") === "-1" && document.activeElement.id !== "main"), "the H1 (tabindex=-1), not the whole workspace, takes focus");
     await page.goBack(); await page.waitForTimeout(80);
-    ok(await page.evaluate(() => document.activeElement.tagName === "H1" && /Check a TalkBack report/.test(document.activeElement.textContent)), "browser Back also focuses the H1");
+    ok(await page.evaluate(() => document.activeElement.tagName === "H1" && /Report/.test(document.activeElement.textContent)), "browser Back also focuses the H1");
     await ctx.close();
   });
 
@@ -112,8 +112,8 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   // each target is opened from a different screen: rail links for the Work/Learn screens, the Research section nav
   // for Labels and Methods, and an address change for Not found (it has no nav link)
   const VIA = {
-    "#/check": ["#/examples", (p) => p.locator("#rail").getByRole("link", { name: "Check a report" }).click()],
-    "#/draft": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Draft" }).click()],
+    "#/check": ["#/examples", (p) => p.locator("#rail").getByRole("link", { name: "Report", exact: true }).click()],
+    "#/draft": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Preview", exact: true }).click()],
     "#/examples": ["#/draft", (p) => p.locator("#rail").getByRole("link", { name: "Examples" }).click()],
     "#/research": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Research" }).click()],
     "#/research/labels": ["#/research", (p) => p.locator("#pilot nav.subnav").getByRole("link", { name: "Labels" }).click()],
@@ -151,8 +151,8 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok(await page.evaluate(() => document.activeElement.id === "btn-menu"), width + "px: focus returns to the Menu button");
     ok((await menu.getAttribute("aria-expanded")) === "false", width + "px: aria-expanded=false after closing");
     await menu.click(); await page.waitForTimeout(60);
-    await page.locator("#rail").getByRole("link", { name: "Draft" }).click(); await page.waitForTimeout(80);
-    ok((await h1Text(page)) === "Review draft" && !(await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), width + "px: choosing a destination closes the sheet and opens the screen");
+    await page.locator("#rail").getByRole("link", { name: "Preview", exact: true }).click(); await page.waitForTimeout(80);
+    ok((await h1Text(page)) === "Preview" && !(await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), width + "px: choosing a destination closes the sheet and opens the screen");
     await ctx.close();
   }); }
   await guard("block at line 125", async () => {
@@ -171,8 +171,8 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: "Team QA plans" });
     ok(await dialog.isVisible(), width + "px: Team QA plans opens as a named native dialog");
-    ok(/free, offline report checker today/.test(await dialog.textContent()) && /\$29/.test(await dialog.textContent()) && /\$149/.test(await dialog.textContent()) && /proposals; there is no checkout/.test(await dialog.textContent()), width + "px: available sandbox and proposed prices are distinguished; no checkout is claimed");
-    ok(/no AWS resources.*are deployed/.test(await dialog.textContent()) && /public GitHub issue draft/.test(await dialog.textContent()) && /Do not include private reports or email addresses/.test(await dialog.textContent()), width + "px: proposed AWS status and public-feedback privacy warning are visible");
+    ok(/Free report checker/.test(await dialog.textContent()) && /\$29/.test(await dialog.textContent()) && /\$149/.test(await dialog.textContent()) && /Paid plans are not available/.test(await dialog.textContent()), width + "px: available sandbox and proposed prices are distinguished; no checkout is claimed");
+    ok(/Feedback is public/.test(await dialog.textContent()) && /Exclude private reports and email addresses/.test(await dialog.textContent()) && (await dialog.locator("#btn-plans-feedback").getAttribute("href")).startsWith("https://github.com/anirudh763/talkback-triage-pilot/issues/new?"), width + "px: public GitHub feedback and privacy warning are explicit");
     ok((await dialog.locator("input, textarea, form, a[href^='mailto:']").count()) === 0, width + "px: plans dialog has no fake capture form or email link");
     const bounds = await dialog.boundingBox();
     ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= width && bounds.y >= 0 && bounds.y + bounds.height <= 900, width + "px: modal stays within the viewport");
@@ -199,17 +199,17 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await page.fill("#in-title", "Persist title: Save button has no label");
     await page.fill("#in-body", "1. Turn on TalkBack\n2. Open Settings\nTalkBack says \"Button\" on Save.\nApp version: 9.1");
     await page.waitForTimeout(250);
-    await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(100);
-    ok((await page.evaluate(() => location.hash)) === "#/draft" && (await h1Text(page)) === "Review draft", "Review draft opens #/draft on its own screen");
+    await page.locator("#btn-review").click(); await page.waitForTimeout(100);
+    ok((await page.evaluate(() => location.hash)) === "#/draft" && (await h1Text(page)) === "Preview", "Preview opens #/draft on its own screen");
     ok(/App version: 9\.1/.test(await page.textContent("#tpl")) && !(await page.locator("#check").isVisible()), "the draft shows the report's own facts, and the Check form is not on this screen");
     ok((await page.locator("#tpl mark.add").count()) >= 1 && /\[ADD:/.test(await page.textContent("#tpl")), "missing details are marked [ADD: ...] gaps, not filled in");
     await page.goBack(); await page.waitForTimeout(100);
-    ok(/^#\/check/.test(await page.evaluate(() => location.hash)) && (await h1Text(page)) === "Check a TalkBack report", "Back returns to Check");
+    ok(/^#\/check/.test(await page.evaluate(() => location.hash)) && (await h1Text(page)) === "Report", "Back returns to Check");
     ok((await page.inputValue("#in-title")) === "Persist title: Save button has no label" && /App version: 9\.1/.test(await page.inputValue("#in-body")), "title and body persist after Draft and Back");
     await page.goForward(); await page.waitForTimeout(100);
-    ok((await h1Text(page)) === "Review draft", "Forward returns to Draft");
+    ok((await h1Text(page)) === "Preview", "Forward returns to Draft");
     await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" }); await page.waitForTimeout(100);
-    ok((await h1Text(page)) === "Review draft" && /App version: 9\.1/.test(await page.textContent("#tpl")), "a reload of #/draft keeps the draft in this tab");
+    ok((await h1Text(page)) === "Preview" && /App version: 9\.1/.test(await page.textContent("#tpl")), "a reload of #/draft keeps the draft in this tab");
     await page.goBack(); await page.waitForTimeout(100);
     ok((await page.inputValue("#in-title")) === "Persist title: Save button has no label", "after a reload, Back still finds the title");
 
@@ -258,7 +258,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const editedTitle = await page.inputValue("#in-title"), editedBody = await page.inputValue("#in-body");
     ok((await page.evaluate(() => location.hash)) === "#/check",
       change + ": editing detaches the frozen link without putting private edits in the URL");
-    await page.getByRole("link", { name: "Review draft" }).click();
+    await page.locator("#btn-review").click();
     await page.waitForTimeout(100);
     ok((await page.textContent("#tpl")).includes(change === "title" ? editedTitle : change === "gap" ? "9.9.1" : "swipe right twice"),
       change + ": Draft contains the new fact");
@@ -272,10 +272,10 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   });
 
   console.log("primary action in view, unknown report links");
-  await guard("Review draft in view", async () => {
+  await guard("Preview in view", async () => {
     const { ctx, page } = await open({ viewport: { width: 1440, height: 900 } }, "#/check?report=AP-3563");
-    const box = await page.getByRole("link", { name: "Review draft" }).boundingBox();
-    ok(box && box.y >= 0 && box.y + box.height <= 900 && box.x + box.width <= 1440, "1440x900: Review draft is inside the viewport without scrolling (y=" + (box && Math.round(box.y)) + ")");
+    const box = await page.locator("#btn-review").boundingBox();
+    ok(box && box.y >= 0 && box.y + box.height <= 900 && box.x + box.width <= 1440, "1440x900: Preview is inside the viewport without scrolling (y=" + (box && Math.round(box.y)) + ")");
     await ctx.close();
   });
   await guard("unknown report", async () => {
@@ -313,13 +313,13 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const { ctx, page } = await open({}, "#check?report=AP-3563");
     const want = await page.evaluate(() => JSON.parse(document.querySelector("#dataset").textContent).find((r) => r.id === "AP-3563").title);
     ok((await page.evaluate(() => location.hash)) === "#/check?report=AP-3563", "#check?report=AP-3563 maps to #/check?report=AP-3563 (" + (await page.evaluate(() => location.hash)) + ")");
-    ok((await page.inputValue("#in-title")) === want && (await h1Text(page)) === "Check a TalkBack report", "the old link still loads that report");
+    ok((await page.inputValue("#in-title")) === want && (await h1Text(page)) === "Report", "the old link still loads that report");
     const code = await page.evaluate(() => window.TBC.encodeState("Old text link", "1. Turn on TalkBack"));
     await ctx.close();
     const t = await open({}, "#check?text=" + code);
     ok((await t.page.evaluate(() => location.hash)) === "#/check?text=" + code && (await t.page.inputValue("#in-title")) === "Old text link", "#check?text= links still restore the pasted text");
     await t.ctx.close();
-    for (const [old, now, h1] of [["#pilot", "#/research", "Research results"], ["#label", "#/research/labels", "Label reports"], ["#about", "#/research/methods", "Research methods"]]) {
+    for (const [old, now, h1] of [["#pilot", "#/research", "Results"], ["#label", "#/research/labels", "Label reports"], ["#about", "#/research/methods", "Methods"]]) {
       const o = await open({}, old);
       ok((await o.page.evaluate(() => location.hash)) === now && (await h1Text(o.page)) === h1, old + " maps to " + now);
       await o.ctx.close();
@@ -378,8 +378,8 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await erased.close();
     await reopened.fill("#in-title", "Reset this draft");
     await reopened.waitForFunction(() => document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
-    await reopened.getByRole("button", { name: "Reset saved draft" }).click();
-    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "Reset saved draft clears fields and removes local copy");
+    await reopened.getByRole("button", { name: "Reset draft" }).click();
+    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "Reset draft clears fields and removes local copy");
     await ctx.close();
   });
   for (const [name, errorName, message] of [["blocked", "SecurityError", /storage is blocked/], ["quota", "QuotaExceededError", /storage is full/]]) { await guard(name + " storage", async () => {
@@ -402,7 +402,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const page = await ctx.newPage(); await page.goto(base); await page.waitForSelector("#checklist li", { state: "attached" });
     await page.waitForFunction(() => /invalid or too large/.test(document.querySelector("#draft-save-status").textContent));
     ok(/invalid or too large/.test(await page.textContent("#draft-save-status")), "malformed saved JSON is ignored with a status");
-    await page.getByRole("button", { name: "Reset saved draft" }).click();
+    await page.getByRole("button", { name: "Reset draft" }).click();
     ok(await page.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "reset removes malformed data");
     await ctx.close();
   });
@@ -454,7 +454,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await ctx.close();
   });
   await guard("prefilled GitHub link and length fallback", async () => {
-    const { ctx, page } = await open({}, "#/check?report=AP-3563"); await page.getByRole("link", { name: "Review draft" }).click();
+    const { ctx, page } = await open({}, "#/check?report=AP-3563"); await page.locator("#btn-review").click();
     const link = page.locator("#btn-open-github-issue");
     await page.waitForFunction(() => document.querySelector("#btn-open-github-issue").href.startsWith("https://github.com/"));
     const href = await link.getAttribute("href");
@@ -475,7 +475,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const gap = page.locator('#gaps .gap[data-key="device"]');
     ok((await gap.count()) === 1 && /Not found|Incomplete/.test(await gap.locator("label").textContent()), "a detail the checker did not find is an inline gap prompt");
     await gap.getByRole("button", { name: "Add to report" }).click();
-    ok((await page.locator("#gap-device").getAttribute("aria-invalid")) === "true" && /first/.test(await page.textContent("#gap-device-err")) && (await page.evaluate(() => document.activeElement.id)) === "gap-device", "an empty gap is not added: the error is in text, tied to the field, and focus goes there");
+    ok((await page.locator("#gap-device").getAttribute("aria-invalid")) === "true" && (await page.locator("#gap-device").getAttribute("aria-describedby")) === "gap-device-err" && /Enter device and android version\./.test(await page.textContent("#gap-device-err")) && (await page.evaluate(() => document.activeElement.id)) === "gap-device", "an empty gap is not added: the error is in text, tied to the field, and focus goes there");
     const before = await page.inputValue("#in-body");
     await page.fill("#gap-device", "Pixel 8, Android 14");
     await page.locator('#gaps .gap[data-key="device"]').getByRole("button", { name: "Add to report" }).click();
@@ -483,7 +483,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const after = await page.inputValue("#in-body");
     ok(after.startsWith(before.replace(/\s+$/, "")) && /\nDevice: Pixel 8, Android 14\n$/.test(after), "Add to report appends the reporter's own words and keeps the original text");
     ok((await page.getAttribute('#checklist li[data-key="device"]', "data-status")) === "present" && (await page.locator('#gaps .gap[data-key="device"]').count()) === 0, "the report is re-checked: the device is now found and its prompt is gone");
-    ok(/now finds it/.test(await page.textContent("#gap-status")), "the result is announced: " + (await page.textContent("#gap-status")));
+    ok(/Added device and android version\./.test(await page.textContent("#gap-status")), "the result is announced: " + (await page.textContent("#gap-status")));
     ok((await page.evaluate(() => location.hash)) === "#/check", "the edited report is no longer the dataset report in the URL");
     await ctx.close();
   });
@@ -503,7 +503,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   console.log("draft actions and empty state");
   await guard("block at line 224", async () => {
     const { ctx, page } = await open({ permissions: ["clipboard-read", "clipboard-write"], acceptDownloads: true }, "#/check?report=AP-3563");
-    await page.getByRole("link", { name: "Review draft" }).click(); await page.waitForTimeout(80);
+    await page.locator("#btn-review").click(); await page.waitForTimeout(80);
     await page.getByRole("button", { name: "Copy draft" }).click();
     await page.waitForFunction(() => document.querySelector("#copy-tpl-status").textContent);
     ok((await page.evaluate(() => navigator.clipboard.readText())) === (await page.textContent("#tpl")), "Copy draft copies exactly the draft");
@@ -513,7 +513,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await goHash(page, "#/check");
     await page.getByRole("button", { name: "Clear" }).click();
     await goHash(page, "#/draft");
-    ok(/Nothing to draft yet/.test(await page.textContent("main")) && (await page.locator('main a[href="#/check"]:visible').count()) >= 1, "an empty report gives a real empty state that points back to Check");
+    ok((await page.locator("#draft-empty").isVisible()) && /No report\./.test(await page.textContent("#draft-empty")) && (await page.locator('#draft-empty a[href="#/check"]:visible').count()) === 1, "an empty report gives a real empty state that points back to Report");
     await ctx.close();
   });
 

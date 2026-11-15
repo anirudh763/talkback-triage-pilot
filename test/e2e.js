@@ -91,6 +91,57 @@ const server = http.createServer((req, res) => {
     await ctx.close();
   }
 
+  // ---- imported labels retain rater identity and reject malformed files ----
+  {
+    const ctx = await browser.newContext(); await block(ctx);
+    const page = await ctx.newPage(); watch(page, 'label-import');
+    await page.goto(base + 'owner#label'); await page.waitForSelector('#btn-import');
+    const label = { impact: 'blocks_task', evidence: 'actionable' };
+    const add = async (name, data) => {
+      await page.fill('#imp-name', name); await page.fill('#imp-json', JSON.stringify(data));
+      await page.click('#btn-import');
+      await page.waitForFunction(() => !document.querySelector('#btn-import').disabled);
+    };
+    await add('Rater A', { tool: 'talkback-triage-pilot', version: 2, labels: { 'WP-20770': label } });
+    await add('Rater-A', { tool: 'talkback-triage-pilot', version: 2, labels: { 'AP-6598': label } });
+    const imported = await page.evaluate(() => [...window.__S.entries()].filter(([k]) => k.startsWith('labels/imported-')).map(([, v]) => v));
+    if (imported.length !== 2 || !imported.some(v => v.labels['WP-20770']) || !imported.some(v => v.labels['AP-6598'])) errors.push('import: distinct rater names must retain both original label sets');
+    await add('Timestamp rater', { tool: 'talkback-triage-pilot', version: 2, labels: { 'WP-20150': { ...label, at: '2026-11-14T12:00:00.000Z' } } });
+    if (!/^Added 1 labels/.test(await page.textContent('#lab-status'))) errors.push('import: valid canonical timestamp must be accepted');
+    for (const [name, data] of [
+      ['Unknown version', { tool: 'talkback-triage-pilot', version: 999, labels: { 'WP-20770': label } }],
+      ['Malformed key', { labels: { 'WP-20770~full~junk': label } }],
+      ['Unknown report', { labels: { constructor: label } }],
+      ['Invalid category', { labels: { 'WP-20770': { impact: 'constructor', evidence: 'actionable' } } }],
+      ['Invalid date', { labels: { 'WP-20770': { ...label, at: '2026-02-31T12:00:00.000Z' } } }],
+      ['Incomplete date', { labels: { 'WP-20770': { ...label, at: '2026' } } }],
+      ['Rater A', { labels: { 'WP-20150': label } }],
+    ]) {
+      await add(name, data);
+      if (/^Added /.test(await page.textContent('#lab-status'))) errors.push('import: must reject ' + name);
+    }
+    await ctx.close();
+  }
+
+  // ---- storage can become unavailable after a successful startup probe ----
+  {
+    const ctx = await browser.newContext(); await block(ctx);
+    const page = await ctx.newPage(); watch(page, 'label-quota');
+    await page.goto(base + 'guest#label'); await page.waitForSelector('input[name=lab-evid]');
+    await page.evaluate(() => {
+      const set = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(key, value) {
+        if (key === 'tbt-labels-v2') throw new DOMException('Full', 'QuotaExceededError');
+        return set.call(this, key, value);
+      };
+    });
+    await page.check('input[name=lab-evid][value=actionable]');
+    await page.check('input[name=lab-impact][value=blocks_task]');
+    await page.click('text=Save and next'); await page.waitForTimeout(100);
+    if (!/isn't keeping|not saved|unavailable/i.test(await page.textContent('#lab-where'))) errors.push('label save: late quota failure must not claim local persistence');
+    await ctx.close();
+  }
+
   // ---- guest: can read but not write the page's store; labels must survive a reload ----
   {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ['clipboard-read', 'clipboard-write'] }); await block(ctx);

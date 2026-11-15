@@ -12,14 +12,15 @@ assert.ok(check.length > 2000, "found the Check and Draft screens in src/app.htm
 const text = check.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 const readme = fs.readFileSync(path.join(__dirname, "..", "README.md"), "utf8");
 const checkerReadme = readme.slice(readme.indexOf("## Report checker"));
+const methods = html.slice(html.indexOf('<section class="screen" id="about"'));
 
 const OVERCLAIM = /\b(reproducible|ready to (fix|act)|actionable|needs to reproduce it|developer needs to reproduce|guarantee)/i;
 assert.ok(!OVERCLAIM.test(text.replace(/can still be impossible to reproduce/g, "")), "checker page overclaims: " + (text.match(OVERCLAIM) || [])[0]);
-assert.ok(/finds missing sections only/i.test(text), "checker page says it finds missing sections only");
-assert.ok(/Report preparation, rules not AI/.test(text), "Check says it is report preparation, by rules, not AI");
+assert.ok(/finds missing sections only/i.test(methods), "Methods states the checker limitation");
+assert.ok(!/The accessibility report desk|Write the report\. Fill the gaps|Your words stay yours|Step [12] of 2/.test(check), "main workflow has no tagline, tutorial or numbered badge");
 assert.ok(!/\b(certif|verified reproduc|triage accuracy of)/i.test(text), "Check and Draft don't claim certified reproducibility or AI triage accuracy");
-assert.ok(/Nothing is filled in for you/.test(text), "Draft says gaps are not filled in for the reporter");
-assert.ok(/github\.com\/AntennaPod\/AntennaPod\/issues\/6598/.test(check), "checker page links the AntennaPod #6598 example");
+assert.ok(!/Nothing is filled in for you/.test(text), "Draft does not narrate its interface");
+assert.ok(/github\.com\/AntennaPod\/AntennaPod\/issues\/6598/.test(methods), "Methods links the AntennaPod #6598 limitation");
 assert.ok(/finds missing sections only/i.test(checkerReadme) && /issues\/6598/.test(checkerReadme), "README checker section says the same");
 assert.ok(!/details a developer needs to reproduce/i.test(readme), "README no longer says the checker finds what is needed to reproduce");
 assert.ok(/no user validation/i.test(checkerReadme), "README says there is no user validation");
