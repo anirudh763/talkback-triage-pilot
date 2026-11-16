@@ -1,13 +1,13 @@
 {
   "app": "cuereport",
   "appVersion": "0.3.0",
-  "version": "38f5569c47d6f5d3",
+  "version": "f3be3d8718a62af5",
   "files": [
     {
       "path": "index.html",
       "mime": "text/html",
-      "bytes": 491689,
-      "sha256": "56366c3fb9fd2cb1bbf9e52d1821266511e11bfaf7e365f0390393590d90172a"
+      "bytes": 491759,
+      "sha256": "e07b365a9c92cce14efe142076e766696063aec6cd3c0083907162b751d2a0b5"
     },
     {
       "path": "manifest.webmanifest",
