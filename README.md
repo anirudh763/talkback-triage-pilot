@@ -48,6 +48,7 @@ On desktop, Report groups the editor, missing details and exportable draft in th
 
 Report autosaves a bounded, versioned draft as readable text in this browser's local storage; **Reset draft** removes it. Do not enter passwords, tokens or private details. **Import a public GitHub issue** accepts only a `github.com/owner/repository/issues/number` URL and, after you press Import, reads that issue from the fixed `api.github.com` REST endpoint. It does not send your report to CueReport or submit anything on GitHub. On Draft, enter an `owner/repository` to open a user-initiated, pre-filled GitHub new-issue form; links over 7,000 characters use the existing Copy/Download actions instead. Review and submit issues on GitHub yourself.
 
+**Team QA plans** opens a local summary of the free offline sandbox and two proposed prices ($29 Indie and $149 QA Team). Those monthly prices are proposals and cannot be purchased. AWS Bedrock, Step Functions and human-review integrations are proposals only; no accounts, checkout, team backend, email capture or paid services are running. Its feedback link opens a public GitHub issue draft with a generic title. Do not put private reports or email addresses in public feedback.
 
 The Phase 2 proposal and current boundaries are documented in [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md), [FAILURE_MODES.md](FAILURE_MODES.md), and [FINOPS_AND_PRICING.md](FINOPS_AND_PRICING.md).
 
