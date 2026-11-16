@@ -15,6 +15,13 @@ assert.strictEqual(top[1], version, "package.json version " + version + " matche
 assert.ok(new RegExp("^## " + version.replace(/\./g, "\\.") + " – \\d{4}-\\d{2}-\\d{2}$", "m").test(changelog), "the top CHANGELOG heading has a date");
 assert.strictEqual(changelog.match(new RegExp("^## " + version.replace(/\./g, "\\.") + "\\b", "gm")).length, 1, "version " + version + " has one CHANGELOG heading");
 const sw = fs.readFileSync(path.join(root, "docs", "sw.js"), "utf8");
-assert.ok(sw.includes('const VERSION = "' + version + '";'), "docs/sw.js carries version " + version + " (run node scripts/build.js)");
-assert.ok(fs.readFileSync(path.join(root, "src", "sw.js"), "utf8").includes('const VERSION = "__VERSION__";'), "src/sw.js takes the version from the build");
-console.log("version tests passed (" + version + ")");
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "docs", "offline-manifest.json"), "utf8"));
+assert.strictEqual(manifest.appVersion, version, "offline metadata carries the package release");
+assert.match(manifest.version, /^[a-f0-9]{16}$/, "cache identity is a content-derived build digest");
+assert.ok(sw.includes('const BUILD = ' + JSON.stringify(manifest) + ';'), "worker embeds the exact generated public manifest");
+assert.ok(fs.readFileSync(path.join(root, "src", "sw.js"), "utf8").includes('const BUILD = __CONFIG__;'), "worker template receives generated metadata");
+for (const file of manifest.files) {
+ const digest = require("node:crypto").createHash("sha256").update(fs.readFileSync(path.join(root, "docs", file.path))).digest("hex");
+ assert.strictEqual(digest, file.sha256, "offline asset matches generated digest: " + file.path);
+}
+console.log("version tests passed (" + version + ", " + manifest.version + ")");

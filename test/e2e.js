@@ -18,7 +18,7 @@ const mockDb=(readOnly)=>{const S=new Map();const L=[];const notify=()=>L.forEac
 const MODE='${mode}';
 if(MODE!=='none'){const DB=mockDb(MODE==='guest');
 window.claude={use:async(n)=>{
- if(n==='sample'){const f=async(input,opts)=>{window.__calls++;await new Promise(r=>setTimeout(r,10));
+ if(n==='sample'){const f=async(input,opts)=>{window.__calls++;await new Promise(r=>setTimeout(r,window.__delay || 10));
    if(MODE==='apifail'&&!window.__fixed)throw{code:'rate_limited'};
    if((MODE==='broken'||(MODE==='flaky'&&window.__calls%3===0))&&!window.__fixed)return{text:'Sorry, I cannot help with that.',truncated:false,modelTierApplied:opts.modelTier};
    const body=(input.split('<<<')[1]||'');const steps=/\\n\\s*(\\d+[.)]|-)\\s/.test(body);const ver=/\\d+\\.\\d+/.test(body);
@@ -32,8 +32,8 @@ const go = async (page, hash) => { await page.evaluate((x) => { location.hash = 
 const wrap = (mode) => built.replace('<head>', '<head>' + mock(mode));
 const server = http.createServer((req, res) => {
   // the page's own files (fonts, icons, manifest, service worker), served as GitHub Pages would
-  const TYPES = { woff2: 'font/woff2', svg: 'image/svg+xml', png: 'image/png', webmanifest: 'application/manifest+json', js: 'text/javascript' };
-  const own = req.url.match(/^\/([\w-]+\.(woff2|svg|png|webmanifest|js))$/);
+  const TYPES = { woff2: 'font/woff2', ttf: 'font/ttf', svg: 'image/svg+xml', png: 'image/png', webmanifest: 'application/manifest+json', js: 'text/javascript' };
+  const own = req.url.match(/^\/([\w-]+\.(woff2|ttf|svg|png|webmanifest|js))$/);
   if (own && fs.existsSync(path.join(__dirname, '../docs', own[1]))) { res.writeHead(200, { 'content-type': TYPES[own[2]] }); res.end(fs.readFileSync(path.join(__dirname, '../docs', own[1]))); return; }
   const mode = (req.url.match(/mode=(\w+)/) || [, 'owner'])[1]; res.writeHead(200, { 'content-type': 'text/html' }); res.end(wrap(mode)); });
 (async () => {
@@ -48,7 +48,7 @@ const server = http.createServer((req, res) => {
   {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); await block(ctx);
     const page = await ctx.newPage(); watch(page, 'owner');
-    await page.goto(base + 'owner'); await page.waitForTimeout(300);
+    await page.goto(base + 'owner#/check'); await page.waitForTimeout(300);
     console.log('[owner] checklist:', await page.textContent('#chk-score'));
     await go(page, '#/draft');
     await page.click('#btn-compare'); await page.waitForFunction(() => document.querySelectorAll('.verdict').length === 2);
@@ -131,7 +131,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => {
       const set = Storage.prototype.setItem;
       Storage.prototype.setItem = function(key, value) {
-        if (key === 'tbt-labels-v2') throw new DOMException('Full', 'QuotaExceededError');
+        if (key === 'cuereport_guest_labels_v2') throw new DOMException('Full', 'QuotaExceededError');
         return set.call(this, key, value);
       };
     });
@@ -157,11 +157,31 @@ const server = http.createServer((req, res) => {
     await ctx.close();
   }
 
+  // Late replies must not reintroduce a report after editing or logging out.
+  {
+    const ctx = await browser.newContext(); const page = await ctx.newPage(); watch(page, 'stale-triage');
+    await page.goto(base + 'owner#/draft'); await page.waitForTimeout(200);
+    await page.evaluate(() => { window.__delay = 400; });
+    await page.click('#btn-triage');
+    await go(page, '#/check');
+    await page.fill('#in-body', 'New report: expected Save, actual Button.');
+    await page.waitForTimeout(600);
+    if ((await page.textContent('#triage-out')).trim()) errors.push('stale-triage: late reply replaced edited report evidence');
+    if (await page.isDisabled('#btn-triage')) errors.push('stale-triage: old request left the action disabled');
+    await go(page, '#/draft');
+    await page.click('#btn-triage');
+    await page.evaluate(() => window.ProductSurface.profiles.logout());
+    await page.waitForTimeout(600);
+    if ((await page.textContent('#triage-out')).trim()) errors.push('stale-triage: late reply reappeared after session reset');
+    if ((await page.inputValue('#in-body')).trim()) errors.push('stale-triage: report survived session reset');
+    console.log('[stale-triage] edit and logout discard delayed replies; actions recover');
+    await ctx.close();
+  }
   // ---- standalone file (no Claude) and phone + dark ----
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' }); await block(ctx);
     const page = await ctx.newPage(); watch(page, 'standalone');
-    await page.goto(base + 'none'); await page.waitForTimeout(400);
+    await page.goto(base + 'none#/check'); await page.waitForTimeout(400);
     console.log('[standalone] overflow px:', await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth));
     await page.screenshot({ path: path.join(__dirname, 'shot-mobile-dark.png') });
     await go(page, '#/research'); await page.waitForTimeout(100);
@@ -198,7 +218,7 @@ const server = http.createServer((req, res) => {
   {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const page = await ctx.newPage(); watch(page, 'apifail');
-    await page.goto(base + 'apifail'); await page.waitForTimeout(300);
+    await page.goto(base + 'apifail#/check'); await page.waitForTimeout(300);
     await go(page, '#/draft');
     await page.click('#btn-triage');
     await page.waitForFunction(() => document.querySelector('#triage-status').classList.contains('err'));

@@ -17,7 +17,7 @@ const AXE = (() => {
   throw new Error("axe-core not found: run npm install");
 })();
 const SHOTS = process.argv.includes("--shots");
-const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".css": "text/css", ".js": "text/javascript",
+const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".ttf": "font/ttf", ".png": "image/png", ".css": "text/css", ".js": "text/javascript",
   ".svg": "image/svg+xml", ".webmanifest": "application/manifest+json" };
 
 const server = http.createServer((req, res) => {
@@ -47,7 +47,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
     page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text()); });
     page.on("request", (r) => { if (!r.url().startsWith(base)) offsite.push(r.url()); });
-    await page.goto(base + (hash || ""));
+    await page.goto(base + (hash || "#/check"));
     await page.waitForSelector("#checklist li", { state: "attached" });
     return { ctx, page };
   }
@@ -158,7 +158,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.keyboard.press("Enter");
     ok(await page.evaluate(() => document.activeElement.id === "h-check" && location.hash.startsWith("#/check")), "keyboard: Skip to content moves focus to the screen's H1 without changing the route");
     await page.focus("#skip"); await page.keyboard.press("Tab");
-    ok(await page.evaluate(() => document.activeElement.classList.contains("wordmark")), "keyboard: after the skip link, the rail comes first");
+    ok(await page.evaluate(() => document.activeElement.classList.contains("product-brand")), "keyboard: after the skip link, product navigation comes first");
     await page.locator("#rail").getByRole("link", { name: "Research" }).click(); await page.waitForTimeout(80);
     await page.locator("#rail").getByRole("link", { name: "Report", exact: true }).click(); await page.waitForTimeout(80);
     ok(/^#\/check\?report=/.test(await page.evaluate(() => location.hash)), "returning to the checker keeps its report in the URL");
@@ -250,7 +250,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
-    await page.goto(base); await page.waitForSelector("#checklist li");
+    await page.goto(base + "#/check"); await page.waitForSelector("#checklist li");
     const csp = await page.getAttribute('meta[http-equiv="Content-Security-Policy"]', "content");
     ok(/connect-src 'self'/.test(csp) && /default-src 'self'/.test(csp) && !/unsafe-inline[^;]*;/.test(csp.split("script-src")[1].split(";")[0] + ";"), "CSP: " + csp.replace(/'sha256-[^']+'/g, "'sha256-…'"));
     const res = await page.evaluate(() => fetch("https://example.com/").then(() => "sent", () => "blocked"));

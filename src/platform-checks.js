@@ -1,0 +1,24 @@
+/* Separate report-preparation templates; study checklist and cached results stay versioned. */
+(function(root){
+ 'use strict';
+ const base=typeof module==='object'?require('./checker.js'):root.TBC;
+ const platforms={android:'Android TalkBack',ios:'iOS VoiceOver',web:'Web NVDA/JAWS'};
+ function template(platform){if(!platforms[platform])throw Error('Unsupported platform');return `Platform: ${platforms[platform]}\nApp version: [version]\nDevice: [device]\nOS version: [os version]\n${platform==='web'?'Site URL: [site URL]\nBrowser version: [version]\n':''}Screen-reader version: [version]\nScreen: [screen]\n\n### Steps to reproduce\n1. [steps]\n\n### Expected behavior\n[expected behavior]\n\n### Actual behavior\n[actual behavior]\n`;}
+ function analyze(report){
+  if(/^Report language: (?!English\b).+/im.test(report.body||'')){const a=base.analyze(report);a.manualReview=true;for(const item of a.items){item.status='optional';item.required=false;item.found=null;item.hint='Review original evidence manually; English-pattern recognition does not cover the selected language.';}a.summary={required:0,present:0,partial:0,notFound:0};a.text=String(report.title||'')+'\n\n'+String(report.body||'');a.template=[{text:a.text}];return a;}
+
+  const mode=/^Platform: (iOS VoiceOver|Web NVDA\/JAWS)$/m.exec(report.body||'');if(!mode)return base.analyze(report);
+  const body=String(report.body||'').slice(0,base.MAX_INPUT),web=mode[1].startsWith('Web');
+  const content=body.replace(/\[(?:version|device|os version|screen|steps|expected behavior|actual behavior|site URL)\]/gi,'');
+  const a=base.analyze({title:report.title,body:content});a.truncated=String(report.body||'').length>base.MAX_INPUT;
+  const deviceValue=/^Device:[ \t]*(\S[^\n]*)/mi.exec(content)?.[1]||'',device=!!deviceValue&&!/^(?:n\/a|none|unknown|not provided)\b/i.test(deviceValue),os=/\b(?:iOS|iPadOS|macOS|Windows|Linux|Ubuntu)(?: version)?\s*[: ]\s*\d[\w.]*/i.test(content)||/^OS version:[ \t]*\d[\w.]*/mi.test(content),browser=/\b(?:Chrome|Firefox|Safari|Edge)(?: version)?\s*[: ]\s*\d[\w.]*/i.test(content);
+  const steps=[...body.matchAll(/### Steps to reproduce\n([\s\S]*?)(?=\n###|$)/gi)].map(x=>x[1]).join('\n');
+  const sr=web?/\b(?:NVDA|JAWS)\b/i:/\bVoiceOver\b/i;
+  for(const item of a.items){if(item.key==='appVersion'){const explicit=/^(?:#{1,6}\s*)?(?:app|site) (?:version|build):[ \t]*(\S[^\n]*)/mi.exec(content),site=web&&/^Site URL:[ \t]*(https?:\/\/[^\s]+)/mi.exec(content);item.name=web?'Site URL or build':'App version';item.status=site||(explicit&&!/^(?:n\/a|none|unknown|not available)$/i.test(explicit[1].trim()))?'present':explicit?'partial':'notfound';item.found=explicit?.[1]||site?.[1]||null;item.hint=web?'Supply the site URL or app/site build explicitly.':'Supply the app version explicitly, separately from OS or screen-reader versions.';}if(item.key==='expectedActual')item.hint='Supply expected and actual behavior, including literal spoken output; do not invent missing evidence.';if(item.key==='srSettings'){const settings=/^(?:Screen-reader (?:version|settings)|VoiceOver (?:version|settings)|NVDA (?:version|settings)|JAWS (?:version|settings)):[ \t]*(\S[^\n]*)/mi.exec(content);item.name='Screen-reader version/settings';item.status=settings?'present':'optional';item.found=settings?.[1]||null;item.hint='Include assistive-technology version, navigation mode and relevant settings.';}if(item.key==='device'){item.name=web?'Device, OS and browser':'Device and iOS version';item.status=device&&os&&(!web||browser)?'present':device||os||browser?'partial':'notfound';item.found=item.status==='present'?'Environment supplied':null;item.hint=web?'Add device, OS version and browser/version.':'Add device model and iOS version.';}if(item.key==='srSteps'){item.name='Screen-reader steps';item.required=true;item.status=sr.test(steps)&&/\b(enable|turn on|start|swipe|double.tap|press|tab|arrow|navigate)\b/i.test(steps)?'present':'notfound';item.found=item.status==='present'?'Screen-reader interaction supplied':null;item.hint='Include screen-reader activation and gestures or keys in the steps.';}}
+  const required=a.items.filter(x=>x.required);a.summary={required:required.length,present:required.filter(x=>x.status==='present').length,partial:required.filter(x=>x.status==='partial').length,notFound:required.filter(x=>x.status==='notfound').length};
+  // Preserve supplied evidence verbatim; this version does not infer platform-specific repairs.
+  a.text=`### Summary\n${String(report.title||'Untitled report')}\n\n${String(report.body||'')}\n\n### Evidence to add\n${required.filter(x=>x.status!=='present').map(x=>'- '+x.name).join('\n')||'No required fields flagged. Review before submission.'}\n`;
+  a.template=[{text:a.text}];return a;
+ }
+ const api={platforms,template,analyze};if(typeof module==='object')module.exports=api;else root.PlatformChecks=api;
+})(typeof window==='object'?window:globalThis);

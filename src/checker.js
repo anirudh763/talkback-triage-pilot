@@ -130,7 +130,9 @@
   // The lines of a report under a heading that matches `re`, up to the next heading.
   // Headings: "### Expected behavior", "**Expected behavior:**", "**Expected:** text on the same line".
   function section(body, re) {
-    const L = body.split("\n");
+    const labelled = body.replace(/(^|[.!?][ \t]+|\n)(Expected|Actual|Current|Observed)(?:[ \t]+(?:behaviou?r|result))?[ \t]*:[ \t]*/gi,
+      (_, before, name) => before.trimEnd() + "\n**" + name + ":** ");
+    const L = labelled.split("\n");
     for (let i = 0; i < L.length; i++) {
       const line = L[i];
       const md = line.match(/^\s*#{1,6}\s*([^\n]+?)\s*:?\s*$/);
@@ -284,7 +286,7 @@
     if (by.srSteps.status === "optional") { t("\n- Screen reader: "); opt("screen reader and its version, if you used one"); }
     else if (by.srSteps.status !== "na") { t("\n- Screen reader: "); val(x.srName, "screen reader and its version, e.g. TalkBack 15.0"); }
     t("\n- Screen-reader settings: ");
-    if (by.srSettings.status === "present") t(by.srSettings.found); else opt("speech rate, verbosity, font or display size");
+    if (by.srSettings.status === "present") t(x.body.split("\n").filter((line) => SR_SETTINGS.test(line)).map((line) => line.trim()).join("; ")); else opt("speech rate, verbosity, font or display size");
 
     t("\n\n### Where in the app\n");
     val(by.where.found, "screen and element, e.g. Post list > three-dot menu button");

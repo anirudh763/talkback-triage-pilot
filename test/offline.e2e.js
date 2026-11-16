@@ -10,7 +10,7 @@ const http = require("http");
 
 const DOCS = path.join(__dirname, "..", "docs");
 const VERSION = require("../package.json").version;
-const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".svg": "image/svg+xml",
+const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".ttf": "font/ttf", ".png": "image/png", ".svg": "image/svg+xml",
   ".js": "text/javascript", ".webmanifest": "application/manifest+json", ".txt": "text/plain" };
 // Served under /app/ so a worker or manifest with an absolute "/" path would break, as on GitHub Pages' /talkback-triage-pilot/.
 const PREFIX = "/app/";
@@ -40,7 +40,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   page.on("console", (m) => { if (m.type() === "error" && !/not-cached-/.test(m.location().url || "")) errors.push("console: " + m.text() + " " + (m.location().url || "")); });
 
   console.log("install");
-  await page.goto(base);
+  await page.goto(base + "#/check");
   await page.waitForSelector("#checklist li");
   const links = await page.evaluate(() => ({
     manifest: (document.querySelector('link[rel="manifest"]') || {}).href || null,
@@ -53,9 +53,9 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     "CSP still blocks other sites and inline scripts without a hash, and allows the page's own worker");
   if (links.manifest) {
     const m = await (await page.request.get(links.manifest)).json().catch(() => null);
-    ok(m && m.name && m.start_url === "./" && m.scope === "./" && m.display === "standalone", "manifest: name, relative start_url and scope, standalone");
+    ok(m && m.name && m.start_url === "./#/" && m.scope === "./" && m.display === "standalone", "manifest: name, relative start_url and scope, standalone");
     const sizes = (m && m.icons || []).map((i) => i.sizes).sort();
-    ok(JSON.stringify(sizes) === JSON.stringify(["192x192", "512x512", "any"]), "manifest icons: SVG plus 192 and 512 PNG (" + sizes.join(", ") + ")");
+    ok(JSON.stringify(sizes) === JSON.stringify(["192x192", "512x512", "512x512"]), "manifest icons: 192, 512 and maskable 512 PNG (" + sizes.join(", ") + ")");
     for (const i of (m && m.icons) || []) {
       const r = await page.request.get(new URL(i.src, links.manifest).href);
       ok(r.ok() && (r.headers()["content-type"] || "").startsWith(i.type), "icon " + i.src + " is served as " + i.type);
@@ -79,7 +79,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   ok(sw.scope === base, "worker scope is the page's folder (relative scope): " + sw.scope);
   ok(sw.script === base + "sw.js", "worker script sits next to the page: " + sw.script);
   ok(sw.controlled, "the worker controls the page");
-  ok((sw.caches || []).includes("talkback-triage-pilot-v" + VERSION), "cache name carries the version " + VERSION + ": " + JSON.stringify(sw.caches));
+  ok((sw.caches || []).some((key) => /^cuereport_pwa_[a-f0-9]{16}$/.test(key)), "cache name carries the version " + VERSION + ": " + JSON.stringify(sw.caches));
 
   console.log("offline");
   await ctx.setOffline(true);
@@ -94,12 +94,16 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   ok(/WordPress-Android #\d+|AntennaPod #\d+/.test(await page.textContent("#ex-source").catch(() => "")), "offline: Load sample loads an attributed issue");
   ok((await page.locator('#checklist li[data-status="notfound"]').count()) >= 1 && /of \d found/.test(await page.textContent("#chk-score").catch(() => "")), "offline: the sample is analyzed");
   await page.fill("#in-body", "1. Turn on TalkBack\n2. Open the Post list screen\nApp version: 24.8\nPixel 8, Android 14").catch(() => null);
-  await page.waitForTimeout(300);
+  await page.waitForFunction(() => document.querySelector('#checklist li[data-key="appVersion"]')?.dataset.status === "present");
   ok((await page.getAttribute('#checklist li[data-key="appVersion"]', "data-status").catch(() => null)) === "present", "offline: pasted text is checked");
-  await page.evaluate(() => { location.hash = "#/draft"; }); await page.waitForTimeout(150);
-  ok((await page.textContent("main h1:visible").catch(() => "")) === "Preview" && /App version: 24\.8/.test(await page.textContent("#tpl").catch(() => "")), "offline: the Draft screen opens with the pasted report");
-  const font = await page.evaluate(() => document.fonts.check('16px "Atkinson Hyperlegible"') && [...document.fonts].some((f) => f.family.includes("Atkinson") && f.status === "loaded"));
-  ok(font, "offline: the page's own font loads from the cache");
+  await page.evaluate(() => { location.hash = "#/draft"; }); await page.waitForFunction(() => !document.querySelector("#draft").hidden && document.querySelector("#tpl").textContent.includes("App version: 24.8"));
+  ok((await page.textContent("main h1:visible").catch(() => "")) === "Draft" && /App version: 24\.8/.test(await page.textContent("#tpl").catch(() => "")), "offline: the Draft screen opens with the pasted report");
+  const font = await page.evaluate(async () => {
+    const families = ["Atkinson Hyperlegible", "Inter", "Newsreader"];
+    const loaded = await Promise.all(families.map(family => document.fonts.load('16px "' + family + '"')));
+    return families.every((family, index) => document.fonts.check('16px "' + family + '"') && loaded[index].some(face => face.status === "loaded"));
+  });
+  ok(font, "offline: all three bundled font families load from the cache");
   await ctx.setOffline(false);
   await ctx.close();
 

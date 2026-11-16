@@ -2,7 +2,7 @@
 
 ## Running system
 
-CueReport is a static browser application served from GitHub Pages. `scripts/build.js` combines the HTML/CSS/JavaScript in `src/` with repository data and cached results into `docs/index.html`. There is no CueReport API, account system, database, hosted queue, or deployed AWS service.
+CueReport is a static browser application that can be served from GitHub Pages or the local hardened HTTP serving process. `scripts/build.js` combines the HTML/CSS/JavaScript in `src/` with repository data and cached results into `docs/index.html`. The local server provides process health and HTTP metrics; it does not provide a model API, hosted account service, database, hosted queue, or deployed AWS service. Optional browser-local profiles are distinct from online accounts.
 
 The browser runs the deterministic report checker in `src/checker.js`. Its seven composer rows are steps, screen-reader steps when relevant, app version, device/Android version, expected versus actual behavior, screen or element, and optional screen-reader settings. The separate research ablation checklist has six measured features; these counts must not be conflated.
 
@@ -43,3 +43,33 @@ The diagram describes a design direction only. Step Functions, Bedrock, the queu
 ## Constraints
 
 The current service is a report-preparation aid, not triage automation. It has no service-level agreement, response-time guarantee, security certification, or measured accuracy claim. Existing third-party issue text remains subject to its authors' rights and GitHub context; the code's MIT licence does not relicense those reports.
+
+## Editorial entry and local saved drafts
+
+The root now opens the product entry. `#/login` and `#/signup` manage optional local profiles; `#/saved` and `#/profile` show saved work. `#/app` opens the report screen; `/app/check`, `/app/draft`, `/app/examples`, `/app/research`, `/app/research/labels` and `/app/research/methods` alias the existing hash routes. Legacy explicit report/share/study routes retain their meaning. All tools remain free and guest accessible.
+
+Canonical `src/product.js`, `src/product.css` and `src/local-profile.js` are included by the existing single-file build and its script-hash CSP. No framework or backend is added. Product navigation uses native disclosures; preview selection has manual controls, persistent pause, focus/hover pause and reduced-motion handling. The report adapter captures explicit bounded text and resets volatile state on identity changes. Password hashing does not encrypt reports; see SECURITY.md for the browser-local trust boundary.
+
+## Portable work and optional cloud reference
+
+`encrypted-backup.js` and `backup-ui.js` export explicitly saved drafts, validate app/version/structure before restore, and require a new-profile or merge confirmation. Unsaved editor text and session credentials are excluded. Cancellation and quota failure preserve existing work. See ENCRYPTED_BACKUP.md.
+
+`sync-provider.js` and `sync-ui.js` implement an explicit Supabase Auth/RLS connector with owner-derived authorization, conditional revisions, conflict review and deletion tombstones. It ships unconfigured; no hosted project or live cross-device sync was verified. See CLOUD_SYNC.md for schema and configuration boundaries. Neither browser-local namespacing nor password verification isolates apps sharing an origin.
+
+Platform-specific report rules live separately in `platform-checks.js`; the original Android research checker/data/results are preserved. CSV/JSON imports are memory-only bounded local collections. The bot view is a deterministic preview with no repository write, installed workflow or token collection.
+
+## Direct routes and observability
+
+```mermaid
+flowchart LR
+  Browser[Browser tab] -->|exact route or asset| Server[Local HTTP process]
+  Server --> Bundle[docs static bundle]
+  Browser -->|system reads only| Health[healthz / readyz / api/system / metrics]
+  Bundle --> Checker[Existing browser checker]
+  Bundle --> Study[Existing study core and frozen archive]
+  Checker --> Local[Browser draft / local profile]
+```
+
+The server route allowlist must return HTML only for `/`, `/ablation`, `/statistics`, and `/system`; unknown API and asset paths remain 404. Legacy hash navigation stays client side and Pages-compatible. Direct root queries contain public report IDs; pasted report sharing always uses the URL fragment. Each tab owns its route and current editor state; existing local saved drafts remain explicitly shared browser storage.
+
+The System page performs four bounded five-second GET requests. Endpoint failures remain visible with Refresh; it does not assume health. Prometheus data measures the serving process, not browser checker execution, research validity, historical workload, or model performance. The archived run lacks an exact model version and prompt revision, so its condition comparisons cannot support a controlled cross-model comparison. No AWS service was added for these routes.

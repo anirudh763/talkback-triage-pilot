@@ -1,0 +1,23 @@
+{
+  "collection_date": "2026-11-09",
+  "source_dataset_sha256": "c369323daaf6c940df71f3113583232cc80e1155bafc72a5fe67764addb18e95",
+  "reuse_basis": "Existing research excerpts with source attribution; no blanket republication licence is asserted. Issue text belongs to authors. Review permissions before wider redistribution. No new body text fetched for UI work.",
+  "modifications": "Existing shortened excerpts; media replaced by markers; source bodies remain unchanged by this upgrade.",
+  "records": [
+    {
+      "id": "WP-21444",
+      "source": "https://github.com/wordpress-mobile/WordPress-Android/issues/21444",
+      "sha256": "5573c3ddaadd39a3dc8598f8cd77cc8abb8b4ad25211d3fd6c15d474cb23a40d"
+    },
+    {
+      "id": "WP-21409",
+      "source": "https://github.com/wordpress-mobile/WordPress-Android/issues/21409",
+      "sha256": "bc334259c876176d6fc7e719645765606a1c2bb6931da6849994e55888d0ed1c"
+    },
+    {
+      "id": "WP-21288",
+      "source": "https://github.com/wordpress-mobile/WordPress-Android/issues/21288",
+      "sha256": "8297da297396ee4404332967225a28164e356223405d308eb601d79c9b53db9c"
+    }
+  ]
+}

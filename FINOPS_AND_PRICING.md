@@ -6,15 +6,11 @@ The current demo is a static site with an in-browser deterministic checker and c
 
 Claude access is available only in the Claude app runtime or through the separate CLI runner when its user supplies an API key. Those calls are not included in CueReport hosting spend. Existing cached results do not incur a new model call.
 
-## Proposed prices (not purchasable)
+## Free product and optional team interest
 
-| Plan | Proposed price | Availability |
-|---|---:|---|
-| Offline sandbox | $0 | Available now: static checker, 75 public examples, cached study results. |
-| Indie | $29/month | Proposed only. Included usage is undecided. |
-| QA Team | $149/month | Proposed only. Seat count, included usage, support, and retention terms are undecided. |
+All implemented templates, checks, imports, drafts, reports, local profiles, encrypted backups and reference sync remain free. No checkout, subscription or paid gate exists. Optional early-access capture needs an owner-configured endpoint and actual acknowledgement; a local draft is not enrollment. No team bot or hosted cloud service is implied. Earlier price suggestions were unvalidated planning hypotheses, not offers or forecasts.
 
-There is no checkout, subscription, account, email capture, or paid provisioning. These numbers are planning placeholders, not validated prices or a commitment to deliver a service.
+The optional Supabase connector ships unconfigured. Its future provider bill and any external form endpoint are separate from static hosting and model inference. No resources were provisioned for this implementation.
 
 ## Unknowns before any hosted pilot
 

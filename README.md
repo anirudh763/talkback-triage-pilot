@@ -1,5 +1,22 @@
 # CueReport
 
+Incomplete accessibility reports make it harder for maintainers to identify the next useful question. CueReport checks supplied evidence, keeps the original report, and prepares a portable draft. Its archived pilot lets researchers inspect how recorded model judgments changed after particular details were removed, without claiming reproducibility or accuracy.
+
+## Direct application routes
+
+The local serving process exposes these routes at `http://127.0.0.1:3004`:
+
+| Route | Working capability |
+| --- | --- |
+| `/` | Deterministic report checks, repairs, draft export and public issue import |
+| `/ablation?report=WP-20770` | Actual step-removal diff and original archived model answers |
+| `/statistics` | Existing condition comparison and exact two-sided McNemar analysis |
+| `/system` | Actual `/healthz`, `/readyz`, `/api/system`, and `/metrics` responses |
+
+GitHub Pages retains the existing hash landing and routes (`#/`, `#/check`, `#/research`, and others). It has no local health API: unavailable endpoint messages on System are expected when using a static host. Archived model tier is recorded as quick; exact model version and prompt revision were not recorded. Condition comparisons are not a controlled comparison of different models, human validation remains incomplete, and p-values are exploratory and unadjusted.
+
+Frontend verification: `npm test`, `npm run test:e2e`, and `npm run test:direct`. Use `TB_BASE_URL=http://127.0.0.1:3004 npm run test:direct` against the running container. See the [runtime verification summary](docs/verification/runtime.md) for focused server checks and portable setup; local run artifacts are not published. Newsreader and Inter are bundled locally under their included OFL licences.
+
 **A report checker for Android accessibility bug reports, and the small pilot study behind it.**
 
 Paste a bug report and the checker lists which of seven report details it can find (screen-reader settings are optional and assistive steps depend on the report): steps, TalkBack or screen-reader steps, app version, device and Android version, expected vs. actual behavior, the screen or element, and screen-reader settings. It then gives you the report rewritten with `[ADD: ...]` where something was not found. It is a heuristic completeness check (rules, not AI), runs in your browser, and works offline once loaded.
@@ -25,13 +42,12 @@ Below the checker, this repository holds an exploratory study: does removing Tal
 
 The [live app](https://anirudh763.github.io/talkback-triage-pilot/) checks one bug report for missing sections: steps, versions, device, expected and actual behavior, and where in the app. It opens on **Report** (`#/check`) with a real, incomplete issue from the dataset; press **Load sample** for another, or paste your own.
 
-In Report, the report text sits beside a plain Markdown preview of the issue body (headings, lists, quotes, code and bold; other Markdown shows as text). Text the checker matched is highlighted where it appears. Each detail it did not find becomes a prompt where you type it in your own words and **Add to report**; the report is then checked again. Nothing is filled in for you. Each detail is also listed as Found, Incomplete, Not found, Optional or Not needed, in text and with an icon.
+On desktop, Report groups the editor, missing details and exportable draft in three columns; the same controls stack on smaller screens. The original Markdown preview remains below (headings, lists, quotes, code and bold; other Markdown shows as text). Text the checker matched is highlighted where it appears. Each detail it did not find becomes a prompt where you type it in your own words and **Add to report**; the report is then checked again. Nothing is filled in for you. Each detail is also listed as Found, Incomplete, Not found, Optional or Not needed, in text and with an icon.
 
-**Preview** (`#/draft`) opens the draft on its own screen: your report rearranged under the headings a developer looks for, with what to add marked `[ADD: ...]`, ready to copy or download as Markdown. **Examples** (`#/examples`) lists the 75 dataset reports with filters (app, a detail not found, title text); each opens in Report and links to its GitHub issue. The study is under **Research** (`#/research`, `#/research/labels`, `#/research/methods`). The page is light by default, including when your system prefers dark; **Dark theme** in the menu switches and is remembered. Old links (`#check?report=…`, `#pilot`, `#label`, `#about`) still work.
+**Draft** (`#/draft`) opens the draft on its own screen: your report rearranged under the headings a developer looks for, with what to add marked `[ADD: ...]`, ready to copy or download as Markdown. **Examples** (`#/examples`) lists the 75 dataset reports with filters (app, a detail not found, title text); each opens in Report and links to its GitHub issue. The study is under **Research** (`#/research`, `#/research/labels`, `#/research/methods`). The page is light by default, including when your system prefers dark; **Dark theme** in the menu switches and is remembered. Old links (`#check?report=…`, `#pilot`, `#label`, `#about`) still work.
 
-Report autosaves a bounded, versioned draft as readable text in this browser's local storage; **Reset draft** removes it. Do not enter passwords, tokens or private details. **Import a public GitHub issue** accepts only a `github.com/owner/repository/issues/number` URL and, after you press Import, reads that issue from the fixed `api.github.com` REST endpoint. It does not send your report to CueReport or submit anything on GitHub. On Preview, enter an `owner/repository` to open a user-initiated, pre-filled GitHub new-issue form; links over 7,000 characters use the existing Copy/Download actions instead. Review and submit issues on GitHub yourself.
+Report autosaves a bounded, versioned draft as readable text in this browser's local storage; **Reset draft** removes it. Do not enter passwords, tokens or private details. **Import a public GitHub issue** accepts only a `github.com/owner/repository/issues/number` URL and, after you press Import, reads that issue from the fixed `api.github.com` REST endpoint. It does not send your report to CueReport or submit anything on GitHub. On Draft, enter an `owner/repository` to open a user-initiated, pre-filled GitHub new-issue form; links over 7,000 characters use the existing Copy/Download actions instead. Review and submit issues on GitHub yourself.
 
-**Team QA plans** opens a local summary of the free offline sandbox and two proposed prices ($29 Indie and $149 QA Team). Those monthly prices are proposals and cannot be purchased. AWS Bedrock, Step Functions and human-review integrations are proposals only; no accounts, checkout, team backend, email capture or paid services are running. Its feedback link opens a public GitHub issue draft with a generic title. Do not put private reports or email addresses in public feedback.
 
 The Phase 2 proposal and current boundaries are documented in [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md), [FAILURE_MODES.md](FAILURE_MODES.md), and [FINOPS_AND_PRICING.md](FINOPS_AND_PRICING.md).
 
@@ -57,7 +73,7 @@ It finds missing sections only. A report with every section is not necessarily r
 
 **Offline and install.** After one visit the page works without a network: a service worker keeps the page, its fonts and icons in a versioned cache. Online it always fetches the latest page first. It has a web app manifest and SVG and PNG icons, so browsers that support installing web apps can offer to install it; installing has not been tried by hand. The browser test turns the network off, reloads, and checks a sample. Without JavaScript the page shows a message pointing here.
 
-**Accessibility.** Playwright runs axe-core on every route with 0 violations at 1440, 768 and 320 px, in the default light theme and the opt-in dark theme; the Team QA plans dialog is also checked at all three widths. Browser checks cover keyboard-only use, focus moving to each screen's heading, Menu and Plans dialogs (Escape closes and focus returns; tab stays inside), Back/Forward keeping the report, no sideways scrolling, 200% zoom, 24px minimum targets (controls are built at 44px) and error states. A manual screen-reader check has not been run.
+**Accessibility.** Playwright runs axe-core on every route with 0 violations at 1440, 768 and 320 px, in the default light theme and the opt-in dark theme. Browser checks cover keyboard-only use, focus moving to each screen's heading, Menu dialog (Escape closes and focus returns; tab stays inside), Back/Forward keeping the report, no sideways scrolling, 200% zoom, 24px minimum targets (controls are built at 44px) and error states. A bounded Safari/VoiceOver automation check on November 15, 2026 exercised final-field repair and research detail/label navigation. It is not a human usability study or whole-product accessibility certification.
 
 **Security.** The public issue importer validates the GitHub URL shape, requests only `api.github.com`, omits credentials, rejects redirects, times out after 10 seconds and bounds the response to 256 KiB. Imported strings are rendered as text. The workflow `.github/workflows/talkback-triage.yml` runs the repository's deterministic checker in dry-run mode on opened/edited issues and can also be called by another workflow. To post a comment or add the `needs: talkback-details` label, explicitly opt into `post_comment` or `apply_label`; the caller must grant `issues: write`, and the label must already exist. Actions are pinned to full commit SHAs. No issue text is interpolated into shell commands; the checker logs only the issue number and fixed result keys.
 
@@ -386,3 +402,24 @@ The next step is human labels from at least two people working independently. [L
 - **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md). To report a security problem, see [SECURITY.md](SECURITY.md).
 - **Author:** Anirudh Yadav Boosa, University of North Texas. Questions and suggestions are welcome as [GitHub issues](https://github.com/anirudh763/talkback-triage-pilot/issues).
 - **AI use:** the triage in the saved runs was done by Claude (Anthropic), as described above. The code and documentation were written with AI assistance.
+
+All available features are free. The report view places input, checks and a live draft side by side on wide screens and stacks them on narrow screens. English-pattern checks can miss valid evidence in other languages. Public import requires streaming support; paste issue text if the browser cannot stream it.
+
+## Flagship local build
+
+The current working branch adds bounded local imports, an editable guest front door, optional browser-local profiles, encrypted saved-work backup/restore, and an unconfigured Supabase reference connector. All implemented features remain free. This branch has not automatically deployed a cloud service. Local password verification is not cloud authorization, and app namespaces do not provide same-origin isolation.
+
+See [ENCRYPTED_BACKUP.md](ENCRYPTED_BACKUP.md), [CLOUD_SYNC.md](CLOUD_SYNC.md), and [ARCHITECTURE.md](ARCHITECTURE.md) for limits and configuration. Native store distribution, physical-device installation and live hosted cloud sync are separate unverified steps.
+
+Additional reproducible browser checks (after building the canonical source):
+
+```sh
+node test/flagship-ui.cjs
+node test/backup-browser.cjs
+node test/ecosystem.e2e.cjs
+node test/pwa-launch.cjs
+```
+
+These tests use installed Chrome on macOS or Playwright’s installed browser elsewhere; `CHROME_PATH` overrides the executable. Receiver fixtures exercise owned local protocols, not a deployed cloud service. Print checks verify the app's print document and Chromium PDF generation; they do not automate an operating-system print dialog.
+
+Local verification: [2026-11-15 checks and limits](docs/verification/release-2026-11-15.md).

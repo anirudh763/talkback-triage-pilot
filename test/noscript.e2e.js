@@ -49,7 +49,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
   {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
-    await page.goto(base); await page.waitForSelector("#checklist li");
+    await page.goto(base + "#/check"); await page.waitForSelector("#checklist li");
     ok((await page.locator("main .noscript").count()) === 0 || !(await page.locator("main .noscript").isVisible()), "with JavaScript on, the message is hidden");
     await ctx.close();
   }
