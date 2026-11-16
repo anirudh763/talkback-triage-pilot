@@ -6,3 +6,6 @@ test/*.png
 # Local secrets/configuration. Keep the checked-in examples visible.
 .env.*
 !.env.example
+# Local verification logs, browser profiles and generated test evidence.
+/artifacts/verification/post-restart/
+__pycache__/

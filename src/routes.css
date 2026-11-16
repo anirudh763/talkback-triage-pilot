@@ -1,0 +1,25 @@
+/* CueReport: editorial report and review surfaces. */
+@font-face{font-family:Inter;src:url(inter-variable.ttf) format('truetype');font-weight:100 900;font-display:swap}
+@font-face{font-family:Newsreader;src:url(newsreader-variable.ttf) format('truetype');font-weight:200 800;font-display:swap}
+:root{--canvas:#fbf9f5;--bg:#fffefa;--rail:#fbf9f5;--fg:#24243b;--fg-muted:#56566c;--accent:#30326e;--accent-fg:#fff;--accent-subtle:#ededf7;--border:#dcd9d4;--border-strong:#89858d;--focus:#a13f2f;--bad:#a13f2f;--font:Inter,system-ui,sans-serif;--document:Newsreader,Georgia,serif;--terracotta:#a13f2f;--bg-inset:#eeebe6;--bg-subtle:#f4f1eb}
+:root[data-theme=dark]{--canvas:#20202e;--bg:#292938;--rail:#20202e;--fg:#f5f2ed;--fg-muted:#c6c3d1;--accent:#c2c2ff;--accent-fg:#20202e;--accent-subtle:#39394f;--border:#575365;--border-strong:#a49eaf;--focus:#ffb29d;--bad:#ffb29d;--terracotta:#ffb29d;--bg-inset:#373747;--bg-subtle:#30303e}
+.screen>header h1{font-family:var(--document);font-size:clamp(2rem,3.2vw,3rem);font-weight:500;letter-spacing:-.025em;line-height:1.1}
+.wordmark{font-family:var(--document);font-size:1.75rem}
+#check .document-sheet{border-top:3px solid var(--accent)}
+.review-margin{border-top:3px solid var(--terracotta)}
+.comparison-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin:16px 0}
+.comparison-grid>*{min-width:0}.comparison-grid .report{max-height:650px}
+.system-fields{display:grid;grid-template-columns:minmax(100px,.4fr) minmax(0,1fr);gap:8px;margin:0}.system-fields dd{margin:0;overflow-wrap:anywhere}
+#system-data{margin:16px 0}#system-data .box{max-width:900px}#system-metrics{max-height:520px}
+#system .check-heading{justify-content:space-between}#ablation-report{width:100%;min-width:0;text-overflow:ellipsis}
+#rail nav ul{flex-wrap:wrap}#rail nav a{white-space:nowrap}
+#in-body,.issue,.tpl{font-family:var(--font)}
+@media(max-width:767px){.comparison-grid{grid-template-columns:minmax(0,1fr)}.system-fields{grid-template-columns:1fr}.system-fields dt{font-weight:700}.screen>header h1{font-size:2rem}}
+
+.comparison-grid>section{align-content:start}
+
+html[data-direct-route]:not([data-direct-route=""]) .product-header[data-workspace=true]{display:none}
+html[data-direct-route=ablation] .profile-tools,html[data-direct-route=statistics] .profile-tools,html[data-direct-route=system] .profile-tools{display:none}
+
+html[data-direct-route=""] .direct-route-link{display:none}
+html[data-direct-route]:not([data-direct-route=""]) #rail a[data-nav=research]{display:none}

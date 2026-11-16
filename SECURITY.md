@@ -26,3 +26,15 @@ Only the latest commit on `main` and the page it publishes (https://anirudh763.g
 - Answers from the AI model in `results/`.
 - Problems in GitHub Pages, GitHub Actions, browsers or Node.js themselves; please report those to their owners.
 - The Claude app runtime that hosts the study's AI triage.
+
+## Public import resource boundary
+
+GitHub import requires a readable response stream. The app cancels after 256 KiB of received bytes (or 10 seconds); browsers without streaming support must paste the issue text instead. The cap bounds app accumulation, not the browser/network stack's own buffering. Report text is never sent to analytics.
+
+## Optional local profiles (unreleased local implementation)
+
+Browser-local profiles use Web Crypto PBKDF2-HMAC-SHA-256 with independent 16-byte salts and 600,000 iterations, with algorithm/version/workfactor recorded. Parameters follow the [OWASP password-storage guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html). Web Locks coordinate profile and saved-record writes. Unsupported crypto/locks/storage produce an explicit error; guest tools remain available.
+
+An unlocked profile exists in memory only and locks on reload. Saved work is not encrypted. App-prefixed storage keys organize profiles but do not protect against other scripts on the same GitHub Pages origin. There is no cloud sync, email verification, server credential, SSO or password recovery. Do not save confidential reports on a shared browser. Explicit saved drafts are bounded to ten entries, 128 KiB each and 256 KiB total, in addition to the existing title/report caps. Guest drafts are not automatically imported into profiles. Profile work is saved only through Save work; legacy guest recovery remains separate.
+
+Logout clears input, import state and export feedback, invalidates pending profile operations and broadcasts logout to other tabs. Intentionally saved entries remain available at later login and can be explicitly deleted. Corrupt/unsupported records produce actionable errors; resetting a corrupt profile registry uses browser site-data settings and removes its local profiles.

@@ -19,7 +19,7 @@ const AXE = (() => {
   }
   throw new Error("axe-core not found: run npm install");
 })();
-const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".svg": "image/svg+xml",
+const TYPES = { ".html": "text/html; charset=utf-8", ".woff2": "font/woff2", ".ttf": "font/ttf", ".png": "image/png", ".svg": "image/svg+xml",
   ".js": "text/javascript", ".webmanifest": "application/manifest+json", ".txt": "text/plain" };
 const server = http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split("?")[0]);
@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
 // route -> [visible H1, document title prefix, rail item marked current]
 const SCREENS = [
   ["#/check", "Report", "Report", "Report"],
-  ["#/draft", "Preview", "Preview", "Preview"],
+  ["#/draft", "Draft", "Draft", "Draft"],
   ["#/examples", "Examples", "Examples", "Examples"],
   ["#/research", "Results", "Results", "Research"],
   ["#/research/labels", "Label reports", "Label reports", "Research"],
@@ -59,7 +59,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     page.setDefaultTimeout(4000); // a missing control fails fast instead of waiting 30 s
     page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
     page.on("console", (m) => { if (m.type() === "error" && !(expectedGithubFailure && /Failed to load resource: the server responded with a status of (403|404|429)/.test(m.text()))) errors.push("console: " + m.text()); });
-    await page.goto(base + (hash || ""));
+    await page.goto(base + (hash || "#/check"));
     await page.waitForSelector("#checklist li", { state: "attached" });
     await page.waitForTimeout(60);
     return { ctx, page };
@@ -113,7 +113,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   // for Labels and Methods, and an address change for Not found (it has no nav link)
   const VIA = {
     "#/check": ["#/examples", (p) => p.locator("#rail").getByRole("link", { name: "Report", exact: true }).click()],
-    "#/draft": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Preview", exact: true }).click()],
+    "#/draft": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Draft", exact: true }).click()],
     "#/examples": ["#/draft", (p) => p.locator("#rail").getByRole("link", { name: "Examples" }).click()],
     "#/research": ["#/check", (p) => p.locator("#rail").getByRole("link", { name: "Research" }).click()],
     "#/research/labels": ["#/research", (p) => p.locator("#pilot nav.subnav").getByRole("link", { name: "Labels" }).click()],
@@ -151,8 +151,8 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok(await page.evaluate(() => document.activeElement.id === "btn-menu"), width + "px: focus returns to the Menu button");
     ok((await menu.getAttribute("aria-expanded")) === "false", width + "px: aria-expanded=false after closing");
     await menu.click(); await page.waitForTimeout(60);
-    await page.locator("#rail").getByRole("link", { name: "Preview", exact: true }).click(); await page.waitForTimeout(80);
-    ok((await h1Text(page)) === "Preview" && !(await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), width + "px: choosing a destination closes the sheet and opens the screen");
+    await page.locator("#rail").getByRole("link", { name: "Draft", exact: true }).click(); await page.waitForTimeout(80);
+    ok((await h1Text(page)) === "Draft" && !(await page.locator("#rail").getByRole("link", { name: "Examples" }).isVisible()), width + "px: choosing a destination closes the sheet and opens the screen");
     await ctx.close();
   }); }
   await guard("block at line 125", async () => {
@@ -164,32 +164,11 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await ctx.close();
   });
 
-  console.log("Team QA plans native dialog");
-  for (const width of [320, 768, 1440]) await guard("plans dialog " + width, async () => {
+  console.log("Free launch surfaces");
+  for (const width of [320, 768, 1440]) await guard("free launch " + width, async () => {
     const { ctx, page } = await open({ viewport: { width, height: 900 } }, "#/check");
-    const trigger = page.getByRole("button", { name: "Team QA plans" });
-    await trigger.click();
-    const dialog = page.getByRole("dialog", { name: "Team QA plans" });
-    ok(await dialog.isVisible(), width + "px: Team QA plans opens as a named native dialog");
-    ok(/Free report checker/.test(await dialog.textContent()) && /\$29/.test(await dialog.textContent()) && /\$149/.test(await dialog.textContent()) && /Paid plans are not available/.test(await dialog.textContent()), width + "px: available sandbox and proposed prices are distinguished; no checkout is claimed");
-    ok(/Feedback is public/.test(await dialog.textContent()) && /Exclude private reports and email addresses/.test(await dialog.textContent()) && (await dialog.locator("#btn-plans-feedback").getAttribute("href")).startsWith("https://github.com/anirudh763/talkback-triage-pilot/issues/new?"), width + "px: public GitHub feedback and privacy warning are explicit");
-    ok((await dialog.locator("input, textarea, form, a[href^='mailto:']").count()) === 0, width + "px: plans dialog has no fake capture form or email link");
-    const bounds = await dialog.boundingBox();
-    ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= width && bounds.y >= 0 && bounds.y + bounds.height <= 900, width + "px: modal stays within the viewport");
-    await page.evaluate(AXE);
-    const violations = await page.evaluate(async () => (await window.axe.run(document, { resultTypes: ["violations"] })).violations.map((v) => v.id));
-    ok(violations.length === 0, width + "px: axe reports 0 violations with the modal open" + (violations.length ? " (" + violations.join(", ") + ")" : ""));
-    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: opening places focus on Close");
-    await page.keyboard.press("Tab");
-    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-feedback"), width + "px: Tab reaches the public feedback link");
-    await page.keyboard.press("Shift+Tab");
-    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: Shift+Tab returns from the link to Close");
-    await page.keyboard.press("Shift+Tab");
-    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-feedback"), width + "px: Shift+Tab wraps from Close to the last modal action");
-    await page.keyboard.press("Tab");
-    ok(await page.evaluate(() => document.activeElement.id === "btn-plans-close"), width + "px: Tab wraps from the public link to Close");
-    await page.keyboard.press("Escape");
-    ok(!(await dialog.isVisible()) && await page.evaluate(() => document.activeElement.id === "btn-plans"), width + "px: Escape closes the modal and returns focus to its trigger");
+    ok(await page.locator("#btn-plans, #plans-dialog").count() === 0, "commercial plans removed");
+    ok(await page.locator("#inline-copy").isVisible(), "draft export remains free and visible");
     await ctx.close();
   });
 
@@ -200,16 +179,16 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await page.fill("#in-body", "1. Turn on TalkBack\n2. Open Settings\nTalkBack says \"Button\" on Save.\nApp version: 9.1");
     await page.waitForTimeout(250);
     await page.locator("#btn-review").click(); await page.waitForTimeout(100);
-    ok((await page.evaluate(() => location.hash)) === "#/draft" && (await h1Text(page)) === "Preview", "Preview opens #/draft on its own screen");
+    ok((await page.evaluate(() => location.hash)) === "#/draft" && (await h1Text(page)) === "Draft", "Preview opens #/draft on its own screen");
     ok(/App version: 9\.1/.test(await page.textContent("#tpl")) && !(await page.locator("#check").isVisible()), "the draft shows the report's own facts, and the Check form is not on this screen");
     ok((await page.locator("#tpl mark.add").count()) >= 1 && /\[ADD:/.test(await page.textContent("#tpl")), "missing details are marked [ADD: ...] gaps, not filled in");
     await page.goBack(); await page.waitForTimeout(100);
     ok(/^#\/check/.test(await page.evaluate(() => location.hash)) && (await h1Text(page)) === "Report", "Back returns to Check");
     ok((await page.inputValue("#in-title")) === "Persist title: Save button has no label" && /App version: 9\.1/.test(await page.inputValue("#in-body")), "title and body persist after Draft and Back");
     await page.goForward(); await page.waitForTimeout(100);
-    ok((await h1Text(page)) === "Preview", "Forward returns to Draft");
+    ok((await h1Text(page)) === "Draft", "Forward returns to Draft");
     await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" }); await page.waitForTimeout(100);
-    ok((await h1Text(page)) === "Preview" && /App version: 9\.1/.test(await page.textContent("#tpl")), "a reload of #/draft keeps the draft in this tab");
+    ok((await h1Text(page)) === "Draft" && /App version: 9\.1/.test(await page.textContent("#tpl")), "a reload of #/draft keeps the draft in this tab");
     await page.goBack(); await page.waitForTimeout(100);
     ok((await page.inputValue("#in-title")) === "Persist title: Save button has no label", "after a reload, Back still finds the title");
 
@@ -299,7 +278,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
         // the action row covers only what is below its top edge while it is pinned there
         let barTop = window.innerHeight;
         if (bar && !bar.contains(a) && bar.getClientRects().length) { const t = bar.getBoundingClientRect().top; if (t > b.top) barTop = t; }
-        const top = Math.max(b.top, head.bottom), bottom = Math.min(b.bottom, barTop, window.innerHeight);
+        const top = Math.max(b.top, head.top <= 0 ? head.bottom : 0), bottom = Math.min(b.bottom, barTop, window.innerHeight);
         return { id: a.id || a.textContent.trim().slice(0, 24), visible: bottom > top };
       });
       if (!r.visible) hidden.push(r.id);
@@ -330,16 +309,16 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   await guard("block at line 189", async () => {
     const { ctx, page } = await open({ colorScheme: "dark" }, "#/check");
     const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    ok((await bg()) === "rgb(255, 249, 239)", "OS prefers dark, first visit: canvas is light ivory #fff9ef (" + (await bg()) + ")");
+    ok((await bg()) === "rgb(251, 249, 245)", "OS prefers dark, first visit: canvas is light ivory #fbf9f5 (" + (await bg()) + ")");
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") !== "dark"), "no dark theme attribute by default");
     const btn = page.locator("#btn-theme");
     ok((await btn.getAttribute("aria-pressed")) === "false", "an explicit, labelled Dark theme toggle (aria-pressed=false)");
     await btn.click(); await page.waitForTimeout(60);
-    ok((await btn.getAttribute("aria-pressed")) === "true" && (await bg()) !== "rgb(255, 249, 239)", "the toggle switches to dark (" + (await bg()) + ")");
+    ok((await btn.getAttribute("aria-pressed")) === "true" && (await bg()) !== "rgb(251, 249, 245)", "the toggle switches to dark (" + (await bg()) + ")");
     await page.reload(); await page.waitForSelector("#checklist li", { state: "attached" });
     ok(await page.evaluate(() => document.documentElement.getAttribute("data-theme") === "dark"), "the dark choice is remembered after a reload");
     await page.getByRole("button", { name: /^Light theme/ }).click(); await page.waitForTimeout(60);
-    ok((await bg()) === "rgb(255, 249, 239)", "toggling again returns to light");
+    ok((await bg()) === "rgb(251, 249, 245)", "toggling again returns to light");
     await ctx.close();
   });
 
@@ -365,13 +344,13 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   await guard("local draft autosave", async () => {
     const { ctx, page } = await open();
     await page.fill("#in-title", "Saved offline title"); await page.fill("#in-body", "A local draft with no credentials.");
-    await page.waitForFunction(() => localStorage.getItem("cuer-report-draft-v1") && document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
-    const reopened = await ctx.newPage(); await reopened.goto(base); await reopened.waitForSelector("#checklist li", { state: "attached" });
+    await page.waitForFunction(() => localStorage.getItem("cuereport_guest_draft_v1") && document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
+    const reopened = await ctx.newPage(); await reopened.goto(base + "#/check"); await reopened.waitForSelector("#checklist li", { state: "attached" });
     ok((await reopened.inputValue("#in-title")) === "Saved offline title" && (await reopened.inputValue("#in-body")) === "A local draft with no credentials.", "versioned local draft restores in a fresh tab");
     await reopened.fill("#in-title", ""); await reopened.fill("#in-body", "");
     await reopened.waitForTimeout(450);
-    ok(await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "manually erasing both fields removes the saved copy");
-    const erased = await ctx.newPage(); await erased.goto(base); await erased.waitForSelector("#checklist li", { state: "attached" });
+    ok(await reopened.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "manually erasing both fields removes the saved copy");
+    const erased = await ctx.newPage(); await erased.goto(base + "#/check"); await erased.waitForSelector("#checklist li", { state: "attached" });
     ok((await erased.inputValue("#in-title")) !== "Saved offline title" &&
       (await erased.inputValue("#in-body")) !== "A local draft with no credentials." &&
       !(await erased.textContent("#draft-save-status")).includes("Restored saved draft"), "a fresh tab shows the public sample instead of manually erased report text");
@@ -379,7 +358,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await reopened.fill("#in-title", "Reset this draft");
     await reopened.waitForFunction(() => document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
     await reopened.getByRole("button", { name: "Reset draft" }).click();
-    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "Reset draft clears fields and removes local copy");
+    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "Reset draft clears fields and removes local copy");
     await ctx.close();
   });
   for (const [name, errorName, message] of [["blocked", "SecurityError", /storage is blocked/], ["quota", "QuotaExceededError", /storage is full/]]) { await guard(name + " storage", async () => {
@@ -387,23 +366,23 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await ctx.addInitScript((type) => {
       const set = Storage.prototype.setItem;
       Storage.prototype.setItem = function (key, value) {
-        if (key === "cuer-report-draft-v1") throw new DOMException("blocked for test", type);
+        if (key === "cuereport_guest_draft_v1") throw new DOMException("blocked for test", type);
         return set.call(this, key, value);
       };
     }, errorName);
-    const page = await ctx.newPage(); await page.goto(base); await page.waitForSelector("#checklist li", { state: "attached" });
+    const page = await ctx.newPage(); await page.goto(base + "#/check"); await page.waitForSelector("#checklist li", { state: "attached" });
     await page.fill("#in-title", "Unsaved title");
     await page.waitForFunction(() => /storage is (blocked|full)/.test(document.querySelector("#draft-save-status").textContent));
     ok(message.test(await page.textContent("#draft-save-status")), name + " storage failure has an explicit status");
     await ctx.close();
   }); }
   await guard("malformed draft storage", async () => {
-    const ctx = await browser.newContext(); await ctx.addInitScript(() => localStorage.setItem("cuer-report-draft-v1", "{bad"));
-    const page = await ctx.newPage(); await page.goto(base); await page.waitForSelector("#checklist li", { state: "attached" });
+    const ctx = await browser.newContext(); await ctx.addInitScript(() => localStorage.setItem("cuereport_guest_draft_v1", "{bad"));
+    const page = await ctx.newPage(); await page.goto(base + "#/check"); await page.waitForSelector("#checklist li", { state: "attached" });
     await page.waitForFunction(() => /invalid or too large/.test(document.querySelector("#draft-save-status").textContent));
     ok(/invalid or too large/.test(await page.textContent("#draft-save-status")), "malformed saved JSON is ignored with a status");
     await page.getByRole("button", { name: "Reset draft" }).click();
-    ok(await page.evaluate(() => localStorage.getItem("cuer-report-draft-v1") === null), "reset removes malformed data");
+    ok(await page.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "reset removes malformed data");
     await ctx.close();
   });
   await guard("strict GitHub issue import", async () => {

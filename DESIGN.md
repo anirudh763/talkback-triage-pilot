@@ -67,3 +67,25 @@ Known limits remain: the Markdown preview supports headings, lists, quotes, fenc
 ## November 15 interface revision
 
 The owner requested compact application copy: no taglines, tutorial intros, numbered stage badges or repeated instructions. Report, Preview, Examples and Research keep their existing routes. Headings use the UI sans-serif face, and document-card shadows are removed. Contextual errors, privacy, field labels and Methods retain their meanings. Before/after copy and browser evidence are recorded in the November 15 concise-UI audit.
+
+## November 15 audit workstation
+
+This revision supersedes the older two-column writing-desk geometry: compact 48px desktop navigation, a contextual action row, then report input / required checks / live draft at 1.15 / .8 / 1 proportions. Panels use 12px gaps and padding. Below 75rem the workspace flows input → checks → draft, followed by matches and the full checklist. Enlarged text can grow the document; no fixed-height clipping. All features are free; commercial plan UI is removed. English-oriented recognition is disclosed beside input. Final required repair focuses Review draft, research navigation restores task focus, and export confirmation applies only to the current revision.
+
+## Editorial entry and optional local profiles — November 15
+
+The newest owner brief adds an editorial root landing while preserving compact tool screens. The landing uses the existing palette, a responsive 56px-scale headline, an authentic labelled four-preview showcase, native disclosure navigation and guest-first entry. Mobile navigation collapses to a native Menu disclosure rather than consuming the first screen. Automatic previews pause on hover/focus and explicit user pause; reduced motion disables autoplay. No prices, upsells or fake adoption metrics are shown.
+
+Login/signup use visible labels and a split form/context layout. Saved-work controls remain reachable in both desktop and mobile workspaces. Report/checks/draft with explicit saved drafts; guest recovery stays separate from profile records. Browser-local profiles provide organization, not encryption, verified identity or server authorization. All tools remain free without signup.
+
+## Flagship brief: two useful panes
+
+The latest flagship brief supersedes the earlier three-column workstation: a report/editor column and one contextual review column containing checks, repairs and the draft. Below 75rem they follow document order. Primary review/export actions remain explicit; long reports and enlarged text may grow the page. Expanded importer and bot output wrap within the editor instead of expanding the page.
+
+## CueReport direct routes — post-restart brief
+
+The current user brief supersedes plum/emerald overrides: ivory #fbf9f5, deep indigo #30326e, terracotta #a13f2f, Newsreader headings and Inter controls. Locally bundled Google Fonts variable TTF files retain their OFL notices. The existing vanilla builder emits all assets and includes fonts in the integrity-checked offline manifest.
+
+Direct `/` opens the report checker; `/ablation` compares real removed TalkBack lines and archived answers; `/statistics` exposes the existing exact McNemar and condition tables; `/system` reads the serving process endpoints. Legacy hash routes and the Pages landing remain available. Direct navigation hides duplicate product chrome; secondary report tools remain available in legacy screens. No model call, model comparison experiment, live checker metric, or study verdict is synthesized.
+
+Report text share links remain in the URL fragment. Only public dataset IDs appear in direct query strings. `/ablation?report=WP-20770` is shareable and tab independent. New route tests cover 320/768/1440, keyboard, history, refresh, tab isolation, error states and axe.
