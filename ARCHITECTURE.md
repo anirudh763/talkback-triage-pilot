@@ -2,13 +2,13 @@
 
 ## Running system
 
-CueReport is a static browser application that can be served from GitHub Pages or the local hardened HTTP serving process. `scripts/build.js` combines the HTML/CSS/JavaScript in `src/` with repository data and cached results into `docs/index.html`. The local server provides process health and HTTP metrics; it does not provide a model API, hosted account service, database, hosted queue, or deployed AWS service. Optional browser-local profiles are distinct from online accounts.
+CueReport is a static browser application that can be served from GitHub Pages or the local hardened HTTP serving process. `scripts/build.js` combines the HTML/CSS/JavaScript in `src/` with repository data and cached results into `docs/index.html`. The optional local server provides private SQLite saved work, durable Beaker guest/account sessions, Argon2 password verification, logical workspace snapshots, process health and HTTP metrics. It provides no model API, hosted queue or deployed AWS service. Retained browser profiles are explicitly separate from server accounts.
 
 The browser runs the deterministic report checker in `src/checker.js`. Its seven composer rows are steps, screen-reader steps when relevant, app version, device/Android version, expected versus actual behavior, screen or element, and optional screen-reader settings. The separate research ablation checklist has six measured features; these counts must not be conflated.
 
 The public study dataset contains 75 GitHub issues. The current clean cached run contains 53 eligible reports and 187 model answers. These are saved study artifacts, not a live model service or a measurement of accuracy. The cached model setting is recorded as “quick”; the exact model version was not exposed by that runtime. Human labels remain incomplete.
 
-The browser can import a public GitHub issue only after a user action. It calls `api.github.com` directly, without CueReport credentials, times out after 10 seconds, and limits the response to 256 KiB. The imported title and body remain in the browser. Draft autosave uses local storage as readable text. A user can also create a GitHub issue draft; clicking the link sends the URL and prefilled content to GitHub, where the user reviews and submits it.
+The browser can import a public GitHub issue only after a user action. It calls `api.github.com` directly, without CueReport credentials, times out after 10 seconds, and limits the response to 256 KiB. Imported text stays in the browser until explicit Save current run uploads it to the owned server workspace. Current tab recovery is principal-scoped on server hosts; retained old browser/encrypted copies require explicit import. Private report bodies are excluded from share and GitHub URLs; users copy/download Markdown and open the bare GitHub issue form to paste and review it.
 
 Live Claude access in the page exists only when the page runs in the Claude app runtime. The command-line runner can use a user-supplied API key. Neither is part of a deployed CueReport backend; the cached research results remain available without either engine.
 
@@ -73,3 +73,8 @@ flowchart LR
 The server route allowlist must return HTML only for `/`, `/ablation`, `/statistics`, and `/system`; unknown API and asset paths remain 404. Legacy hash navigation stays client side and Pages-compatible. Direct root queries contain public report IDs; pasted report sharing always uses the URL fragment. Each tab owns its route and current editor state; existing local saved drafts remain explicitly shared browser storage.
 
 The System page performs four bounded five-second GET requests. Endpoint failures remain visible with Refresh; it does not assume health. Prometheus data measures the serving process, not browser checker execution, research validity, historical workload, or model performance. The archived run lacks an exact model version and prompt revision, so its condition comparisons cannot support a controlled cross-model comparison. No AWS service was added for these routes.
+
+
+## Implemented private server mode
+
+Four product routes (`/overview`, `/workbench`, `/reports`, `/settings`) expose actual workflows and stored evidence. Optional server persistence uses SQLite WAL on a private UID10001 volume, opaque durable Beaker sessions and Argon2 accounts. Origin/CSRF/owner checks, quotas and idempotent saves are enforced by the server. No reconnect upload, private signing-key storage or private API caching occurs. Snapshots stay on the same local volume; they are not an independent device backup. See [server workspaces](SERVER_WORKSPACES.md) for contracts, launch, limits and recovery. AWS diagrams elsewhere remain proposals.

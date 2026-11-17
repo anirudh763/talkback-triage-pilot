@@ -59,7 +59,11 @@
 
   const bar = document.createElement('nav'); bar.className = 'profile-tools'; bar.setAttribute('aria-label', 'Local profile');
   bar.innerHTML = '<a href="#/">Home</a><a id="workspace-profile" href="#/login">Local profile</a><button type="button" id="save-work" class="btn">Save work</button><a href="#/saved">Saved work</a><button type="button" class="btn" data-logout hidden>Log out</button>';
-  document.querySelector('.main-col').insertBefore(bar, document.querySelector('#main'));
+  const localArea = document.createElement('section'); localArea.className = 'local-work-area'; localArea.setAttribute('aria-label','Local work tools');
+  const localWork = document.createElement('details'); localWork.className = 'local-work';
+  const localSummary = document.createElement('summary'); localSummary.textContent = 'Local work';
+  localWork.append(localSummary, bar); localArea.append(localWork);
+  document.querySelector('.main-col').insertBefore(localArea, document.querySelector('#main'));
   const saveDialog = document.createElement('dialog'); saveDialog.className = 'product-save-dialog';
   saveDialog.innerHTML = '<form id="save-work-form"><h2>Save work</h2><label for="save-work-name">Name</label><input id="save-work-name" maxlength="80" required><p>Saved on this browser, without encryption.</p><p id="save-work-error" role="alert"></p><button class="btn primary" type="submit">Save</button><button class="btn" id="save-work-close" type="button">Cancel</button></form>';
   document.body.append(saveDialog);
@@ -69,7 +73,7 @@
   const rememberPause = () => { try { localStorage.setItem('cuereport_preview_paused_v1', String(userPaused)); } catch { /* Current-page choice remains active. */ } };
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const $ = (id) => document.getElementById(id);
-  const rawPath = () => !location.hash && ['/', '/ablation', '/statistics', '/system'].includes(location.pathname) ? 'check' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
+  const rawPath = () => !location.hash && ['/', '/overview', '/workbench', '/reports', '/settings', '/ablation', '/statistics', '/system'].includes(location.pathname) ? 'check' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
   function go(hash) { location.hash = hash; }
   function syncTheme() { const dark = document.documentElement.dataset.theme === 'dark'; productHeader.querySelectorAll('.theme-toggle').forEach((b) => { b.textContent = dark ? 'Light theme' : 'Dark theme'; b.setAttribute('aria-pressed', String(dark)); }); }
   productHeader.querySelector('.theme-toggle').onclick = () => document.getElementById('btn-theme').click();
@@ -142,8 +146,9 @@
   $('hero-input').addEventListener('input',()=>{heroGeneration++;$('hero-output').replaceChildren();$('hero-run').disabled=false;});
   let lastIdentity = null;
   profiles.subscribe((identity) => {heroGeneration++;$('hero-run').disabled=false;
+    const changedIdentity = lastIdentity?.id !== identity?.id;
     const loggedOut = lastIdentity && !identity; lastIdentity = identity;
-    adapter?.reset(); $('hero-input').value=initialHero; $('hero-output').replaceChildren(); if (saveDialog.open) saveDialog.close();
+    if (changedIdentity || !identity) adapter?.reset(); $('hero-input').value=initialHero; $('hero-output').replaceChildren(); if (saveDialog.open) saveDialog.close();
     $('workspace-profile').textContent = identity ? identity.name : 'Local profile'; $('workspace-profile').href = identity ? '#/profile' : '#/login';
     bar.querySelector('[data-logout]').hidden = true;
     $('header-logout').hidden = !identity; $('header-profile').hidden = !identity; $('header-profile').textContent = identity?.name || '';
@@ -159,10 +164,13 @@
     finally {if(generation===heroGeneration)button.disabled=false;}
   };
   $('hero-continue').onclick=()=>{try{adapter.heroContinue($('hero-input').value);}catch(error){$('hero-output').textContent=error.message;}};
+  addEventListener('cuereport-private-reset',event=>{if(event.detail?.server)pendingGuest=null;heroGeneration++;profiles.cancel();$('profile-password').value='';$('profile-error').textContent='';$('hero-output').replaceChildren();$('hero-input').value=initialHero;if(saveDialog.open)saveDialog.close();});
   let routeInitialized = false;
   window.ProductSurface = {
     profiles,
     configure(value) { adapter = value; },
+    reset(options) { adapter?.reset(options); },
+    restore(value, options) { adapter?.restore(value, options); },
     route() {
       const wasInitialized = routeInitialized; routeInitialized = true;
       const legacyReport = !rawPath() && ['report', 'text'].some((key) => new URLSearchParams(location.hash.split('?')[1] || '').has(key));
@@ -176,6 +184,12 @@
       $('pending-guest-note').hidden = !pendingGuest;
       surface.querySelector('[data-product-page=auth] [data-demo]').textContent=pendingGuest?'Return to guest work':'Continue with Demo';
       productHeader.querySelector('.theme-toggle').hidden=!next;
+      if (next) {
+        const safeURL = new URL(location.href); safeURL.searchParams.delete('text');
+        const split = safeURL.hash.indexOf('?');
+        if (split >= 0) { const query = new URLSearchParams(safeURL.hash.slice(split+1)); query.delete('text'); if (query.has('return') && !/^\/app(?:\/(?:check|draft|examples|research(?:\/(?:labels|methods))?))?$/.test(query.get('return'))) query.delete('return'); safeURL.hash = safeURL.hash.slice(0,split) + (query.size ? '?' + query : ''); }
+        if (safeURL.href !== location.href) history.replaceState(null, '', safeURL);
+      }
       if (next === 'auth') { const signup = path === 'signup'; $('profile-heading').textContent = signup ? 'Create a local profile' : 'Log in'; $('profile-submit').textContent = signup ? 'Create profile' : 'Log in'; $('profile-password').autocomplete = signup ? 'new-password' : 'current-password'; $('profile-switch').href = signup ? '#/login' : '#/signup'; $('profile-switch').textContent = signup ? 'Log in to an existing profile' : 'Create a local profile'; }
       if (next === 'saved') renderSaved();
       document.title = `${next === 'home' ? 'CueReport' : next === 'auth' ? $('profile-heading').textContent + ' – CueReport' : 'Saved work – CueReport'}`;

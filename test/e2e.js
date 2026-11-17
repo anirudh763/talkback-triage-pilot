@@ -24,7 +24,9 @@ window.claude={use:async(n)=>{
    const body=(input.split('<<<')[1]||'');const steps=/\\n\\s*(\\d+[.)]|-)\\s/.test(body);const ver=/\\d+\\.\\d+/.test(body);
    const a={task_impact:/crash|can't|cannot|unable|skips/i.test(input)?'blocks_task':'slows_task',evidence:steps?'actionable':'needs_more_evidence',missing:[...(steps?[]:['talkback_steps']),...(ver?[]:['app_version'])],reason:'Mock reason.',ask_reporter:steps?'':'What steps did you take with TalkBack on?'};
    return{text:JSON.stringify(a),truncated:false,modelTierApplied:opts.modelTier}};return f}
- if(n==='user')return{me:async()=>({id:MODE==='guest'?'u_guest':'u_me',name:MODE==='guest'?'Guest':'Anirudh',isOwner:MODE!=='guest'}),profiles:async(ids)=>Object.fromEntries([].concat(ids).map(i=>[i,{id:i,name:''}])),isOwner:async()=>MODE!=='guest'};
+ if(n==='user')return{me:async()=>({id:MODE==='guest'?'u_guest':'u_me',name:MODE==='guest'?'Guest':'Anirudh',isOwner:MODE!=='guest'}),profiles:async(ids)=>Object.fromEntries([].concat(ids).map(i=>[i,{id:i,name:''}])),isOwner:async()=>window.__holdLabel?new Promise(resolve=>window.__releaseLabel=()=>resolve(true)):MODE!=='guest'};
+ if(n==='downloads'&&MODE==='heldready')return new Promise(resolve=>window.__releaseReady=()=>resolve({save:async()=>{window.__downloadCalls=(window.__downloadCalls||0)+1;}}));
+ if(n==='downloads'&&MODE==='rejectdownload')return {save:()=>new Promise((resolve,reject)=>window.__rejectDownload=()=>reject(Error('deliberate rejection')))};
  if(n==='db')return DB;
  return null}};}
 </script>`;
@@ -44,6 +46,22 @@ const server = http.createServer((req, res) => {
   const watch = (page, tag) => { page.on('pageerror', (e) => errors.push(tag + ' pageerror: ' + e.message)); page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(tag + ' console: ' + m.text()); }); };
   const block = async (ctx) => { await ctx.route('https://fonts.googleapis.com/**', r => r.abort()); await ctx.route('https://fonts.gstatic.com/**', r => r.abort()); };
 
+  // Long report consent is checked against the owned fake provider, never an external model.
+  {
+    const ctx = await browser.newContext(); const page = await ctx.newPage(); watch(page, 'long-report-consent');
+    await page.goto(base + 'owner#/check');
+    const body = 'TalkBack report. ' + 'Local log entry. '.repeat(400);
+    await page.fill('#in-body', body); await go(page, '#/draft');
+    page.once('dialog', dialog => dialog.dismiss()); await page.click('#btn-triage');
+    await page.waitForFunction(() => document.querySelector('#triage-status').textContent.includes('cancelled'));
+    if (await page.evaluate(() => window.__calls) !== 0 || await page.inputValue('#in-body') !== body) errors.push('long-report-consent: cancellation sent data or changed original');
+    page.once('dialog', dialog => dialog.accept()); await page.click('#btn-triage');
+    await page.waitForFunction(() => document.querySelector('#triage-status').textContent.startsWith('Done.'));
+    if (await page.evaluate(() => window.__calls) !== 1 || !/first 6,000 characters/.test(await page.textContent('#triage-status')) || await page.inputValue('#in-body') !== body) errors.push('long-report-consent: accepted bounded request result was incorrect');
+    console.log('[long-report-consent] cancel sends zero calls; explicit accept sends one bounded fake-provider request; original preserved');
+    await ctx.close();
+  }
+
   // ---- owner ----
   {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); await block(ctx);
@@ -57,9 +75,12 @@ const server = http.createServer((req, res) => {
     await go(page, '#/research');
     await page.locator('#cond-opts input[value=no_steps]').check(); await page.locator('#cond-opts input[value=no_version]').check();
     console.log('[owner] planned:', await page.textContent('#run-calls'));
+    await page.evaluate(()=>{window.__cueEvents=[];const original=CueAudio.cue;CueAudio.cue=e=>{__cueEvents.push(e);return original(e);};});
     await page.click('#btn-run');
     await page.waitForFunction(() => /Finished/.test(document.querySelector('#run-status').textContent), null, { timeout: 60000 });
     console.log('[owner] run:', await page.textContent('#run-status'));
+    if(await page.evaluate(()=>__cueEvents.filter(e=>e==='evaluation').length)!==1)errors.push('evaluation: expected exactly one terminal cue');
+    if(await page.evaluate(()=>__cueEvents.some(e=>e==='typing'||e==='progress')))errors.push('evaluation: progress emitted sound');
     // The finished bar fills its track, and it moves by transform, never by animating width (DESIGN.md motion rule).
     await page.waitForFunction(() => /^matrix\(1, 0, 0, 1/.test(getComputedStyle(document.querySelector('#run-bar')).transform), null, { timeout: 2000 }).catch(() => {}); // let the 200ms transition end
     const bar = await page.$eval('#run-bar', (i) => { const s = getComputedStyle(i), r = i.getBoundingClientRect(), t = i.parentElement.getBoundingClientRect(); return { tf: s.transform, tp: s.transitionProperty, full: Math.abs(r.width - t.width) < 1 }; });
@@ -233,6 +254,66 @@ const server = http.createServer((req, res) => {
     await ctx.close();
   }
 
+  for(const mode of ['heldready','rejectdownload']){
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'export-'+mode);
+    await page.goto(base+mode+'#/draft');await page.waitForTimeout(200);
+    await page.evaluate(()=>{window.__blobExports=0;const original=URL.createObjectURL;URL.createObjectURL=value=>{__blobExports++;return original.call(URL,value);};});
+    await page.click('#btn-dl-tpl');
+    await page.waitForFunction(name=>typeof window[name]==='function',mode==='heldready'?'__releaseReady':'__rejectDownload');
+    await page.evaluate(()=>{ProductSurface.reset();if(window.__S)__S.set('runs/private-late-capability',{created:'2026-11-16',status:'done',conds:['full'],scope:'all',method:2});});
+    await page.evaluate(name=>window[name](),mode==='heldready'?'__releaseReady':'__rejectDownload');await page.waitForTimeout(150);
+    if(await page.evaluate(()=>window.__downloadCalls||window.__blobExports))errors.push('export-'+mode+': old private draft downloaded after reset');
+    if(mode==='heldready'&&await page.locator('#run-pick option[value=private-late-capability]').count())errors.push('heldready: stale initial capability installed old subscriptions');
+    console.log('[export-'+mode+'] no post-reset provider call, Blob fallback or old capability subscription');await ctx.close();
+  }
+  {
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'stale-label');
+    await page.goto(base+'owner#/research/labels');await page.waitForTimeout(200);await page.evaluate(()=>{window.__holdLabel=true;});
+    await page.fill('#imp-name','Private held rater');await page.fill('#imp-json',JSON.stringify({labels:{'WP-20770':{impact:'blocks_task',evidence:'actionable'}}}));
+    await page.click('#btn-import');await page.waitForFunction(()=>typeof window.__releaseLabel==='function');await page.evaluate(()=>ProductSurface.reset());await page.evaluate(()=>__releaseLabel());await page.waitForTimeout(100);
+    if(await page.evaluate(()=>[...__S.keys()].some(k=>k.startsWith('labels/imported-'))))errors.push('stale-label: label DB write began after reset');
+    if((await page.textContent('#lab-agree')).includes('Private held rater')||(await page.textContent('#lab-status')).includes('Private held rater'))errors.push('stale-label: old rater returned to UI');
+    console.log('[stale-label] held ownership result cannot write or display old import');await ctx.close();
+  }
+  {
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'stale-file');
+    await page.goto(base+'none#/check');await page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){const file=this;return new Promise(resolve=>window.__releaseFile=async()=>resolve(await original.call(file)));};});
+    await page.setInputFiles('#report-file',{name:'private.csv',mimeType:'text/csv',buffer:Buffer.from('title,body\nPrivate staged title,Private staged body')});await page.waitForFunction(()=>typeof window.__releaseFile==='function');await page.evaluate(()=>ProductSurface.reset());await page.evaluate(()=>__releaseFile());await page.waitForTimeout(100);
+    if(await page.locator('#report-row option').count()||await page.locator('#report-map select').count()||(await page.textContent('#report-row-preview')).trim())errors.push('stale-file: old CSV rows/preview/map returned after reset');
+    if(!(await page.isDisabled('#report-load')))errors.push('stale-file: old record load action enabled');console.log('[stale-file] pending file read cannot restore staged private collection');await ctx.close();
+  }
+  {
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'auxiliary-reset');
+    await page.goto(base+'none#/check');await page.fill('#in-title','Private auxiliary draft');await page.fill('#in-body','Private auxiliary body');await go(page,'#/draft');
+    await page.click('#pwa-share');await page.evaluate(()=>{Object.defineProperty(navigator.clipboard,'writeText',{configurable:true,value:()=>new Promise((resolve,reject)=>window.__rejectShare=()=>reject(Error('held copy rejection')))});});await page.click('#share-copy');await page.evaluate(()=>ProductSurface.reset());await page.evaluate(()=>__rejectShare());await page.waitForTimeout(50);
+    if((await page.textContent('#launch-content')).trim()||await page.locator('#share-text').count())errors.push('auxiliary-reset: private share text or callbacks survived');
+    await page.evaluate(()=>PortableWorkspace.review({schema:1,profileName:'Private backup owner',entries:[{name:'Private backup',value:{version:1,title:'Private title',body:'Private body'}}]}));
+    await page.fill('#backup-passphrase','private disposable passphrase');await page.fill('#restore-password','private restore password');await page.evaluate(()=>ProductSurface.reset());
+    if(await page.inputValue('#backup-passphrase')||await page.inputValue('#restore-password')||(await page.textContent('#backup-preview')).trim()||!(await page.isDisabled('#backup-commit')))errors.push('auxiliary-reset: decrypted backup/passphrases survived');
+    await page.evaluate(()=>{document.querySelector('.local-work').open=true;});await page.getByRole('button',{name:'Cloud sync',exact:true}).click();await page.fill('#cloud-email','private@example.test');await page.fill('#cloud-password','private cloud password');await page.evaluate(()=>{document.querySelector('#cloud-preview').textContent='Private remote preview';ProductSurface.reset();});
+    if(await page.inputValue('#cloud-email')||await page.inputValue('#cloud-password')||(await page.textContent('#cloud-preview')).trim())errors.push('auxiliary-reset: cloud credentials/preview survived');
+    console.log('[auxiliary-reset] share callbacks, backup plaintext/passphrases and cloud UI clear; original files retained');await ctx.close();
+  }
+  for(const route of ['ablation','research/labels']){
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'copy-reset-'+route);
+    await page.goto(base+'none#/check');await page.fill('#in-body','Private copy body with TalkBack steps.\n1. Open report');await go(page,'#/'+route);
+    await page.evaluate(()=>{Object.defineProperty(navigator.clipboard,'writeText',{configurable:true,value:()=>new Promise((resolve,reject)=>window.__rejectCopy=()=>reject(Error('held rejection')))});});
+    await page.click(route==='ablation'?'#ablation-copy':'#btn-copy-labels');await page.evaluate(()=>ProductSurface.reset());await page.evaluate(()=>__rejectCopy());await page.waitForTimeout(100);
+    if(await page.locator('.copybox').count()||(await page.textContent('#ablation-diff')).trim())errors.push('copy-reset-'+route+': private copy fallback or diff survived');console.log('[copy-reset-'+route+'] late rejection cannot recreate copybox or private removed lines');await ctx.close();
+  }
+  // A provider that ignores cancellation must not repopulate private runs after logout.
+  {
+    const ctx=await browser.newContext(),page=await ctx.newPage();watch(page,'stale-batch');
+    await page.goto(base+'owner#/research');await page.waitForTimeout(200);
+    await page.evaluate(()=>{window.__delay=450;});
+    await page.click('#btn-run');await page.waitForFunction(()=>window.__calls>0);
+    const run=await page.inputValue('#run-pick');
+    await page.evaluate(()=>ProductSurface.profiles.logout());await page.waitForTimeout(700);
+    if(await page.locator('#run-pick option[value="'+run+'"]').count())errors.push('stale-batch: old run returned after logout');
+    if((await page.textContent('#run-status')).trim())errors.push('stale-batch: old terminal status returned after logout');
+    if(await page.evaluate(()=>WorkspaceStore.state.current!==null))errors.push('stale-batch: private save evidence survived logout');
+    console.log('[stale-batch] ignored-abort reply cannot restore private run/status/save state');await ctx.close();
+  }
   await browser.close(); server.close();
   console.log('\nERRORS:', errors.length ? errors.join('\n') : 'none');
   process.exitCode = errors.length ? 1 : 0;

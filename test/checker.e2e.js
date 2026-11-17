@@ -98,13 +98,14 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok(await page.evaluate(() => location.hash === "#/check"), "editing drops the sample from the URL");
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
-    const link = await page.evaluate(() => navigator.clipboard.readText());
-    ok(/#\/check\?text=[A-Za-z0-9_-]+$/.test(link), "Copy link puts the text in the URL fragment");
+    ok(!page.url().includes("text=") && /Private or edited report/.test(await page.textContent("#link-status")), "private Copy link keeps report contents out of the URL");
+    const code = await page.evaluate(() => window.TBC.encodeState(document.querySelector("#in-title").value,document.querySelector("#in-body").value));
+    const link = base + "#check?text=" + code;
     const p3 = await ctx.newPage();
     p3.on("pageerror", (e) => errors.push("pageerror: " + e.message));
     await p3.goto(link); await p3.waitForSelector("#checklist li");
     await p3.waitForLoadState("networkidle"); await p3.waitForTimeout(200);
-    ok((await p3.inputValue("#in-title")) === evil && (await p3.evaluate(() => window.__xss)) === undefined, "a ?text= link restores the pasted text, still inert");
+    ok((await p3.inputValue("#in-title")) === evil && (await p3.evaluate(() => window.__xss)) === undefined, "legacy text link imports inert pasted text");
     const bad = await ctx.newPage();
     await bad.goto(base + "#check?text=%3Cscript%3E"); await bad.waitForSelector("#checklist li");
     ok(/couldn't be read/.test(await bad.textContent("#ex-source")), "a broken link says so instead of failing");
@@ -113,7 +114,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     ok((await page.textContent("#chk-score")).trim() === "No report.", "Clear empties the report and shows its empty state");
     ok(await page.evaluate(() => document.activeElement.id === "in-body"), "Clear moves focus to the report box");
     ok((await page.locator("#ai-card").isHidden()), "AI study tool is hidden when no AI is available");
-    ok(/include the full report text/.test(await page.textContent("#link-hint")), "the page warns that a link carries the report text");
+    ok(/private drafts locally/.test(await page.textContent("#link-hint")), "the page explains that private drafts use local export");
     await goView(page, "pilot");
     ok((await page.locator("#run-card").isHidden()) && (await page.locator("#run-off").isVisible()), "the pilot's run controls are hidden outside the Claude app, with a note instead");
     await ctx.close();
@@ -240,7 +241,7 @@ const ok = (cond, msg) => { console.log((cond ? "  ok   " : "  FAIL ") + msg); i
     await page.fill("#in-body", "x".repeat(13000));
     await page.click("#btn-link");
     await page.waitForFunction(() => document.querySelector("#link-status").textContent);
-    ok(/too long to put in a link/.test(await page.textContent("#link-status")), "too long for a link: says so and suggests copying the draft");
+    ok(/Private or edited report/.test(await page.textContent("#link-status")), "too long for a link: says so and suggests copying the draft");
     await page.goto(base + "#check?text=AAAA"); await page.waitForTimeout(150);
     ok(/couldn't be read/.test(await page.textContent("#ex-source")), "a link with an unreadable report says so");
     await ctx.close();

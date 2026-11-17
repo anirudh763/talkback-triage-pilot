@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-p50hPdlHKuJPXqjE+T37g1UBkXhxkKxrpHxSWgRsWbA=' 'sha256-r7jXqgM4EHDByO5KoqCBxVapWh+bCWjMQU/1OOg28jA=' 'sha256-gplLvpjVVeml5uUKOkaaAv/AvW/8bnx9cL+0E6OPiRk=' 'sha256-vR2mzu1CsWYMdLDt1DwRJYB8ymcwKU40NXkiSQrQe90=' 'sha256-lI9Oo76l7ZTpH6uL04wL6bFFXelbcRBfF9i0oztL0QE='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-p50hPdlHKuJPXqjE+T37g1UBkXhxkKxrpHxSWgRsWbA=' 'sha256-r7jXqgM4EHDByO5KoqCBxVapWh+bCWjMQU/1OOg28jA=' 'sha256-TBi8HW+Ap2ehNYrUTw1poH95+sfK/U2YUtXCaNchs+k=' 'sha256-vXohyKXDB5rVFiAZntUQ2+WA/fKnpjrem17tUbvn5xQ=' 'sha256-lI9Oo76l7ZTpH6uL04wL6bFFXelbcRBfF9i0oztL0QE='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Paste an Android accessibility bug report and see which details a developer needs are missing: TalkBack steps, app version, device, expected vs. actual. Runs offline in the browser.">
 <meta name="application-name" content="CueReport">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -466,10 +466,56 @@ body{min-height:100vh;min-height:100dvh;padding-bottom:env(safe-area-inset-botto
 .comparison-grid>section{align-content:start}
 
 html[data-direct-route]:not([data-direct-route=""]) .product-header[data-workspace=true]{display:none}
-html[data-direct-route=ablation] .profile-tools,html[data-direct-route=statistics] .profile-tools,html[data-direct-route=system] .profile-tools{display:none}
+
 
 html[data-direct-route=""] .direct-route-link{display:none}
 html[data-direct-route]:not([data-direct-route=""]) #rail a[data-nav=research]{display:none}
+
+#demo-scenario{flex:1 1 220px;min-width:0}#workflow-guide{display:flex;gap:12px;align-items:center;flex-wrap:wrap}#workflow-guide p{flex:1;min-width:160px;margin:0}
+#ablation .comparison-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.comparison-report{white-space:pre-wrap;overflow-wrap:anywhere;max-height:500px;overflow:auto;margin:0;font:inherit;line-height:1.6;border-top:1px solid var(--border);padding-top:12px}#ablation-findings{padding-left:20px}#ablation .row input[type=checkbox]{width:20px;min-height:20px}#ablation label.row{min-height:44px;cursor:pointer}#ablation-original-score,#ablation-modified-score{font-variant-numeric:tabular-nums}
+@media(max-width:767px){#ablation .comparison-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Keep four task pages primary; local work stays available without a full toolbar. */
+html[data-direct-route]:not([data-direct-route=""]) #rail .report-extra{display:none}
+html:not([data-direct-route]) .direct-report-tools,html[data-direct-route=""] .direct-report-tools{display:none}
+.direct-report-tools{position:relative}.direct-report-tools>summary,.local-work>summary{min-height:44px;display:flex;align-items:center;padding:8px 12px;color:var(--fg-muted);cursor:pointer}
+#rail .direct-report-tools>ul{position:absolute;z-index:20;top:100%;right:0;display:grid;min-width:220px;max-width:calc(100vw - 32px);padding:8px;background:var(--bg);border:1px solid var(--border-strong)}
+.local-work-area{padding:0 16px;border-bottom:1px solid var(--border)}
+.local-work .profile-tools{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0;margin:0;border:0}
+@media(max-width:999px){#rail .direct-report-tools>ul{position:static;min-width:0;width:100%}}
+
+/* Canonical navigation reuses the report's typography and the existing mobile modal. */
+.canonical-nav{display:none!important}.canonical-shell .legacy-nav,.canonical-shell .local-work-area{display:none}
+.canonical-shell #settings-local-tools .local-work-area{display:block;padding:0;border:0}
+.canonical-shell .canonical-nav{display:block!important}.canonical-shell .canonical-nav ul{display:grid;gap:4px}
+.canonical-shell .canonical-nav a{white-space:normal;border:0;border-radius:4px;color:var(--fg)}
+.canonical-shell .canonical-nav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+.context-tabs{display:flex;flex-wrap:wrap;gap:8px}.context-tabs a{display:flex;align-items:center;min-height:44px;padding:8px 12px;border-bottom:3px solid transparent;color:var(--fg)}
+.context-tabs a[aria-current=page]{border-color:var(--accent);background:var(--accent-subtle);font-weight:700;text-decoration:none}
+.canonical-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0}.canonical-tools label{font-weight:600}.canonical-tools p{flex-basis:100%}
+.canonical-tools select{min-width:0;max-width:100%;min-height:44px;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);padding:8px}
+#settings-local-tools .profile-tools{margin:0;gap:8px}.canonical-shell #main{max-width:1440px}#audio-volume{width:min(100%,320px);min-height:44px}
+@media(min-width:1000px){.canonical-shell .shell{display:grid;grid-template-columns:220px minmax(0,1fr)}.canonical-shell .rail{height:100dvh;position:sticky;top:0;padding:16px 12px;display:flex;flex-direction:column;align-items:stretch;gap:16px;border-right:1px solid var(--border);border-bottom:0}.canonical-shell .rail .rail-foot{margin: auto 0 0}.canonical-shell .rail .wordmark{padding:0 12px}.canonical-shell #pwa-status{left:232px}}
+@media(max-width:699px){.context-tabs a{flex:1 1 100px;justify-content:center}.canonical-tools>*{max-width:100%}.canonical-tools select{width:100%}}
+
+.canonical-tools server-workspace{flex-basis:100%;margin:4px 0}
+
+#sample-scenario>summary,.report-options>summary,#save-options>summary{min-height:44px;cursor:pointer;padding:8px 0;font-weight:600}
+.report-options{margin-block:8px}#secondary-report-controls{display:grid;gap:8px}#save-options label{display:block;margin-block:8px}
+
+.canonical-shell #check .focal{display:none}#sample-scenario:not([open]){padding:0 12px}.report-options>button{margin:8px 8px 8px 0}
+
+server-workspace{display:block;margin-block:16px;padding:16px;border:1px solid var(--border,var(--line,#b6c1ca));border-radius:4px;background:var(--bg,var(--paper,#fff));color:var(--fg,var(--ink,#25364b))}
+server-workspace h2,server-workspace h3{margin-top:0}server-workspace p{overflow-wrap:anywhere}server-workspace .server-workspace-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+server-workspace button,server-workspace select,server-workspace input,server-workspace summary{min-height:44px;font:inherit;max-width:100%;color:inherit}
+server-workspace input,server-workspace select{background:var(--bg,#fff);padding:8px;border:1px solid var(--border-strong,var(--line,#b6c1ca));border-radius:4px;min-width:0}
+server-workspace form,server-workspace label{display:grid;gap:8px}server-workspace form{max-width:520px;margin-block:12px}server-workspace button,server-workspace summary{cursor:pointer}
+server-workspace :focus-visible{outline:3px solid var(--focus,var(--accent,#2355ba));outline-offset:3px}server-workspace [hidden]{display:none!important}
+server-workspace .server-run,server-workspace .server-snapshot{padding-block:16px;border-top:1px solid var(--border,var(--line,#b6c1ca))}server-workspace pre{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+server-workspace summary{display:flex;align-items:center}server-workspace .server-save-status{min-height:1.5em}server-workspace .server-workspace-actions select{flex:0 1 320px}
+server-workspace[view="workbench"]{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:8px 12px;margin-block:8px}
+server-workspace[view="workbench"] .server-save-status{flex:1 1 180px;order:1;margin:0}server-workspace[view="workbench"] .server-runs{display:none}
+@media(max-width:600px){server-workspace{padding:12px}server-workspace input,server-workspace select{font-size:16px}server-workspace .server-workspace-actions select{flex-basis:100%;width:100%}}
 </style>
 <script>
 'use strict';
@@ -508,25 +554,26 @@ try { if (localStorage.getItem("cuereport_theme_v1") === "dark") document.docume
 
       <button class="btn menu-close" id="btn-menu-close" type="button">Close menu</button>
     </div>
-    <nav aria-label="Main">
+    <nav aria-label="Main" class="canonical-nav"><ul><li><a href="/overview" data-canonical="overview">Overview</a></li><li><a href="/workbench" data-canonical="workbench">Workbench</a></li><li><a href="/reports" data-canonical="reports">Reports</a></li><li><a href="/settings" data-canonical="settings">Settings</a></li></ul></nav><div class="legacy-nav"><nav aria-label="Main">
       <div>
         <p class="group" id="g-work">Work</p>
         <ul aria-labelledby="g-work">
           <li><a href="#/check" data-nav="check">Report</a></li>
-          <li><a href="#/draft" data-nav="draft">Draft</a></li>
-          <li><a href="#/examples" data-nav="examples">Examples</a></li>
+          <li class="report-extra"><a href="#/draft" data-nav="draft">Draft</a></li>
+          <li class="report-extra"><a href="#/examples" data-nav="examples">Examples</a></li>
         </ul>
       </div>
       <div>
         <p class="group" id="g-learn">Learn</p>
         <ul aria-labelledby="g-learn">
-          <li><a href="#/research" data-nav="research">Research</a></li>
+          <li class="report-extra"><a href="#/research" data-nav="research">Research</a></li>
           <li><a class="direct-route-link" href="ablation" data-nav="ablation">Ablation</a></li>
           <li><a class="direct-route-link" href="statistics" data-nav="statistics">Statistics</a></li>
           <li><a class="direct-route-link" href="system" data-nav="system">System</a></li>
         </ul>
       </div>
-    </nav>
+      <details class="direct-report-tools" id="report-tools"><summary>Report tools</summary><ul><li><a href="#/draft">Draft</a></li><li><a href="#/examples">Examples</a></li><li><a href="#/research/methods">Research methods</a></li></ul></details>
+    </nav></div>
     <div class="rail-foot">
       <button class="btn" id="btn-theme" type="button" aria-pressed="false">Dark theme</button>
 
@@ -547,6 +594,11 @@ try { if (localStorage.getItem("cuereport_theme_v1") === "dark") document.docume
 <main id="main">
 <noscript><div class="noscript"><p><strong>This page needs JavaScript.</strong> The report checker and the study results run as scripts in your browser; nothing is sent anywhere. Turn JavaScript on and reload, or read how the checker works and the study's results in the <a href="https://github.com/anirudh763/talkback-triage-pilot#readme">README on GitHub</a>.</p></div></noscript>
 
+<section class="screen" id="overview" aria-labelledby="h-overview" hidden><header><h1 id="h-overview" tabindex="-1">Overview</h1></header><p>Prepare accessibility reports and compare the evidence recognized by the offline checker.</p><server-workspace view="overview"></server-workspace><section class="box pad stack"><h2>Check a report</h2><p>Paste a report, review missing details, then save or export the result.</p><div class="row"><a class="btn primary" href="/workbench">Open Workbench</a><a class="btn" href="/workbench?tool=ablation&report=WP-20770">Compare public sample</a><a href="/reports">Review saved runs</a></div></section></section>
+<section class="screen" id="saved-reports" aria-labelledby="h-saved-reports" hidden><header><h1 id="h-saved-reports" tabindex="-1">Reports</h1></header><server-workspace view="reports"></server-workspace><section id="restored-evaluation" class="box pad stack" hidden></section></section>
+<section class="screen" id="settings" aria-labelledby="h-settings" hidden><header><h1 id="h-settings" tabindex="-1">Settings</h1></header><server-workspace view="settings"></server-workspace><section class="box pad stack"><h2>Sound cues</h2><p>Optional short tones for completed actions. Off until enabled in this visit; text updates always remain active.</p><button class="btn" id="audio-toggle" type="button" aria-pressed="false">Enable sound cues</button><label for="audio-volume">Sound cue volume</label><input id="audio-volume" type="range" min="0" max="1" step="0.05" value="0.25"><p id="audio-status" role="status">Sound cues off. Shortcut: Alt+Shift+M outside text fields.</p></section><section class="box pad stack"><h2>Browser drafts</h2><button class="btn" id="import-browser-draft" type="button">Import previous browser draft</button><p id="browser-import-status" role="status">Import is explicit. Existing browser and encrypted copies are retained.</p><div id="settings-local-tools"></div></section><details class="box pad"><summary>Service diagnostics</summary><a href="/system">Open service diagnostics</a></details></section>
+<div id="canonical-tools" class="canonical-tools" hidden><details id="save-options"><summary>Evidence to save</summary><label for="cue-record-kind">Evidence type</label><select id="cue-record-kind"><option value="report">Current report and checks</option><option value="ablation">Current comparison</option><option value="evaluation">Selected evaluation summary</option></select></details><server-workspace view="workbench"></server-workspace><p id="cue-unsynced" role="status"></p></div>
+
 <!-- ============ CHECK ============ -->
 <section class="screen" id="check" aria-labelledby="h-check" hidden>
   <header>
@@ -561,6 +613,14 @@ try { if (localStorage.getItem("cuereport_theme_v1") === "dark") document.docume
 
   </header>
 
+  <p class="small muted" id="checker-scope">Check accessibility reports for missing reproduction details. Runs offline; no AI verdict.</p>
+  <details class="box pad stack" id="sample-scenario" aria-labelledby="demo-h">
+    <summary id="demo-h">Sample scenario</summary>
+    <label for="demo-scenario">Public WordPress #20770 report</label>
+    <div class="row"><select id="demo-scenario"><option value="normal">Original reproduction steps</option><option value="missing">Steps removed</option></select><button class="btn primary" id="run-demo" type="button">Run Interactive Demo</button><a class="btn" href="#/ablation" id="compare-current">Compare current report</a></div>
+    <p id="demo-status" class="small muted" role="status">Verified public issue excerpt; compare with and without its steps.</p>
+    <div id="workflow-guide"><p class="small">Pick a sample · Inspect or modify the report · Review checks and compare</p><button class="btn" type="button" id="dismiss-guide">Dismiss guide</button></div>
+  </details>
   <div class="check-grid">
     <div class="document-column">
     <section class="box document-sheet" aria-labelledby="paste-h">
@@ -572,7 +632,7 @@ try { if (localStorage.getItem("cuereport_theme_v1") === "dark") document.docume
           <button class="btn" id="btn-link" type="button">Copy link</button>
           <button class="btn" id="btn-reset-draft" type="button">Reset draft</button>
         </div>
-        <label for="report-language">Evidence language</label><select id="report-language"><option value="English">English-pattern recognition</option><option value="Other">Other / manual review</option></select><label for="platform-template">Report template</label><div class="row"><select id="platform-template"><option value="android">Android TalkBack</option><option value="ios">iOS VoiceOver</option><option value="web">Web NVDA/JAWS</option></select><button type="button" class="btn" id="insert-template">Insert template</button></div>
+        <div id="secondary-report-controls"><label for="report-language">Evidence language</label><select id="report-language"><option value="English">English-pattern recognition</option><option value="Other">Other / manual review</option></select><label for="platform-template">Report template</label><div class="row"><select id="platform-template"><option value="android">Android TalkBack</option><option value="ios">iOS VoiceOver</option><option value="web">Web NVDA/JAWS</option></select><button type="button" class="btn" id="insert-template">Insert template</button></div></div>
         <p class="src" id="ex-source" aria-live="polite"></p>
         <label class="field" for="in-title">Title
           <input type="text" id="in-title" autocomplete="off" spellcheck="false">
@@ -581,6 +641,7 @@ try { if (localStorage.getItem("cuereport_theme_v1") === "dark") document.docume
           <textarea id="in-body" spellcheck="false" aria-describedby="language-coverage"></textarea>
         </label>
 
+        <p class="small muted" id="input-size" role="status"></p>
         <p class="small muted" id="language-coverage">English-pattern checks; other languages may not be recognized.</p>
         <details class="github-import">
           <summary>Import a public GitHub issue</summary>
@@ -600,7 +661,7 @@ steps:
   - validate report fields
   - report missing evidence
   - require human review</pre><p>Repository write access and a reviewed integration would be required. All current checks are free.</p></details>
-        <p class="small muted" id="link-hint">Shared links include the full report text.</p>
+        <p class="small muted" id="link-hint">Links share unchanged public samples only. Copy or download private drafts locally.</p>
         <p class="small muted" id="link-status" role="status"></p>
         <details class="more">
           <summary>Dataset</summary>
@@ -610,6 +671,7 @@ steps:
         </details>
         <details class="more"><summary>Privacy</summary><p>Drafts are stored locally as plain text. Imports fetch public GitHub issues into this browser. Keep passwords and tokens out of reports.</p></details>
         <p class="small muted" id="draft-save-status" role="status" aria-live="polite"></p>
+        <button class="btn" id="recover-legacy-draft" type="button" hidden>Recover previous device draft</button>
       </div>
     </section>
 
@@ -787,10 +849,18 @@ steps:
 
 <section class="screen" id="ablation" aria-labelledby="h-ablation" hidden>
   <header><h1 id="h-ablation" tabindex="-1">Step-removal comparison</h1></header>
-  <div class="box pad stack"><label for="ablation-report">Report</label><select id="ablation-report"></select><p id="ablation-source" class="small muted"></p></div>
-  <div class="comparison-grid"><section class="box pad stack" aria-labelledby="ablation-diff-h"><h2 id="ablation-diff-h">Removed TalkBack steps</h2><div id="ablation-diff"></div><p id="ablation-check" role="status"></p></section>
-  <section class="box pad stack" aria-labelledby="ablation-verdict-h"><h2 id="ablation-verdict-h">Archived model answers</h2><div id="ablation-verdicts" class="stack"></div></section></div>
-  <details><summary>Limitations</summary><p>Deterministic removal and pattern checks do not prove the remaining text has identical meaning. Archived model answers apply only to the original dataset report and recorded run. Exact model version and prompt revision were not recorded by the original runtime. No new model call is made.</p><a class="btn link" href="#/research/methods">Methods</a></details>
+  <div class="box pad stack"><label for="ablation-report">Report</label><select id="ablation-report"></select><p id="ablation-source" class="small muted"></p>
+    <label class="row"><input type="checkbox" id="ablation-remove" checked> Remove reproduction / TalkBack steps</label>
+    <div class="row"><button class="btn primary" type="button" id="ablation-run">Run comparison</button><button class="btn" type="button" id="ablation-reset">Restore steps</button><a class="btn" href="#/check" id="ablation-edit">Edit report</a></div>
+    <p id="ablation-status" role="status"></p>
+  </div>
+  <div class="comparison-grid">
+    <section class="box pad stack" aria-labelledby="ablation-original-h"><h2 id="ablation-original-h">Original report</h2><p id="ablation-original-score"></p><pre id="ablation-original" class="comparison-report" tabindex="0" role="region" aria-label="Original report text"></pre></section>
+    <section class="box pad stack" aria-labelledby="ablation-modified-h"><h2 id="ablation-modified-h">Modified report</h2><button class="btn" type="button" id="ablation-copy">Copy modified report</button><p id="ablation-modified-score"></p><pre id="ablation-modified" class="comparison-report" tabindex="0" role="region" aria-label="Modified report text"></pre></section>
+  </div>
+  <section class="box pad stack" aria-labelledby="ablation-findings-h"><h2 id="ablation-findings-h">Offline completeness findings</h2><p id="ablation-summary" role="status"></p><ul id="ablation-findings" class="stack"></ul><p id="ablation-check"></p></section>
+  <details class="box pad"><summary>Removed lines and methods</summary><div id="ablation-diff"></div><p>The deterministic checker runs separately on both reports. Removal uses the study’s existing TalkBack-step rules, retaining recognized environment and observed-result lines. Unrecognized step formats can remain; inspect the text. These findings do not establish reproducibility, actionability or AI confidence.</p></details>
+  <details class="box pad"><summary>Archived model answers</summary><p>No live provider is connected to this comparison. Archived answers apply only to the exact public report and condition shown.</p><div id="ablation-verdicts" class="stack"></div></details>
 </section>
 <section class="screen" id="system" aria-labelledby="h-system" hidden>
   <header class="check-heading"><h1 id="h-system" tabindex="-1">System</h1><button class="btn" id="system-refresh" type="button">Refresh</button></header>
@@ -896,7 +966,267 @@ steps:
 // scoped to this folder. Not registered inside the Claude app (the page then runs in a frame) or from file://.
 
 </script>
-<script>/* TalkBack Triage Pilot — core logic (no DOM). Runs in the page and in Node for tests. */
+<script>/* Same-origin persistence UI. Copied into each app; browser-only hosts make no API calls. */
+(() => {
+  if (typeof window === 'undefined') return;
+  const enabled = !!document.querySelector('meta[name="server-persistence"][content="enabled"]');
+  const state = {enabled, session:null, workspace:null, workspaces:[], runs:[], snapshots:[], current:null, status:enabled?'Connecting…':'Server storage is unavailable on this host.', dirty:false, busy:false};
+  const listeners = new Set();
+  let bridge = {}, starting = null, currentKey = '', saving = false, generation = 0;
+  const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('server-workspace:'+location.origin) : null;
+  const emit = () => listeners.forEach(fn=>fn(state));
+  const note = text => {state.status=text;emit();};
+  function installSession(session){
+    const previous=state.session;
+    const sameOwner=previous?.principal_id&&previous.principal_id===session.principal_id;
+    const migrated=previous?.role==='guest'&&previous.principal_id&&session.migrated_from===previous.principal_id;
+    if(previous&&previous.csrf_token!==session.csrf_token&&!sameOwner&&!migrated){state.current=null;state.runs=[];state.snapshots=[];state.workspaces=[];state.dirty=false;currentKey='';bridge.onLogout?.();}
+    state.session=session;state.workspace=session.workspace;
+  }
+  async function api(path, options={}) {
+    if (!enabled) throw Error('Server storage is unavailable on this host. Keep a local export.');
+    const headers = {...options.headers};
+    if (options.body !== undefined && !(options.body instanceof Blob)) {headers['Content-Type']='application/json';options.body=JSON.stringify(options.body);}
+    if (options.method && options.method!=='GET') headers['X-CSRF-Token']=state.session?.csrf_token||'';
+    let response;
+    try {response=await fetch('/api/'+path,{signal:AbortSignal.timeout(30000),...options,headers,credentials:'same-origin',cache:'no-store'});}
+    catch {throw Error('Server unavailable. Your current input is retained; retry when connected.');}
+    let value;try{value=await response.json();}catch{throw Error('The server returned an unreadable response. Retry without clearing your work.');}
+    if (!response.ok) {const error=Error(value.error?.message||value.error||'Request failed; retry.');error.status=response.status;throw error;}
+    return value;
+  }
+  async function refresh() {
+    if (!state.session || !state.workspace) return;
+    const ticket=generation,session=state.session,workspaceId=state.workspace.id;
+    const [workspaces,runs,snapshots]=await Promise.all([
+      api('workspaces?limit=50'),api('runs?workspace_id='+encodeURIComponent(workspaceId)+'&limit=50'),api('sync?workspace_id='+encodeURIComponent(workspaceId)+'&limit=50')
+    ]);
+    if(ticket!==generation||session!==state.session||workspaceId!==state.workspace?.id)return;
+    state.workspaces=workspaces.items;state.runs=runs.items;state.snapshots=snapshots.items;
+    state.workspace=workspaces.items.find(w=>w.id===state.workspace.id)||state.workspace;
+    emit();
+  }
+  async function init(create=true) {
+    if (!enabled) {emit();return;}
+    if (starting) return starting;
+    const ticket=++generation;
+    starting=(async()=>{
+      try {
+        const session=await api(create?'session/guest':'session',create?{method:'POST',body:{}}:{});
+        if(ticket!==generation)return;
+        installSession(session);
+        let remembered;try{remembered=sessionStorage.getItem('server-workspace-id');}catch{/* Optional per-tab selection; the server session remains authoritative. */}
+        if(remembered){try{const workspace=await api('workspaces/'+encodeURIComponent(remembered));if(ticket!==generation)return;state.workspace=workspace;}catch(error){if(ticket!==generation)return;if(error.status!==404)throw error;try{sessionStorage.removeItem('server-workspace-id');}catch{}}}
+        state.status='Connected · '+(session.role==='account'?'account':'guest workspace');await refresh();
+      }catch(error){if(ticket===generation){state.status=error.message;emit();}}
+    })().finally(()=>{starting=null;});
+    return starting;
+  }
+  async function save() {
+    if (saving) return;
+    const current=bridge.readCurrent?.()||state.current;
+    const artifacts=bridge.readArtifacts?.()||[];
+    if (!current) {note('Run a check or enter a record in Workbench before saving.');return;}
+    if (!state.session) {const expected=generation+(starting?0:1);await init();if(generation!==expected)return;}
+    if (!state.workspace) return;
+    saving=state.busy=true;state.dirty=true;note('Saving…');
+    const ownerTicket=state.session.csrf_token;
+    const ticket=generation;
+    const workspaceId=state.workspace.id;
+    const isCurrent=()=>ticket===generation&&ownerTicket===state.session?.csrf_token&&workspaceId===state.workspace?.id;
+    const saveKey=JSON.stringify(current);
+    try {
+      const text=JSON.stringify({...current,workspace_id:workspaceId});
+      if(new TextEncoder().encode(text).length>65536)throw Error('The record exceeds 64 KiB. Export the source locally and save a smaller summary.');
+      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+      if(!isCurrent())return;
+      const record=JSON.parse(text);
+      const artifact_ids=[];
+      for(const [index,item]of artifacts.entries()){
+        if(item.blob.size>32*1024*1024)throw Error('The source exceeds the 32 MiB server limit. Keep a local source export.');
+        const artifact=await api('artifacts?workspace_id='+encodeURIComponent(workspaceId)+'&name='+encodeURIComponent(item.name),{method:'POST',body:item.blob,headers:{'Content-Type':'application/octet-stream','Idempotency-Key':digest+'-artifact-'+index}});if(!isCurrent())return;artifact_ids.push(artifact.id);
+      }
+      const run=await api('runs',{method:'POST',body:{...record,artifact_ids},headers:{'Idempotency-Key':digest}});
+      if(!isCurrent())return;
+      const latest=bridge.readCurrent?.()||state.current;
+      state.dirty=!!latest&&JSON.stringify(latest)!==saveKey;state.status=state.dirty?'Saved previous run. New changes are unsynced.':'Saved · '+run.title;await refresh();channel?.postMessage('records');
+      return run;
+    }catch(error){if(isCurrent())state.status=(error.status===409?'Conflict. ':'Unsynced changes. ')+error.message;}
+    finally{saving=false;if(ticket===generation){state.busy=false;emit();}}
+  }
+  async function select(id) {
+    if(state.dirty&&!confirm('Switch workspace while keeping your current unsaved input in this tab?'))return;
+    const ticket=generation;const session=await api('session/workspace',{method:'POST',body:{workspace_id:id}});if(ticket!==generation)return;
+    installSession(session);try{sessionStorage.setItem('server-workspace-id',id);}catch{}await refresh();note('Workspace selected. Current input remains in this tab.');
+  }
+  async function snapshot() {
+    if(!state.workspace)return;
+    const ticket=generation,workspaceId=state.workspace.id;
+    state.busy=true;note('Creating snapshot…');
+    try{await refresh();if(ticket!==generation||workspaceId!==state.workspace?.id)return;const snapshot=await api('sync',{method:'POST',body:{workspace_id:workspaceId,expected_revision:state.workspace.revision}});if(ticket!==generation)return;await refresh();note(snapshot.status==='completed'?'Snapshot created.':'Snapshot needs attention.');}
+    catch(error){if(ticket===generation)note((error.status===409?'Conflict. ':'Retry required. ')+error.message);}
+    finally{if(ticket===generation){state.busy=false;emit();}}
+  }
+  async function restore(snapshot) {
+    if(!confirm('Restore this snapshot into a new workspace? Current workspaces and input will be kept.'))return;
+    const ticket=generation;state.busy=true;note('Restoring snapshot…');
+    try{const result=await api('sync/'+snapshot.id+'/restore',{method:'POST',body:{sha256:snapshot.sha256,schema_version:1}});if(ticket!==generation)return;await select(result.workspace.id);if(ticket===generation)note('Snapshot restored into a new workspace.');}
+    catch(error){if(ticket===generation)note('Restore failed. '+error.message);}
+    finally{if(ticket===generation){state.busy=false;emit();}}
+  }
+  async function authenticate(mode,username,password) {
+    if(state.busy)return false;
+    const ticket=++generation;
+    state.busy=true;note(mode==='signup'?'Creating account…':'Signing in…');
+    try{const session=await api('session/'+mode,{method:'POST',body:{username,password}});if(ticket!==generation)return false;installSession(session);try{sessionStorage.removeItem('server-workspace-id');}catch{}await refresh();note('Signed in. Authorized guest work was retained.');channel?.postMessage('session');return true;}
+    catch(error){if(ticket===generation)note(error.message);return false;}
+    finally{if(ticket===generation){state.busy=false;emit();}}
+  }
+  function clearSession(message){generation++;state.session=state.workspace=state.current=null;state.runs=[];state.snapshots=[];state.workspaces=[];state.dirty=state.busy=false;currentKey='';try{sessionStorage.removeItem('server-workspace-id');}catch{}bridge.onLogout?.();note(message);}
+  async function logout() {
+    if(state.dirty&&!confirm('Log out? Download or save your unsynced work first.'))return;
+    const ticket=++generation;
+    try{await api('session/logout',{method:'POST',body:{}});if(ticket!==generation)return;clearSession('Logged out. This session is revoked.');channel?.postMessage('logout');}
+    catch(error){note(error.message);}
+  }
+  async function exportRun(run,format) {
+    const ticket=generation;try{const record=await api('exports',{method:'POST',body:{run_id:run.id,format}});if(ticket!==generation)return;const blob=new Blob([record.content],{type:format==='json'?'application/json':format==='csv'?'text/csv':'text/markdown'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='run-'+run.id+'.'+(format==='markdown'?'md':format);link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);note('Export saved from persisted run.');}
+    catch(error){if(ticket===generation)note('Export failed. '+error.message);}
+  }
+  async function openRun(run) {
+    if(state.dirty&&!confirm('Replace your unsaved input with this saved run? Save or download changes first.'))return;
+    const ticket=generation,workspaceId=state.workspace?.id;
+    const isCurrent=()=>ticket===generation&&workspaceId===state.workspace?.id;
+    try {
+      const saved=await api('runs/'+encodeURIComponent(run.id));
+      if(!isCurrent())return;
+      const files=[];
+      for(const id of saved.artifact_ids||[]){
+        const response=await fetch('/api/artifacts/'+encodeURIComponent(id),{signal:AbortSignal.timeout(30000),credentials:'same-origin',cache:'no-store'});
+        if(!isCurrent())return;
+        if(!response.ok)throw Error('The saved source is unavailable. Keep the stored report and retry.');
+        const blob=await response.blob();
+        if(!isCurrent())return;
+        files.push(blob);
+      }
+      if(!isCurrent())return;
+      await bridge.restore?.(saved,files,isCurrent);
+      if(isCurrent())note('Saved input opened. Re-run the domain check before relying on a new result.');
+    }catch(error){if(isCurrent())note('Open failed. '+error.message);}
+  }
+  channel?.addEventListener('message',async({data})=>{
+    if(data==='logout'){clearSession('Logged out in another tab. Current session is revoked.');}
+    else if(data==='session')await init(false);
+    else if(data==='records'&&state.session)try{await refresh();}catch(error){note(error.message);}
+  });
+  window.addEventListener('online',()=>{if(state.dirty)note('Unsynced changes. Reconnected; choose Save current run to upload.');});
+  const store=window.WorkspaceStore={state,init,api,refresh,save,select,snapshot,restore,authenticate,logout,exportRun,
+    register(adapter){bridge=adapter;emit();},subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);},
+    capture(current,{autosave=false}={}){const key=JSON.stringify(current);state.current=current;state.dirty=!!current;if(key!==currentKey){currentKey=key;note(current?'Unsynced changes.':'No current record.');if(autosave&&enabled)save();}},
+    markDirty(){if(state.current){state.dirty=true;note('Unsynced changes.');}},
+  };
+  function node(tag,text,attrs={}){const element=document.createElement(tag);if(text!==null)element.textContent=text;for(const[key,value]of Object.entries(attrs))element.setAttribute(key,value);return element;}
+  function button(text,action){const item=node('button',text,{type:'button',class:'button btn secondary'});item.addEventListener('click',()=>Promise.resolve(action()).catch(error=>note(error.message)));return item;}
+  class ServerWorkspace extends HTMLElement {
+    connectedCallback(){
+      if(this.built)return;this.built=true;this.classList.add('server-workspace');
+      this.heading=node('h2',this.getAttribute('view')==='reports'?'Saved runs':this.getAttribute('view')==='overview'?'Workspace status':'Server workspace');
+      this.status=node('p','',{role:'status','aria-live':'polite','aria-atomic':'true',class:'server-save-status'});
+      this.append(this.heading,this.status);this.controls=node('div',null,{class:'server-workspace-actions'});this.append(this.controls);
+      this.retry=button('Connect guest workspace',()=>init());this.controls.append(this.retry);
+      this.saveButton=button('Save current run',save);this.controls.append(this.saveButton);
+      this.snapshotButton=button('Create snapshot',snapshot);this.controls.append(this.snapshotButton);
+      this.logOut=button('Log out of server',logout);this.controls.append(this.logOut);
+      this.select=node('select',null,{'aria-label':'Server workspace'});this.select.addEventListener('change',()=>select(this.select.value).catch(error=>note(error.message)));this.controls.append(this.select);
+      this.summary=node('p','');this.append(this.summary);this.list=node('div',null,{class:'server-runs'});this.append(this.list);
+      if(this.getAttribute('view')==='settings')this.buildSettings();
+      this.unsubscribe=store.subscribe(()=>this.update());this.update();if(enabled&&!state.session)init();
+    }
+    disconnectedCallback(){this.unsubscribe?.();this.unsubscribe=null;this.built=false;this.optionKey=this.runKey=this.snapshotKey=null;this.replaceChildren();}
+    buildSettings(){
+      const hint=node('p','Snapshots stay on this server’s persistent volume. Download an export before relying on a single device.');this.append(hint);
+      this.auth=node('details',null);this.auth.append(node('summary','Account on this server'));
+      const form=node('form',null);this.auth.append(form);
+      const user=node('input',null,{name:'username',type:'email',autocomplete:'username',required:'',maxlength:'100'});const userLabel=node('label','Email');userLabel.append(user);
+      const password=node('input',null,{name:'password',type:'password',autocomplete:'current-password',required:'',minlength:'12',maxlength:'128'});const passLabel=node('label','Password');passLabel.append(password);
+      const mode=node('select',null,{'aria-label':'Account action'});mode.append(node('option','Sign in',{value:'login'}),node('option','Create account',{value:'signup'}));mode.onchange=()=>password.autocomplete=mode.value==='signup'?'new-password':'current-password';
+      const submit=node('button','Continue',{type:'submit',class:'button btn primary'});form.append(userLabel,passLabel,mode,submit,node('p','This is an account on this server. No external identity verification or email recovery is configured.'));
+      form.addEventListener('submit',async event=>{event.preventDefault();if(await authenticate(mode.value,user.value,password.value))password.value='';});this.append(this.auth);
+      this.snapshots=node('div',null,{class:'server-snapshots'});this.append(node('h3','Snapshots'),this.snapshots);
+    }
+    update(){
+      const workbench=this.getAttribute('view')==='workbench';this.heading.hidden=workbench;this.summary.hidden=workbench;
+      if(this.status.textContent!==state.status)this.status.textContent=state.status;this.saveButton.disabled=!enabled||state.busy||!state.session||!(state.current||bridge.readCurrent?.());this.snapshotButton.disabled=!state.workspace||state.busy;
+      this.logOut.hidden=!state.session;this.retry.hidden=!!state.session||!enabled;this.select.hidden=!state.workspace||workbench;this.controls.hidden=!enabled;
+      this.select.disabled=state.busy;
+      this.saveButton.hidden=this.getAttribute('view')==='overview';this.snapshotButton.hidden=this.getAttribute('view')!=='settings';this.logOut.hidden=!state.session||this.getAttribute('view')!=='settings';
+      const options=state.workspaces.map(w=>[w.id,w.name||w.title]);if(JSON.stringify(options)!==this.optionKey){this.optionKey=JSON.stringify(options);this.select.replaceChildren(...options.map(([id,name])=>node('option',name,{value:id})));}if(state.workspace)this.select.value=state.workspace.id;
+      this.summary.textContent=state.session?`${state.session.role==='account'?'Account':'Guest'} · ${state.workspace?.name||state.workspace?.title||'Workspace'} · ${state.runs.length} saved runs shown`:'Your browser drafts are retained. Connect a guest workspace to save on this server.';
+      if(this.auth){this.auth.hidden=!state.session?.auth_enabled||state.session.role==='account';if(this.auth.hidden)this.auth.querySelector('[name=password]').value='';}
+      if(this.getAttribute('view')==='reports'){
+        const key=JSON.stringify([state.runs,!!bridge.restore]);if(key!==this.runKey){this.runKey=key;this.list.replaceChildren();if(!state.runs.length)this.list.append(node('p','No saved runs in this workspace.'));
+          for(const run of state.runs){const section=node('section',null,{class:'server-run'});section.append(node('h3',run.title),node('p',run.kind+' · '+run.source+' · '+new Date(run.created_at).toLocaleString()));
+            const actions=node('div',null,{class:'server-workspace-actions'});for(const format of ['json','markdown','csv'])actions.append(button('Download '+format.toUpperCase(),()=>exportRun(run,format)));
+            for(const [index,id]of (run.artifact_ids||[]).entries())actions.append(node('a','Download source artifact '+(index+1),{href:'/api/artifacts/'+encodeURIComponent(id),class:'button btn secondary'}));
+            if(bridge.restore)actions.append(button('Open saved input',()=>openRun(run)));section.append(actions);
+            const detail=node('details',null);detail.append(node('summary','Stored evidence'),node('pre',JSON.stringify(run.payload,null,2)));section.append(detail);this.list.append(section);}
+        }
+      }
+      if(this.snapshots){const key=JSON.stringify(state.snapshots);if(key!==this.snapshotKey){this.snapshotKey=key;this.snapshots.replaceChildren();if(!state.snapshots.length)this.snapshots.append(node('p','No snapshots yet.'));for(const item of state.snapshots){const row=node('div',null,{class:'server-snapshot'});row.append(node('p',item.status+' · '+new Date(item.created_at).toLocaleString()));if(item.status==='completed')row.append(button('Restore as new workspace',()=>restore(item)));this.snapshots.append(row);}}}
+    }
+  }
+  customElements.define('server-workspace',ServerWorkspace);
+})();
+
+/* Optional non-speech cues: only explicit user activation may create or resume audio. */
+(() => {
+  let context = null, enabled = false, muted = true, volume = 0.25;
+  const active = new Set(), recent = new Map();
+  const frequencies = { 'validation-error': 220, repair: 440, demo: 523.25, ablation: 587.33, evaluation: 659.25 };
+  try { const value = JSON.parse(localStorage.getItem('cuereport_audio_v1')); if (value) { muted = value.muted !== false; if (Number.isFinite(value.volume)) volume = Math.max(0, Math.min(1, value.volume)); } } catch { /* Optional preference. */ }
+  const remember = () => { try { localStorage.setItem('cuereport_audio_v1', JSON.stringify({ muted, volume })); } catch { /* Page-only preference. */ } };
+  const announce = text => { const node = document.getElementById('audio-status'); if (node && node.textContent !== text) node.textContent = text; };
+  function render() {
+    const button = document.getElementById('audio-toggle'), input = document.getElementById('audio-volume');
+    if (button) { button.textContent = enabled && !muted ? 'Mute sound cues' : 'Enable sound cues'; button.setAttribute('aria-pressed', String(enabled && !muted)); }
+    if (input) input.value = String(volume);
+  }
+  async function toggle() {
+    if (enabled && !muted) { muted = true; for (const gain of active) gain.gain.value = 0; remember(); render(); announce('Sound cues muted. Text updates remain active.'); return; }
+    try {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) throw Error();
+      if (!context || context.state === 'closed') context = new Audio();
+      if (context.state !== 'running') await context.resume();
+      if (context.state !== 'running') throw Error();
+      enabled = true; muted = false; remember(); render(); announce('Sound cues enabled.');
+    } catch { enabled = false; render(); announce('Sound cues unavailable. Text updates remain active.'); }
+  }
+  function cue(event) {
+    if (!Object.hasOwn(frequencies, event) || !enabled || muted || volume === 0 || context?.state !== 'running') return false;
+    const now = performance.now(); if (recent.has(event) && now - recent.get(event) < 1000) return false;
+    try {
+      const oscillator = context.createOscillator(), gain = context.createGain();
+      oscillator.frequency.value = frequencies[event]; oscillator.type = 'sine';
+      gain.gain.setValueAtTime(0, context.currentTime); gain.gain.linearRampToValueAtTime(volume * 0.12, context.currentTime + 0.01); gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.09);
+      oscillator.connect(gain); gain.connect(context.destination); active.add(gain);
+      oscillator.onended = () => { active.delete(gain); oscillator.disconnect(); gain.disconnect(); };
+      oscillator.start(); oscillator.stop(context.currentTime + 0.1); recent.set(event, now); return true;
+    } catch { announce('Sound cue unavailable. Text updates remain active.'); return false; }
+  }
+  function mount() {
+    render(); document.getElementById('audio-toggle')?.addEventListener('click', toggle);
+    document.getElementById('audio-volume')?.addEventListener('input', event => { volume = Math.max(0, Math.min(1, Number(event.target.value) || 0)); for (const gain of active) gain.gain.value = 0; remember(); });
+    document.addEventListener('keydown', event => {
+      if (event.ctrlKey || event.metaKey || event.isComposing || event.repeat || !event.altKey || !event.shiftKey || event.code !== 'KeyM' || event.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
+      event.preventDefault(); toggle();
+    });
+  }
+  window.CueAudio = { cue, toggle };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+})();
+
+/* TalkBack Triage Pilot — core logic (no DOM). Runs in the page and in Node for tests. */
 (function (root) {
   "use strict";
 
@@ -1893,7 +2223,11 @@ steps:
 
   const bar = document.createElement('nav'); bar.className = 'profile-tools'; bar.setAttribute('aria-label', 'Local profile');
   bar.innerHTML = '<a href="#/">Home</a><a id="workspace-profile" href="#/login">Local profile</a><button type="button" id="save-work" class="btn">Save work</button><a href="#/saved">Saved work</a><button type="button" class="btn" data-logout hidden>Log out</button>';
-  document.querySelector('.main-col').insertBefore(bar, document.querySelector('#main'));
+  const localArea = document.createElement('section'); localArea.className = 'local-work-area'; localArea.setAttribute('aria-label','Local work tools');
+  const localWork = document.createElement('details'); localWork.className = 'local-work';
+  const localSummary = document.createElement('summary'); localSummary.textContent = 'Local work';
+  localWork.append(localSummary, bar); localArea.append(localWork);
+  document.querySelector('.main-col').insertBefore(localArea, document.querySelector('#main'));
   const saveDialog = document.createElement('dialog'); saveDialog.className = 'product-save-dialog';
   saveDialog.innerHTML = '<form id="save-work-form"><h2>Save work</h2><label for="save-work-name">Name</label><input id="save-work-name" maxlength="80" required><p>Saved on this browser, without encryption.</p><p id="save-work-error" role="alert"></p><button class="btn primary" type="submit">Save</button><button class="btn" id="save-work-close" type="button">Cancel</button></form>';
   document.body.append(saveDialog);
@@ -1903,7 +2237,7 @@ steps:
   const rememberPause = () => { try { localStorage.setItem('cuereport_preview_paused_v1', String(userPaused)); } catch { /* Current-page choice remains active. */ } };
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const $ = (id) => document.getElementById(id);
-  const rawPath = () => !location.hash && ['/', '/ablation', '/statistics', '/system'].includes(location.pathname) ? 'check' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
+  const rawPath = () => !location.hash && ['/', '/overview', '/workbench', '/reports', '/settings', '/ablation', '/statistics', '/system'].includes(location.pathname) ? 'check' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
   function go(hash) { location.hash = hash; }
   function syncTheme() { const dark = document.documentElement.dataset.theme === 'dark'; productHeader.querySelectorAll('.theme-toggle').forEach((b) => { b.textContent = dark ? 'Light theme' : 'Dark theme'; b.setAttribute('aria-pressed', String(dark)); }); }
   productHeader.querySelector('.theme-toggle').onclick = () => document.getElementById('btn-theme').click();
@@ -1976,8 +2310,9 @@ steps:
   $('hero-input').addEventListener('input',()=>{heroGeneration++;$('hero-output').replaceChildren();$('hero-run').disabled=false;});
   let lastIdentity = null;
   profiles.subscribe((identity) => {heroGeneration++;$('hero-run').disabled=false;
+    const changedIdentity = lastIdentity?.id !== identity?.id;
     const loggedOut = lastIdentity && !identity; lastIdentity = identity;
-    adapter?.reset(); $('hero-input').value=initialHero; $('hero-output').replaceChildren(); if (saveDialog.open) saveDialog.close();
+    if (changedIdentity || !identity) adapter?.reset(); $('hero-input').value=initialHero; $('hero-output').replaceChildren(); if (saveDialog.open) saveDialog.close();
     $('workspace-profile').textContent = identity ? identity.name : 'Local profile'; $('workspace-profile').href = identity ? '#/profile' : '#/login';
     bar.querySelector('[data-logout]').hidden = true;
     $('header-logout').hidden = !identity; $('header-profile').hidden = !identity; $('header-profile').textContent = identity?.name || '';
@@ -1993,10 +2328,13 @@ steps:
     finally {if(generation===heroGeneration)button.disabled=false;}
   };
   $('hero-continue').onclick=()=>{try{adapter.heroContinue($('hero-input').value);}catch(error){$('hero-output').textContent=error.message;}};
+  addEventListener('cuereport-private-reset',event=>{if(event.detail?.server)pendingGuest=null;heroGeneration++;profiles.cancel();$('profile-password').value='';$('profile-error').textContent='';$('hero-output').replaceChildren();$('hero-input').value=initialHero;if(saveDialog.open)saveDialog.close();});
   let routeInitialized = false;
   window.ProductSurface = {
     profiles,
     configure(value) { adapter = value; },
+    reset(options) { adapter?.reset(options); },
+    restore(value, options) { adapter?.restore(value, options); },
     route() {
       const wasInitialized = routeInitialized; routeInitialized = true;
       const legacyReport = !rawPath() && ['report', 'text'].some((key) => new URLSearchParams(location.hash.split('?')[1] || '').has(key));
@@ -2010,6 +2348,12 @@ steps:
       $('pending-guest-note').hidden = !pendingGuest;
       surface.querySelector('[data-product-page=auth] [data-demo]').textContent=pendingGuest?'Return to guest work':'Continue with Demo';
       productHeader.querySelector('.theme-toggle').hidden=!next;
+      if (next) {
+        const safeURL = new URL(location.href); safeURL.searchParams.delete('text');
+        const split = safeURL.hash.indexOf('?');
+        if (split >= 0) { const query = new URLSearchParams(safeURL.hash.slice(split+1)); query.delete('text'); if (query.has('return') && !/^\/app(?:\/(?:check|draft|examples|research(?:\/(?:labels|methods))?))?$/.test(query.get('return'))) query.delete('return'); safeURL.hash = safeURL.hash.slice(0,split) + (query.size ? '?' + query : ''); }
+        if (safeURL.href !== location.href) history.replaceState(null, '', safeURL);
+      }
       if (next === 'auth') { const signup = path === 'signup'; $('profile-heading').textContent = signup ? 'Create a local profile' : 'Log in'; $('profile-submit').textContent = signup ? 'Create profile' : 'Log in'; $('profile-password').autocomplete = signup ? 'new-password' : 'current-password'; $('profile-switch').href = signup ? '#/login' : '#/signup'; $('profile-switch').textContent = signup ? 'Log in to an existing profile' : 'Create a local profile'; }
       if (next === 'saved') renderSaved();
       document.title = `${next === 'home' ? 'CueReport' : next === 'auth' ? $('profile-heading').textContent + ' – CueReport' : 'Saved work – CueReport'}`;
@@ -2034,11 +2378,12 @@ steps:
  document.body.append(footer);
  const dialog=document.createElement('dialog');dialog.className='launch-dialog';dialog.setAttribute('aria-labelledby','launch-title');
  dialog.innerHTML='<h2 id="launch-title"></h2><div id="launch-content"></div><p id="launch-status" role="status"></p><button id="launch-close" type="button">Close</button>';document.body.append(dialog);
+ let privateEpoch=0;
  let opener, deferredPrompt, registration, version='unavailable', accepting=false;
  const status=(text)=>{$('pwa-status').textContent=text;};
  const standalone=()=>matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
- function show(title,content,source){opener=source||document.activeElement;$('launch-title').textContent=title;$('launch-content').replaceChildren();$('launch-content').innerHTML=content;$('launch-status').textContent='';dialog.showModal();}
- $('launch-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{ $('launch-content').replaceChildren();opener?.isConnected&&opener.focus(); });
+ function show(title,content,source){privateEpoch++;opener=source||document.activeElement;$('launch-title').textContent=title;$('launch-content').replaceChildren();$('launch-content').innerHTML=content;$('launch-status').textContent='';dialog.showModal();}
+ $('launch-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{ privateEpoch++;$('launch-content').replaceChildren();opener?.isConnected&&opener.focus(); });
  function button(id,fn){$(id).addEventListener('click',fn);}
  function message(worker,type){return new Promise((resolve,reject)=>{if(!worker)return reject(Error('No offline worker is available. Prepare online first.'));const channel=new MessageChannel();const timer=setTimeout(()=>{channel.port1.close();reject(Error('Offline preparation did not respond. Retry online.'));},10000);channel.port1.onmessage=({data})=>{clearTimeout(timer);channel.port1.close();resolve(data);};worker.postMessage({type},[channel.port2]);});}
  async function check(){try{const result=await message(navigator.serviceWorker.controller,'STATUS');version=result.version;status(result.ready?'Offline copy ready. External services still require a connection.':'Offline copy incomplete. Reconnect and prepare again.');}catch(error){status(error.message);}}
@@ -2060,15 +2405,15 @@ steps:
  const key=()=>'cuereport_quick_v1:'+identity;
  function loadProgress(){try{const raw=localStorage.getItem(key());const parsed=raw&&raw.length<200?JSON.parse(raw):null;progress=Array.isArray(parsed?.steps)&&parsed.steps.length===3?parsed.steps.map(v=>v===true):[false,false,false];dismissed=parsed?.dismissed===true;}catch{progress=[false,false,false];dismissed=false;}}
  function saveProgress(){try{localStorage.setItem(key(),JSON.stringify({steps:progress,dismissed}));}catch{$('launch-status').textContent='Checklist works for this session; browser storage is unavailable.';}}
- loadProgress();window.ProductSurface?.profiles.subscribe((profile)=>{identity=profile?.id||'guest';loadProgress();if(dialog.open)dialog.close();});
+ loadProgress();const resetPrivate=profile=>{privateEpoch++;identity=profile?.id||'guest';loadProgress();if(dialog.open)dialog.close();$('launch-content').replaceChildren();$('launch-status').textContent='';};window.ProductSurface?.profiles.subscribe(resetPrivate);addEventListener('cuereport-private-reset',()=>resetPrivate());
  addEventListener('launch-step',(event)=>{const step=event.detail;if(Number.isInteger(step)&&step>=0&&step<3){progress[step]=true;saveProgress();const item=$('quick-step-'+step);if(item)item.textContent=steps[step]+' — complete';}});
  button('pwa-quick',()=>{show('Quick start','<ul id="quick-list"></ul><button id="quick-dismiss" type="button">Dismiss checklist</button><button id="quick-restart" type="button">Restart checklist</button>');steps.forEach((label,i)=>{const li=document.createElement('li');li.id='quick-step-'+i;li.textContent=label+(progress[i]?' — complete':'');$('quick-list').append(li);});button('quick-dismiss',()=>{dismissed=true;saveProgress();dialog.close();});button('quick-restart',()=>{dismissed=false;progress=[false,false,false];saveProgress();steps.forEach((label,i)=>$('quick-step-'+i).textContent=label);});});
  function routePattern(){const path=location.hash.split('?')[0].replace(/^#\/?/,'').replace(/^app\/?/,'');return ['','check','draft','examples','pilot','label','about','explore','sql','manifest','methods','login','signup','saved','profile'].includes(path)?'#/'+(path||'home'):'#/other';}
  button('pwa-feedback',()=>{show('Report bug','<label for="feedback-description">Description</label><textarea id="feedback-description" maxlength="1600" required></textarea><label for="feedback-steps">Reproduction steps (optional)</label><textarea id="feedback-steps" maxlength="1600"></textarea><h3>Diagnostic summary</h3><pre id="feedback-summary"></pre><p>Review a public GitHub issue draft. Report text, queries, filenames and credentials are not included automatically. Nothing is submitted here.</p><button id="feedback-open" type="button">Review draft on GitHub</button>');const summary=`App: ${name}\nOffline build: ${version}\nViewport: ${innerWidth} × ${innerHeight}\nRoute: ${routePattern()}`;$('feedback-summary').textContent=summary;button('feedback-open',()=>{const description=$('feedback-description').value.trim();if(!description){$('launch-status').textContent='Describe the problem before opening a draft.';return;}const target=new URL('https://github.com/anirudh763/'+repo+'/issues/new');target.searchParams.set('title',name+' feedback');target.searchParams.set('body',description+'\n\nSteps:\n'+$('feedback-steps').value+'\n\n'+summary);window.open(target.href,'_blank','noopener,noreferrer');$('launch-status').textContent='GitHub draft requested. Review and submit there; nothing was sent by this app.';});});
- const privacy=cue?'Guest report drafts may be saved locally by the existing recovery feature. Local profiles save reports only when you choose Save work. Public GitHub imports contact api.github.com only after you request them. Hosted Claude features, when available, send the selected report only after an explicit run.':'The public dataset is cached. Guest SQL recovery stays in this tab. Local profiles save selected queries/views only when you choose Save work. Queries and result exports run locally.';
+ const privacy=cue?'Guest report drafts may be saved locally by the existing recovery feature. Local profiles save reports only when you choose Save work. Public GitHub imports contact api.github.com only after you request them. Hosted Claude features, when available, send the selected report only after an explicit run. On a server-enabled deployment, Save current run uploads the selected report/checks, comparison or full evaluation CSV to this host’s private workspace. Server snapshots remain on that same volume; browser profiles and encrypted backups are separate.':'The public dataset is cached. Guest SQL recovery stays in this tab. Local profiles save selected queries/views only when you choose Save work. Queries and result exports run locally.';
  const disclosures={privacy:`<p>${privacy}</p><p>Profile passwords are salted and hashed, but saved work is not encrypted. Apps sharing this origin can access the same browser storage; prefixes are not a security boundary. No analytics are added. Browser clearing or eviction can remove local data; keep exported copies.</p>`,terms:'<p>All available tools are free. These tools are provided without a guarantee of accuracy or availability. Review outputs before relying on them. Public source records retain their original rights; availability does not grant redistribution rights. No compliance certification or cloud backup is provided.</p>',security:'<p>Only the versioned public shell, fonts, icons, published data and required worker/Wasm assets are cached. Authentication responses, imports, private reports and generated exports are not put in Cache Storage. First-ever offline visits cannot load an unprepared site.</p><p>Log out clears active work, retaining intentionally saved work. Remove saved entries in Saved work. To remove all profiles, use browser site-data settings; on shared GitHub Pages this also affects sibling apps. Clear offline copy below removes only this app’s caches and registration.</p><button id="pwa-clear" type="button">Clear this app’s offline copy</button>'};
  for(const [key,title] of Object.entries({privacy:'Privacy',terms:'Terms of Use',security:'Security & Offline Data'}))button('pwa-'+key,()=>{show(title,disclosures[key]);if(key==='security'&&document.documentElement.dataset.storageRecovery){const note=document.createElement('p');note.textContent='Some older local data could not be migrated. Existing records were retained. Export retained legacy data for private recovery; it may include saved text and password verifiers.';const recover=document.createElement('button');recover.type='button';recover.textContent='Export retained legacy data';recover.onclick=()=>{try{const saved={};for(const kind of ['localStorage','sessionStorage']){saved[kind]={};const store=window[kind];for(let i=0;i<store.length;i++){const k=store.key(i);const owned=cue?(k.startsWith('cuereport:v1:')||['tbt-theme','tbt-report','tbt-labels-v2','cuer-report-draft-v1','cuereport:preview-paused'].includes(k)):(k.startsWith('issue-warehouse:v1:')||['warehouse-theme','warehouse-query-v1','warehouse:preview-paused'].includes(k));if(owned)saved[kind][k]=store.getItem(k);}}const text=JSON.stringify(saved,null,2);if(text.length>4194304)throw Error('Legacy export exceeds 4 MiB. Use browser storage tools to recover it.');const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=app+'-legacy-local-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('launch-status').textContent='Private recovery download requested. No stored records were deleted.';}catch(error){$('launch-status').textContent=error.message;}};$('launch-content').append(note,recover);}if(key==='security')button('pwa-clear',async()=>{if(!confirm('Remove this app’s offline copy? Export work first. Saved profiles are retained; a connection is needed to prepare again.'))return;try{const registrations=await navigator.serviceWorker.getRegistrations();for(const reg of registrations)if(reg.scope===base.href)await reg.unregister();for(const cache of await caches.keys())if(cache.startsWith(app.replaceAll('-','_')+'_pwa_')||cache.startsWith(app+'-pwa-')||(cue&&cache.startsWith('talkback-triage-pilot-')))await caches.delete(cache);status('Offline copy removed. Reconnect and choose Prepare offline to restore it.');$('launch-status').textContent='Only this app’s offline cache was removed. Saved profiles remain.';}catch{$('launch-status').textContent='Cache removal failed. Retry in this browser’s storage settings.';}});});
- function shareDialog(){const text=cue?($('tpl')?.textContent||$('inline-draft-text')?.textContent||''):$('sql-query')?.value||'';if(!text.trim()){status('Nothing selected to share.');return;}show(cue?'Share draft':'Share query','<p>Only the text shown below will be shared. Review it for private details. No source files or credentials are added.</p><label for="share-text">Selected text</label><textarea id="share-text" readonly></textarea><button id="share-native" type="button">Share</button><button id="share-copy" type="button">Copy</button><button id="share-download" type="button">Download</button>');$('share-text').value=text;const file=new File([text],cue?'accessibility-report.md':'warehouse-query.sql',{type:'text/plain'});button('share-native',async()=>{try{if(navigator.share){const data=navigator.canShare?.({files:[file]})?{files:[file]}:{title:name,text};await navigator.share(data);$('launch-status').textContent='Share request finished. Delivery depends on the selected app.';}else{$('launch-status').textContent='Native sharing is unavailable. Copy, download or select the text.';}}catch(error){$('launch-status').textContent=error.name==='AbortError'?'Sharing cancelled.':'Sharing failed. Copy, download or select the text.';}});button('share-copy',async()=>{try{await navigator.clipboard.writeText(text);$('launch-status').textContent='Copied selected text.';}catch{$('share-text').focus();$('share-text').select();$('launch-status').textContent='Copy unavailable. Selected text can be copied manually.';}});button('share-download',()=>{const a=document.createElement('a'),url=URL.createObjectURL(file);a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('launch-status').textContent='Download requested.';});}
+ function shareDialog(){const text=cue?($('tpl')?.textContent||$('inline-draft-text')?.textContent||''):$('sql-query')?.value||'';if(!text.trim()){status('Nothing selected to share.');return;}show(cue?'Share draft':'Share query','<p>Only the text shown below will be shared. Review it for private details. No source files or credentials are added.</p><label for="share-text">Selected text</label><textarea id="share-text" readonly></textarea><button id="share-native" type="button">Share</button><button id="share-copy" type="button">Copy</button><button id="share-download" type="button">Download</button>');$('share-text').value=text;const ticket=privateEpoch,valid=()=>ticket===privateEpoch&&dialog.open;const file=new File([text],cue?'accessibility-report.md':'warehouse-query.sql',{type:'text/plain'});button('share-native',async()=>{try{if(navigator.share){const data=navigator.canShare?.({files:[file]})?{files:[file]}:{title:name,text};await navigator.share(data);if(!valid())return;$('launch-status').textContent='Share request finished. Delivery depends on the selected app.';}else{$('launch-status').textContent='Native sharing is unavailable. Copy, download or select the text.';}}catch(error){if(!valid())return;$('launch-status').textContent=error.name==='AbortError'?'Sharing cancelled.':'Sharing failed. Copy, download or select the text.';}});button('share-copy',async()=>{try{await navigator.clipboard.writeText(text);if(!valid())return;$('launch-status').textContent='Copied selected text.';}catch{if(!valid())return;$('share-text').focus();$('share-text').select();$('launch-status').textContent='Copy unavailable. Selected text can be copied manually.';}});button('share-download',()=>{if(!valid())return;const a=document.createElement('a'),url=URL.createObjectURL(file);a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('launch-status').textContent='Download requested.';});}
  const share=document.createElement('button');share.type='button';share.className='btn';share.id='pwa-share';share.textContent=cue?'Share draft':'Share query';share.onclick=shareDialog;
  const anchor=cue?$('btn-dl-tpl'):$('sql-retry');anchor?.after(share);
 })();
@@ -2112,15 +2457,15 @@ steps:
 /* Explicit portable-work backup. No automatic cloud upload or session export. */
 addEventListener('DOMContentLoaded',()=>{'use strict';const cue=document.querySelector('meta[name="application-name"]').content==='CueReport',app=cue?'cuereport':'issue-warehouse',profiles=window.ProductSurface.profiles;
  const trigger=document.createElement('button');trigger.type='button';trigger.className='btn';trigger.textContent='Encrypted backup';document.querySelector('.profile-tools').append(trigger);
- const dialog=document.createElement('dialog');dialog.className='ecosystem-dialog';dialog.setAttribute('aria-label','Encrypted portable backup');dialog.append(document.getElementById('backup-ui-template').content.cloneNode(true));document.body.append(dialog);const $=id=>document.getElementById(id);let staging=null,busy=false,ticket=0;
+ const dialog=document.createElement('dialog');dialog.className='ecosystem-dialog';dialog.setAttribute('aria-label','Encrypted portable backup');dialog.append(document.getElementById('backup-ui-template').content.cloneNode(true));document.body.append(dialog);const $=id=>document.getElementById(id);let staging=null,busy=false,ticket=0,serverEpoch=0;
  const error=text=>{$('backup-status').textContent=text;};
- function reset(){ticket++;staging=null;$('backup-passphrase').value='';$('restore-password').value='';$('backup-file').value='';$('backup-preview').textContent='';$('backup-commit').disabled=true;}
- trigger.onclick=()=>{reset();error('Encrypted transfer only. Lost backup passphrases cannot be recovered. Existing saved work is not encrypted on this device.');dialog.showModal();$('backup-passphrase').focus();};$('backup-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{reset();trigger.focus();});profiles.subscribe(()=>{reset();if(dialog.open)dialog.close();});
+ function reset(){ticket++;busy=false;staging=null;$('backup-passphrase').value='';$('restore-password').value='';$('backup-file').value='';$('backup-preview').textContent='';$('backup-commit').disabled=true;}
+ trigger.onclick=()=>{reset();error('Encrypted transfer only. Lost backup passphrases cannot be recovered. Existing saved work is not encrypted on this device.');dialog.showModal();$('backup-passphrase').focus();};$('backup-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{reset();trigger.focus();});const resetPrivate=()=>{reset();$('restore-name').value='';$('backup-status').textContent='';if(dialog.open)dialog.close();};profiles.subscribe(resetPrivate);addEventListener('cuereport-private-reset',event=>{if(event.detail?.server)serverEpoch++;resetPrivate();});
  function validate(document){if(cue&&document?.dataset!==undefined)throw Error('Dataset backup belongs to Issue Warehouse.');if(document&&Object.keys(document).some(k=>!['schema','profileName','entries','dataset'].includes(k)))throw Error('Unknown backup field.');if(!document||document.schema!==1||!Array.isArray(document.entries)||document.entries.length>10||typeof document.profileName!=='string'||document.profileName.length>40)throw Error('Unsupported backup document.');for(const r of document.entries){const v=r?.value;if(r&&Object.keys(r).some(k=>!['name','value'].includes(k)))throw Error('Unknown entry field.');if(v&&Object.keys(v).some(k=>!(cue?['version','title','body']:['version','sql','filters','snapshot']).includes(k)))throw Error('Unknown saved-work field.');if(!r||typeof r.name!=='string'||!r.name.trim()||r.name.length>80||!v||v.version!==1)throw Error('Invalid work entry.');if(cue){if(typeof v.title!=='string'||v.title.length>1000||typeof v.body!=='string'||v.body.length>64000)throw Error('Invalid report entry.');}else if(typeof v.sql!=='string'||new TextEncoder().encode(v.sql).length>4096||typeof v.filters!=='string'||v.filters.length>8192||(v.snapshot!==null&&typeof v.snapshot!=='string'))throw Error('Invalid query entry.');}return document;}
- async function action(fn){if(busy){error('A local cryptographic operation is still running. Wait briefly, then retry.');return;}busy=true;const version=ticket,revision=profiles.revision();error('Processing locally…');try{await fn(()=>version===ticket&&revision===profiles.revision());}catch(e){if(version===ticket)error(e.message);}finally{busy=false;}}
+ async function action(fn){if(busy){error('A local cryptographic operation is still running. Wait briefly, then retry.');return;}busy=true;const version=ticket,revision=profiles.revision();error('Processing locally…');try{await fn(()=>version===ticket&&revision===profiles.revision());}catch(e){if(version===ticket)error(e.message);}finally{if(version===ticket)busy=false;}}
  $('backup-export').onclick=()=>action(async valid=>{const current=profiles.current();if(!current)throw Error('Log in and explicitly save work before exporting a profile.');const doc=validate({schema:1,profileName:current.name,entries:profiles.list().map(({name,value})=>({name,value}))});const encrypted=await EncryptedBackup.seal(app,doc,$('backup-passphrase').value);if(!valid())return;const url=URL.createObjectURL(new Blob([encrypted],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=app+'-encrypted-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);error('Encrypted download requested. Only explicitly saved work was included; current unsaved work was excluded.');});
- $('backup-decrypt').onclick=()=>action(async valid=>{const file=$('backup-file').files[0];if(!file||file.size>EncryptedBackup.MAX_FILE)throw Error('Choose an encrypted JSON backup up to 5 MiB.');const doc=validate(await EncryptedBackup.open(app,await file.text(),$('backup-passphrase').value));if(!valid())return;staging=doc;$('backup-preview').textContent=JSON.stringify({profileName:doc.profileName,entries:doc.entries.map(x=>({name:x.name,characters:JSON.stringify(x.value).length}))},null,2);$('restore-name').value=doc.profileName;$('backup-commit').disabled=false;error('Decrypted and validated in memory. Review entries and choose a new profile or merge before committing. Nothing restored yet.');});
- $('backup-commit').onclick=()=>action(async valid=>{if(!staging)throw Error('Decrypt and review a backup first.');const entries=staging.entries;let restored;if($('restore-mode').value==='new'){if(!valid())return;restored=await profiles.restoreEntries(entries,{newName:$('restore-name').value,password:$('restore-password').value,isCurrent:valid});}else{if(!profiles.current())throw Error('Log in to merge, or choose a new profile.');if(!valid())return;restored=await profiles.restoreEntries(entries,{isCurrent:valid});}if(restored?.id!==profiles.current()?.id)throw Error('Profile changed after restore. Saved entries remain with the selected profile.');staging=null;location.hash='#/saved';error('Saved work restored. Open Saved work and choose Restore explicitly; SQL never runs automatically.');$('backup-commit').disabled=true;});
+ $('backup-decrypt').onclick=()=>action(async valid=>{const file=$('backup-file').files[0];if(!file||file.size>EncryptedBackup.MAX_FILE)throw Error('Choose an encrypted JSON backup up to 5 MiB.');const passphrase=$('backup-passphrase').value,text=await file.text();if(!valid())return;const doc=validate(await EncryptedBackup.open(app,text,passphrase));if(!valid())return;staging=doc;$('backup-preview').textContent=JSON.stringify({profileName:doc.profileName,entries:doc.entries.map(x=>({name:x.name,characters:JSON.stringify(x.value).length}))},null,2);$('restore-name').value=doc.profileName;$('backup-commit').disabled=false;error('Decrypted and validated in memory. Review entries and choose a new profile or merge before committing. Nothing restored yet.');});
+ $('backup-commit').onclick=()=>action(async valid=>{if(!staging)throw Error('Decrypt and review a backup first.');const ownerTicket=serverEpoch,entries=staging.entries;let restored;if($('restore-mode').value==='new'){if(!valid())return;restored=await profiles.restoreEntries(entries,{newName:$('restore-name').value,password:$('restore-password').value,isCurrent:valid});}else{if(!profiles.current())throw Error('Log in to merge, or choose a new profile.');if(!valid())return;restored=await profiles.restoreEntries(entries,{isCurrent:valid});}if(ownerTicket!==serverEpoch)return;if(restored?.id!==profiles.current()?.id)throw Error('Profile changed after restore. Saved entries remain with the selected profile.');staging=null;location.hash='#/saved';error('Saved work restored. Open Saved work and choose Restore explicitly; SQL never runs automatically.');$('backup-commit').disabled=true;});
 window.PortableWorkspace={validate,
  capture(){const current=profiles.current();if(!current)throw Error('Log in and save selected work first.');return validate({schema:1,profileName:current.name,entries:profiles.list().map(({name,value})=>({name,value}))});},
  review(document){reset();staging=validate(document);$('backup-preview').textContent=JSON.stringify({profileName:staging.profileName,entries:staging.entries.map(x=>x.name)},null,2);$('restore-name').value=staging.profileName;$('backup-commit').disabled=false;error('Cloud snapshot staged. Review and confirm local restore; existing work is unchanged.');dialog.showModal();}
@@ -2166,6 +2511,7 @@ window.PortableWorkspace={validate,
       if(path.startsWith('/')===false||path.startsWith('//'))throw Error('Invalid Supabase API path.');
       const epoch=this.epoch;let lastError;
       for(let attempt=0;attempt<retries;attempt++){
+        if(epoch!==this.epoch)throw Error('Cloud operation was canceled because the session changed.');
         const controller=new AbortController();this.controllers.add(controller);const timeout=setTimeout(()=>controller.abort(),8000);
         try{
           const headers={Accept:'application/json','Content-Type':'application/json','apikey':this.anonKey};
@@ -2188,7 +2534,7 @@ window.PortableWorkspace={validate,
     }
     async signIn(email,password){
       if(typeof email!=='string'||email.length>254||typeof password!=='string'||password.length<1||password.length>1024)throw Error('Enter a valid Supabase email and password.');
-      if(this.session)await this.logout();else this.logoutLocal();const epoch=this.epoch;
+      const epoch=this.epoch+1;if(this.session)await this.logout();else this.logoutLocal();if(epoch!==this.epoch)throw Error('Cloud sign-in was canceled.');
       const r=await this.request('/auth/v1/token?grant_type=password',{method:'POST',auth:false,retries:1,body:{email:email.trim(),password}});
       if(epoch!==this.epoch)throw Error('Cloud sign-in was canceled.');
       if(r.status!==200||typeof r.data?.access_token!=='string'||!r.data.access_token.length||r.data.access_token.length>8192||/[\r\n]/.test(r.data.access_token)||!(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(r.data?.user?.id||'')))throw Error('Supabase did not authenticate this account. Check project settings and credentials.');
@@ -2196,9 +2542,10 @@ window.PortableWorkspace={validate,
       return {userId:this.session.userId,email:this.session.email};
     }
     async read(){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       const q=`?select=user_id,revision,data,deleted_at&user_id=eq.${encodeURIComponent(this.session.userId)}&limit=2`;
-      const r=await this.request(('/rest/v1/'+this.table)+q);
+      const r=await this.request(('/rest/v1/'+this.table)+q);if(epoch!==this.epoch)throw Error('Cloud read canceled.');
       if(r.status!==200||!Array.isArray(r.data))throw Error(`Supabase workspace read failed (HTTP ${r.status}).`);
       if(r.data.length>1)throw Error('RLS table returned duplicate workspace rows; no data was changed.');
       if(!r.data.length)return null;
@@ -2208,12 +2555,14 @@ window.PortableWorkspace={validate,
       return {revision:row.revision,deleted,data};
     }
     async write(data,expectedRevision){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       const clean=window.PortableWorkspace.validate(data);if(!Object.keys(clean).length)throw Error('Select at least one safe local category before syncing.');
       if(new TextEncoder().encode(JSON.stringify(clean)).byteLength>MAX_DATA)throw Error('Selected cloud data exceeds the 3 MiB limit.');
       const userId=this.session.userId;
       if(expectedRevision===null){
         const r=await this.request(('/rest/v1/'+this.table+'?select=user_id,revision,data,deleted_at'),{method:'POST',prefer:true,body:{user_id:userId,revision:1,data:clean,deleted_at:null}});
+        if(epoch!==this.epoch)throw Error('Cloud write canceled.');
         if(r.status===409)return {ok:false,conflict:true,remote:await this.read()};
         if(r.status<200||r.status>=300)throw Error(`Supabase workspace insert failed (HTTP ${r.status}).`);
         if(!Array.isArray(r.data)||r.data.length!==1||r.data[0].user_id!==userId||r.data[0].revision!==1||r.data[0].deleted_at!==null)throw Error('Supabase returned an unexpected workspace row after insert.');
@@ -2222,22 +2571,25 @@ window.PortableWorkspace={validate,
       if(!Number.isInteger(expectedRevision)||expectedRevision<1)throw Error('Remote revision is invalid.');
       const filter=`?user_id=eq.${encodeURIComponent(userId)}&revision=eq.${expectedRevision}&select=user_id,revision,data,deleted_at`;
       const r=await this.request(('/rest/v1/'+this.table)+filter,{method:'PATCH',prefer:true,body:{revision:expectedRevision+1,data:clean,deleted_at:null}});
+      if(epoch!==this.epoch)throw Error('Cloud write canceled.');
       if(r.status<200||r.status>=300)throw Error(`Supabase workspace update failed (HTTP ${r.status}).`);
       if(!Array.isArray(r.data)||r.data.length!==1)return {ok:false,conflict:true,remote:await this.read()};
       if(r.data[0].user_id!==userId||r.data[0].revision!==expectedRevision+1)throw Error('Supabase returned an unexpected workspace revision.');
       return {ok:true,revision:expectedRevision+1};
     }
     async sync(data){
-      const remote=await this.read();if(!remote)return this.write(data,null);
+      const epoch=this.epoch,remote=await this.read();if(epoch!==this.epoch)throw Error('Cloud sync canceled.');if(!remote)return this.write(data,null);
       if(remote.deleted)return {ok:false,conflict:true,remote,reason:'A remote deletion marker exists.'};
       if(canonical(window.PortableWorkspace.validate(data))===canonical(remote.data))return {ok:true,unchanged:true,revision:remote.revision};
       return {ok:false,conflict:true,remote,reason:'Remote and local revisions differ; choose which copy to keep.'};
     }
     async deleteRemote(expectedRevision){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       if(!Number.isInteger(expectedRevision)||expectedRevision<1)throw Error('Read the current remote revision before deleting it.');
       const filter=`?user_id=eq.${encodeURIComponent(this.session.userId)}&revision=eq.${expectedRevision}&select=user_id,revision,data,deleted_at`;
       const r=await this.request(('/rest/v1/'+this.table)+filter,{method:'PATCH',prefer:true,body:{revision:expectedRevision+1,data:{},deleted_at:new Date().toISOString()}});
+      if(epoch!==this.epoch)throw Error('Cloud deletion canceled.');
       if(r.status<200||r.status>=300)throw Error(`Supabase deletion marker failed (HTTP ${r.status}).`);
       if(!Array.isArray(r.data)||r.data.length!==1)return {ok:false,conflict:true,remote:await this.read()};
       if(r.data[0].user_id!==this.session.userId||r.data[0].revision!==expectedRevision+1||typeof r.data[0].deleted_at!=='string')throw Error('Supabase returned an invalid deletion acknowledgement.');return {ok:true,revision:expectedRevision+1,deleted:true};
@@ -2264,12 +2616,12 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
  function state(){for(const id of ['cloud-connect','cloud-read','cloud-push','cloud-delete','cloud-local','cloud-review','cloud-disconnect'])$(id).disabled=pending||!provider||(id!=='cloud-connect'&&!provider.session)||(id==='cloud-local'&&!remote)||(id==='cloud-review'&&(!remote||remote.deleted));}
  trigger.onclick=()=>{$('cloud-destination').textContent=provider?'Destination: '+provider.origin+'. Cloud content is not end-to-end encrypted; only explicitly selected saved work is sent. Cloud sign-in is separate from local profiles.':'Cloud sync is unconfigured. Encrypted offline backup remains available. No cloud service or account has been created.';status(configurationError||'');state();dialog.showModal();};
  $('cloud-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{$('cloud-password').value='';epoch++;trigger.focus();});
- profiles.subscribe(()=>{epoch++;provider?.logout();clearSelection();$('cloud-password').value='';if(dialog.open)dialog.close();state();});
- async function action(fn){if(!provider){status('Cloud sync is unconfigured.');return;}if(pending)return;pending=true;const ticket=epoch,revision=profiles.revision();state();status('Pending…');try{await fn(()=>ticket===epoch&&revision===profiles.revision());}catch(error){if(ticket===epoch)status('Not confirmed: '+error.message+' Local work remains unchanged.');}finally{pending=false;state();}}
+ const resetPrivate=()=>{epoch++;pending=false;provider?.logoutLocal();clearSelection();$('cloud-email').value='';$('cloud-password').value='';status('');if(dialog.open)dialog.close();state();};profiles.subscribe(resetPrivate);addEventListener('cuereport-private-reset',resetPrivate);
+ async function action(fn){if(!provider){status('Cloud sync is unconfigured.');return;}if(pending)return;pending=true;const ticket=epoch,revision=profiles.revision();state();status('Pending…');try{await fn(()=>ticket===epoch&&revision===profiles.revision());}catch(error){if(ticket===epoch)status('Not confirmed: '+error.message+' Local work remains unchanged.');}finally{if(ticket===epoch){pending=false;state();}}}
  function summary(row){$('cloud-preview').textContent=row?JSON.stringify({revision:row.revision,deleted:row.deleted,profile:row.data?.profileName,saved:row.data?.entries?.map(x=>x.name),dataset:row.data?.dataset?{source:row.data.dataset.source,rows:row.data.dataset.rows?.length}:null},null,2):'No cloud workspace.';}
  function consent(){if(!$('cloud-consent').checked)throw Error('Confirm consent before transferring or deleting cloud work.');}
  function capture(){const data=PortableWorkspace.capture();if(!cue&&$('cloud-dataset').checked)data.dataset=PrivateBacklog.snapshot();return PortableWorkspace.validate(data);}
- $('cloud-connect').onclick=()=>action(async valid=>{try{clearSelection();await provider.signIn($('cloud-email').value,$('cloud-password').value);if(valid())status('Cloud account authenticated. No workspace transferred.');}finally{$('cloud-password').value='';}});
+ $('cloud-connect').onclick=()=>action(async valid=>{try{clearSelection();await provider.signIn($('cloud-email').value,$('cloud-password').value);if(valid())status('Cloud account authenticated. No workspace transferred.');}finally{if(valid())$('cloud-password').value='';}});
  $('cloud-read').onclick=()=>action(async valid=>{consent();const row=await provider.read();if(!valid())return;remote=row;summary(row);status(row?'Cloud revision received for review. No local changes.':'No remote workspace.');});
  $('cloud-push').onclick=()=>action(async valid=>{consent();const data=capture(),result=await provider.sync(data);if(!valid())return;if(result.conflict){remote=result.remote;summary(remote);status('Conflict preserved. Review remote or explicitly keep local on cloud.');}else{remote={revision:result.revision,data,deleted:false};summary(remote);status('Synced: server acknowledged revision '+result.revision+'.');}});
  $('cloud-local').onclick=()=>action(async valid=>{consent();if(!remote)throw Error('Read the remote revision first.');const data=capture(),result=await provider.write(data,remote.revision);if(!valid())return;if(!result.ok){remote=result.remote;summary(remote);status('Revision changed again. Conflict preserved; review before retry.');}else{remote={revision:result.revision,data,deleted:false};summary(remote);status('Synced: acknowledged revision '+result.revision+'.');}});
@@ -2300,7 +2652,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     return e;
   };
   const pct = (x) => (x == null ? "–" : Math.round(x * 100) + "%");
-  const scopedKey = (key) => window.ProductSurface.profiles.current() ? "cuereport_profiles_v1:" + window.ProductSurface.profiles.current().id + ":" + key : key;
+  const scopedKey = (key) => isServer() ? (recoveryKey(key) || '__no_principal__') : window.ProductSurface.profiles.current() ? "cuereport_profiles_v1:" + window.ProductSurface.profiles.current().id + ":" + key : key;
   const store = {
     get(k) { try { const v = localStorage.getItem(scopedKey(k)); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(scopedKey(k), JSON.stringify(v)); return true; } catch (e) { return false; } },
@@ -2339,20 +2691,25 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   const outcome = (r) => r.state === "open" ? "Open" : r.stateReason === "completed" ? "Closed: completed" : r.stateReason === "not_planned" ? "Closed: not planned" : r.stateReason === "duplicate" ? "Closed: duplicate" : "Closed";
   const badge = (map, v) => h("span", { class: ("label " + (map[v] ? map[v].c : "")).trim() }, map[v] ? map[v].t : v);
 
+  let ownershipEpoch = 0, comparisonEvidence = null, persistenceReady = false, evaluationExport = null, preparingEvaluation = false;
+
   // ---------- capabilities ----------
   // Inside Claude the page can call the model; anywhere else (GitHub Pages, a local file) it shows saved runs only.
   let aiOff = false;
   const NO_AI_RUN = "Live triage unavailable. Cached results only.";
   let sample = null, db = null, user = null, downloads = null, me = null;
   const ready = (async () => {
+    const ticket=ownershipEpoch;
     const use = (n) => (window.claude && window.claude.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null));
-    [sample, db, user, downloads] = await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
-    if (user) { try { me = await user.me(); } catch (e) { me = null; } }
+    const capabilities=await Promise.all([use("sample"), use("db"), use("user"), use("downloads")]);
+    if(ticket!==ownershipEpoch)return;
+    [sample, db, user, downloads]=capabilities;
+    if (user) { try { const identity=await user.me();if(ticket!==ownershipEpoch)return;me=identity; } catch (e) { if(ticket!==ownershipEpoch)return;me = null; } }
     $("#ai-card").hidden = !sample;
     // outside the Claude app the run controls can't do anything, so they are not shown
     $("#run-card").hidden = !sample;
     $("#run-off").hidden = !!sample;
-    if (!sample) { aiOff = true; $("#run-status").textContent = NO_AI_RUN; updateCallCount(); }
+    if (!sample) { aiOff = true; setStatus("#run-status", NO_AI_RUN); updateCallCount(); }
     startDb();
     renderLabelView();
     renderResults();
@@ -2364,7 +2721,20 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   // #/check?report=WP-21127 (a dataset report), #/check?text=<code> (pasted text), #/examples?app=AP&gap=...&q=...
   // The fragment is never sent to a server. Old links (#check?report=, #pilot, #label, #about) are mapped.
   const APPNAME = "CueReport";
+  const SOURCE_VERSIONS = {"app":"0.3.0","checker":"47372090234eccbf70de50cd12f6f66b8f0402904763b7f53da1b0d949b98816","method":"7a47c267f7fee5f124ad72b7ea7d652119b967797f9dbd7a1b932317b0e595d1","dataset":"b9ef33553c22186254443e1ffb098d8565d337363c952d1ae3f526e7c34bdf2a"};
+  const isServer = () => !!window.WorkspaceStore?.state.enabled;
+  const recoveryKey = key => isServer() ? (window.WorkspaceStore.state.session?.principal_id ? 'cuereport_owner:' + window.WorkspaceStore.state.session.principal_id + ':' + key : null) : key;
+  function setStatus(node, text) { if (typeof node === 'string') node = $(node); if (node && node.textContent !== text) node.textContent = text; }
+  const sound = event => window.CueAudio?.cue(event);
+  function canonicalPage() { return !location.hash ? ({'/':'overview','/overview':'overview','/workbench':'workbench','/reports':'reports','/settings':'settings'})[location.pathname] : null; }
+  const toolPaths = {check:'check', draft:'draft', examples:'examples', ablation:'ablation'};
+  const reportPaths = {saved:'saved-reports', statistics:'statistics', labels:'research/labels', methods:'research/methods'};
+  function contextualLinks(page) { return page === 'workbench' ? [['check','Report'],['draft','Draft'],['ablation','Ablation'],['examples','Examples']] : [['saved','Saved runs'],['statistics','Statistics'],['labels','Labels'],['methods','Methods']]; }
+
   const ROUTES = {
+    overview:{panel:"overview",title:"Overview",nav:"overview"},
+    "saved-reports":{panel:"saved-reports",title:"Reports",nav:"reports"},
+    settings:{panel:"settings",title:"Settings",nav:"settings"},
     "ablation": { panel: "ablation", title: "Step-removal comparison", nav: "ablation" },
     "statistics": { panel: "pilot", title: "Statistics", nav: "statistics" },
     "system": { panel: "system", title: "System", nav: "system" },
@@ -2376,9 +2746,11 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     "research/methods": { panel: "about", title: "Methods", nav: "research" },
   };
   const LEGACY = { check: "check", pilot: "research", label: "research/labels", about: "research/methods" };
-  const PANELS = ["check", "draft", "examples", "pilot", "label", "about", "ablation", "system", "notfound"];
+  const PANELS = ["overview", "saved-reports", "settings", "check", "draft", "examples", "pilot", "label", "about", "ablation", "system", "notfound"];
   const parseHash = () => {
-    const direct = !location.hash && ({ "/": "check", "/ablation": "ablation", "/statistics": "statistics", "/system": "system" })[location.pathname];
+    const canonical = canonicalPage();
+    if (canonical) { const params = new URLSearchParams(location.search); return {path: canonical === 'workbench' ? toolPaths[params.get('tool')] || 'check' : canonical === 'reports' ? reportPaths[params.get('view')] || 'saved-reports' : canonical, params}; }
+    const direct = !location.hash && ({ "/ablation": "ablation", "/statistics": "statistics", "/system": "system" })[location.pathname];
     if (direct) return { path: direct, params: new URLSearchParams(location.search) };
     const raw = location.hash.replace(/^#\/?/, "").replace(/^app(?=\/|$)/, "").replace(/^\//, ""); const q = raw.indexOf("?");
     return { path: (q < 0 ? raw : raw.slice(0, q)).replace(/\/+$/, ""), params: new URLSearchParams(q < 0 ? "" : raw.slice(q + 1)) };
@@ -2386,7 +2758,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   const hashFor = (path, params) => { const q = params ? params.toString() : ""; return "#/" + path + (q ? "?" + q : ""); };
   // replace the current entry (state changes within a screen do not add Back steps)
   const setHash = (path, params) => {
-    if (!location.hash && location.pathname === "/" && path === "check" && !(params && params.has("text"))) { const query = params ? params.toString() : ""; history.replaceState(null, "", "/" + (query ? "?" + query : "")); return; }
+    if (canonicalPage() && path === 'check') { const safe = params ? new URLSearchParams(params) : new URLSearchParams(); safe.delete('text'); if (!$('#check').hidden) {safe.set('tool','check');history.replaceState(null,'','/workbench?'+safe);} return; }
     const want = hashFor(path, params); if (location.hash !== want) history.replaceState(null, "", want);
   };
   const current = () => { const p = parseHash().path; return ROUTES[p] ? p : p === "" ? "check" : null; };
@@ -2399,25 +2771,48 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
 
   let firstRoute = true;
   function route() {
-    if (window.ProductSurface.route()) { if (importController) stopIssueImport("Import cancelled because you left Report."); closeMenu(false); return; }
+    if(!location.hash&&location.pathname==='/'&&['report','text','source'].some(key=>new URLSearchParams(location.search).has(key)))history.replaceState(null,'','/workbench'+location.search);
     let { path, params } = parseHash();
+    // Import old text links once; never retain payloads in the current address, including mixed/auth routes.
+    const cleanURL = new URL(location.href), hashQuery = cleanURL.hash.indexOf("?");
+    for(const key of ["text","token","api_key","password","secret","authorization"])cleanURL.searchParams.delete(key);
+    if (hashQuery >= 0) {
+      const safe = new URLSearchParams(cleanURL.hash.slice(hashQuery + 1)); for(const key of ["text","token","api_key","password","secret","authorization"])safe.delete(key);
+      if (safe.has("return") && !/^\/app(?:\/(?:check|draft|examples|research(?:\/(?:labels|methods))?))?$/.test(safe.get("return"))) safe.delete("return");
+      cleanURL.hash = cleanURL.hash.slice(0, hashQuery) + (safe.size ? "?" + safe : "");
+    }
+    if (cleanURL.href !== location.href) history.replaceState(null, "", cleanURL);
+    if (window.ProductSurface.route()) { if (importController) stopIssueImport("Import cancelled because you left Report."); closeMenu(false); return; }
     const legacy = /^#(check|pilot|label|about)(\?|$)/.exec(location.hash);
-    if (legacy) { path = LEGACY[legacy[1]]; history.replaceState(null, "", hashFor(path, params)); }
+    if (legacy) { path = LEGACY[legacy[1]]; const safe = new URLSearchParams(params); for(const key of ["text","token","api_key","password","secret","authorization"])safe.delete(key); history.replaceState(null, "", hashFor(path, safe)); }
     if (path === "" && !location.hash.startsWith("#/")) { path = "check"; if (location.hash && location.hash !== "#") history.replaceState(null, "", "#/check"); }
     if (path === "") path = "check";
     const r = ROUTES[path];
     const directRoot = !location.hash && location.pathname === "/";
     document.documentElement.dataset.directRoute = !location.hash ? path : "";
-    $("#rail a[data-nav=check]").href = directRoot || ["/ablation", "/statistics", "/system"].includes(location.pathname) ? "/" : "#/check";
+    const directRoute = !!canonicalPage() || directRoot || ["/ablation", "/statistics", "/system"].includes(location.pathname);
+    $("#rail a[data-nav=check]").href = directRoute ? "/workbench" : "#/check";
+    $("#compare-current").href = directRoute ? "/workbench?tool=ablation" : "#/ablation";
+    $("#ablation-edit").href = directRoute ? "/workbench" : "#/check";
     if (path !== "check" && importController) stopIssueImport("Import cancelled because you left Report.");
     const panel = r ? r.panel : "notfound";
     for (const id of PANELS) $("#" + id).hidden = id !== panel;
-    for (const a of $$("#rail nav a")) { if (r && a.dataset.nav === r.nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); }
-    const title = !location.hash && path === "check" ? "Bug report triage" : r ? r.title : "Page not found";
-    $("#h-check").textContent = !location.hash && path === "check" ? title : "Report";
+    for (const a of $$("#rail nav a")) { if (r && !(canonicalPage() || !location.hash && ['/ablation','/statistics','/system'].includes(location.pathname)) && a.dataset.nav === r.nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); }
+    const canonical = canonicalPage();
+    const title = canonical ? canonical[0].toUpperCase()+canonical.slice(1) : r ? r.title : "Page not found";
+    $("#h-check").textContent = "Report";
     $("#h-pilot").textContent = path === "statistics" ? "Statistics" : "Results";
     if (path === "ablation") queueMicrotask(() => renderAblation(params));
     if (path === "system") queueMicrotask(refreshSystem);
+    $('#sample-scenario').open=!canonical;const options=$('#report-options');if(options)options.open=!canonical;arrangeReportOptions();
+    document.body.classList.toggle('canonical-shell', !!canonical || !location.hash && ['/ablation','/statistics','/system'].includes(location.pathname));
+    for (const link of $$('[data-canonical]')) { if (document.body.classList.contains('canonical-shell') && link.dataset.canonical === (canonical || (path === 'system' ? 'settings' : path === 'statistics' ? 'reports' : 'workbench'))) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current'); }
+    const tabs = $('#context-tabs'); if (tabs) tabs.remove();
+    if (canonical === 'workbench' || canonical === 'reports') { const nav=h('nav',{id:'context-tabs','aria-label':canonical === 'workbench' ? 'Report tools' : 'Report views',class:'context-tabs'},contextualLinks(canonical).map(([key,label])=>h('a',{href:'/'+canonical+'?'+(canonical==='workbench'?'tool':'view')+'='+key,'aria-current':path===(canonical==='workbench'?toolPaths[key]:reportPaths[key])?'page':null},label))); $('#'+panel+' header').after(nav); }
+    const activeHeading = $('#'+panel+' h1'); if (activeHeading) activeHeading.textContent = title;
+    $('#canonical-tools').hidden = canonical !== 'workbench';
+    if (canonical === 'workbench') $('#'+panel+' header').after($('#canonical-tools'));
+    if (canonical === 'settings') { $('#settings-local-tools').append(document.querySelector('.local-work-area')); }
     document.title = title + " – " + APPNAME;
     $("#crumb-here").textContent = title;
     const back = $("#back-link");
@@ -2431,6 +2826,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if (!firstRoute) { const hd = $("#" + panel + " h1"); if (hd) hd.focus({ preventScroll: true }); window.scrollTo(0, 0); }
     firstRoute = false;
   }
+  document.addEventListener('click', event => { const link=event.target.closest('a[href]'); if (!link || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; const url=new URL(link.href,location.href);if(url.origin===location.origin&&canonicalPage()&&url.hash.startsWith('#/')){const [path,query]=url.hash.slice(2).split('?'),tools={check:'check',draft:'draft',examples:'examples',ablation:'ablation'},views={research:'statistics','research/labels':'labels','research/methods':'methods'};if(tools[path]||views[path]){const params=new URLSearchParams(query||'');for(const key of ['text','token','api_key','password','secret','authorization'])params.delete(key);params.set(tools[path]?'tool':'view',tools[path]||views[path]);url.pathname=tools[path]?'/workbench':'/reports';url.search=params;url.hash='';}} if (url.origin!==location.origin || url.hash || !['/','/overview','/workbench','/reports','/settings'].includes(url.pathname)) return; event.preventDefault(); history.pushState(null,'',url.pathname+url.search); route(); });
   window.addEventListener("hashchange", route);
   window.addEventListener("popstate", route);
   // "Skip to content" must not change the route: it moves focus to the current screen's H1
@@ -2441,7 +2837,15 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   // close it and focus returns to the Menu button; Tab stays inside while it is open.
   const rail = $("#rail"), menuBtn = $("#btn-menu"), scrim = $("#scrim"), mainCol = $("#main-col");
   const narrow = window.matchMedia("(max-width: 999px)");
-  const focusables = () => $$("a[href], button:not([disabled]), select, input, textarea", rail).filter((e) => e.getClientRects().length);
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const detail = e.target.closest?.('.direct-report-tools[open], .local-work[open], .report-collection[open], .report-options[open], #sample-scenario[open], #save-options[open]');
+    if (!detail) return;
+    e.preventDefault(); e.stopPropagation();
+    detail.open = false; detail.querySelector('summary')?.focus();
+  }, true);
+
+  const focusables = () => $$("a[href], button:not([disabled]), summary, select, input, textarea", rail).filter((e) => e.getClientRects().length && !e.matches(":disabled") && !e.closest("details:not([open]) > :not(summary)"));
   function openMenu() {
     rail.classList.add("open"); scrim.classList.add("open");
     rail.setAttribute("role", "dialog"); rail.setAttribute("aria-modal", "true"); rail.setAttribute("aria-label", "Menu");
@@ -2502,7 +2906,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     exSel.append(g);
   }
   function checkParams() {
-    if (shownId) return new URLSearchParams({ report: shownId });
+    const original = BY_ID[shownId], report = currentReport();
+    if (original && report.title === original.title && report.body === original.body) return new URLSearchParams({ report: shownId });
     return null;
   }
   function loadExample(id) {
@@ -2668,7 +3073,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     const v = field.value.trim();
     if (!v) {
       err.textContent = "Enter " + gap.label.toLowerCase() + "."; err.hidden = false;
-      field.setAttribute("aria-invalid", "true"); field.focus(); return;
+      field.setAttribute("aria-invalid", "true"); sound("validation-error"); field.focus(); return;
     }
     const body = $("#in-body");
     body.value = body.value.replace(/\s+$/, "") + gap.add(v) + "\n";
@@ -2678,9 +3083,10 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if (current() === "check") setHash("check");
     updateChecklist(true);
     const now = lastResult.items.find((x) => x.key === it.key);
-    $("#gap-status").textContent = now && now.status === "present" ? "Added " + gap.label.toLowerCase() + "."
-      : "Added. Detail still incomplete.";
-    if (lastResult.summary.present === lastResult.summary.required) $("#gap-status").textContent = "All required details recognized. Review draft.";
+    setStatus("#gap-status", now && now.status === "present" ? "Added " + gap.label.toLowerCase() + "."
+      : "Added. Detail still incomplete.");
+    if (lastResult.summary.present === lastResult.summary.required) setStatus("#gap-status", "All required details recognized. Review draft.");
+    sound("repair");
     const next = [...document.querySelectorAll("#gaps > .gap input, #gaps > .gap textarea")].find((el) => !el.disabled && el.getClientRects().length);
     (next || $("#btn-review")).focus();
   }
@@ -2700,19 +3106,19 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   // this tab keeps the report while you move between screens, reload, or go Back from another site
   let clearingSession = false;
   const session = {
-    get() { if (window.ProductSurface.profiles.current()) return null; try { const v = sessionStorage.getItem("cuereport_guest_report_v1"); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
-    set(v) { if (clearingSession || window.ProductSurface.profiles.current()) return; try { sessionStorage.setItem("cuereport_guest_report_v1", JSON.stringify(v)); } catch (e) { /* kept in the page only */ } },
+    get() { if (window.ProductSurface.profiles.current()) return null; try { const raw = sessionStorage.getItem(recoveryKey("cuereport_guest_report_v1") || "__no_principal__"); if (!raw || raw.length > 140000) return null; const v = JSON.parse(raw); return v && typeof v.title === "string" && typeof v.body === "string" && v.title.length <= MAX_DRAFT_TITLE && v.body.length <= MAX_DRAFT_BODY ? v : null; } catch (e) { return null; } },
+    set(v) { if (clearingSession || window.ProductSurface.profiles.current()) return; try { recoveryKey("cuereport_guest_report_v1") && sessionStorage.setItem(recoveryKey("cuereport_guest_report_v1"), JSON.stringify(v)); } catch (e) { /* kept in the page only */ } },
   };
 
   const SAVED_DRAFT_KEY = "cuereport_guest_draft_v1";
   const MAX_DRAFT_TITLE = 1000, MAX_DRAFT_BODY = C.MAX_INPUT;
   const draftSaveStatus = $("#draft-save-status");
-  let savedDraft = null, saveTimer = null;
+  let savedDraft = null, saveTimer = null, draftAnnounceTimer = null;
   function readSavedDraft() {
     if (window.ProductSurface.profiles.current()) return null;
     let raw;
     try {
-      raw = localStorage.getItem(SAVED_DRAFT_KEY);
+      raw = sessionStorage.getItem(recoveryKey(SAVED_DRAFT_KEY) || "__no_principal__");
     } catch (e) {
       draftSaveStatus.textContent = "Autosave is unavailable because browser storage is blocked.";
       return null;
@@ -2740,9 +3146,10 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       return;
     }
     try {
-      localStorage.setItem(SAVED_DRAFT_KEY, JSON.stringify({ version: 1, title, body }));
+      recoveryKey(SAVED_DRAFT_KEY) && sessionStorage.setItem(recoveryKey(SAVED_DRAFT_KEY), JSON.stringify({ version: 1, title, body }));
       savedDraft = { title, body };
-      draftSaveStatus.textContent = "Draft saved on this device.";
+      clearTimeout(draftAnnounceTimer);const ticket=ownershipEpoch,revision=exportRevision;
+      draftAnnounceTimer=setTimeout(()=>{if(ticket===ownershipEpoch&&revision===exportRevision)setStatus(draftSaveStatus,recoveryKey(SAVED_DRAFT_KEY)?'Draft saved in this tab.':'Unsynced draft stays in memory until a server session connects. Export before closing.');},700);
     } catch (e) {
       draftSaveStatus.textContent = e && (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014)
         ? "Autosave could not save because browser storage is full. Copy or download this report."
@@ -2750,16 +3157,28 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     }
   }
   function queueDraftSave() {
-    draftSaveStatus.textContent = "Saving draft on this device…";
+    clearTimeout(draftAnnounceTimer);
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveDraft, 350);
   }
   function resetSavedDraft() {
     clearTimeout(saveTimer);
-    try { localStorage.removeItem(SAVED_DRAFT_KEY); savedDraft = null; draftSaveStatus.textContent = "Saved draft removed from this device."; }
+    try { recoveryKey(SAVED_DRAFT_KEY) && sessionStorage.removeItem(recoveryKey(SAVED_DRAFT_KEY)); savedDraft = null; draftSaveStatus.textContent = "Saved draft removed from this tab."; }
     catch (e) { draftSaveStatus.textContent = "Could not remove the saved draft because browser storage is blocked."; }
   }
   savedDraft = readSavedDraft();
+  const recoverLegacy = $("#recover-legacy-draft");
+  try { recoverLegacy.hidden = !localStorage.getItem(SAVED_DRAFT_KEY); } catch { /* Explicit recovery remains optional. */ }
+  recoverLegacy.onclick = () => {
+    if (window.ProductSurface.profiles.current()) { draftSaveStatus.textContent = "Log out before recovering a guest draft."; return; }
+    if ((currentReport().title || currentReport().body) && !confirm("Replace this tab’s report with the previous device draft? Save or export first.")) return;
+    try {
+      const value = JSON.parse(localStorage.getItem(SAVED_DRAFT_KEY));
+      if (!value || value.version !== 1 || typeof value.title !== "string" || typeof value.body !== "string" || value.title.length > MAX_DRAFT_TITLE || value.body.length > MAX_DRAFT_BODY) throw Error();
+      shownId = null; exSel.value = ""; $("#in-title").value = value.title; $("#in-body").value = value.body;
+      updateChecklist(true); setHash("check"); $("#ex-source").textContent = "Recovered previous device draft. Original backup retained.";
+    } catch { draftSaveStatus.textContent = "Previous device draft could not be recovered. Paste or import a backup instead."; }
+  };
 
   const MAX_GITHUB_BYTES = 262144, MAX_GITHUB_ISSUE_URL = 2048;
   const ISSUE_URL = /^https:\/\/github\.com\/([A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?)\/([A-Za-z0-9_.-]{1,100})\/issues\/([1-9]\d{0,8})\/?$/;
@@ -2845,8 +3264,11 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if ($("#in-body").value.trim()) window.dispatchEvent(new CustomEvent("launch-step", { detail: 0 }));
     const rep = currentReport();
     const previous = lastResult && lastResult.text;
+    const inputBytes = new TextEncoder().encode(rep.body).byteLength;
+    $("#input-size").textContent = inputBytes >= 51200 ? inputBytes.toLocaleString("en-US") + " bytes. Offline checks cover up to 64,000 characters; provider input is limited to 6,000 characters." : "";
     const a = (lastResult = PlatformChecks.analyze(rep));
     if (previous !== a.text) invalidateExport();
+    if (typeof publishCurrent === "function") publishCurrent();
     $("#checklist").replaceChildren(...a.items.map((it) => h("li", { "data-status": it.status, "data-key": it.key },
       icon(it.status),
       h("span", { class: "name" }, it.name),
@@ -2864,8 +3286,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       : S.present + " of " + S.required + " found" + (S.notFound ? ", " + S.notFound + " not found" : "") + (S.partial ? ", " + S.partial + " incomplete" : "") + (a.truncated ? ". Only the first " + C.MAX_INPUT.toLocaleString("en-US") + " characters were checked" : "");
     clearTimeout(summaryTimer);
     // the summary is a live region: while someone types, announce it only after a pause
-    if (now) $("#chk-score").textContent = text;
-    else summaryTimer = setTimeout(() => { $("#chk-score").textContent = text; }, 700);
+    if (now) setStatus("#chk-score", text);
+    else summaryTimer = setTimeout(() => { setStatus("#chk-score", text); }, 700);
   }
   let inputTimer = null;
   ["#in-title", "#in-body"].forEach((s) => $(s).addEventListener("input", () => {
@@ -2873,8 +3295,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if (importController) stopIssueImport("Import cancelled because the report changed.");
     clearTimeout(inputTimer); inputTimer = setTimeout(() => updateChecklist(false), 150);
     if (shownId) { shownId = null; exSel.value = ""; }
-    $("#ex-source").textContent = $("#in-title").value.trim() || $("#in-body").value.trim()
-      ? "Custom report." : "Cleared.";
+    setStatus("#ex-source",$("#in-title").value.trim() || $("#in-body").value.trim() ? "Custom report." : "Cleared.");
     if (current() === "check") setHash("check");
     // keep the tab's copy current even before the debounced check runs
     session.set({ title: $("#in-title").value, body: $("#in-body").value, id: null });
@@ -2884,6 +3305,24 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     const i = SAMPLES.indexOf(shownId);
     loadExample(SAMPLES[(i + 1) % SAMPLES.length]);
   });
+  $("#dismiss-guide").onclick = () => { $("#workflow-guide").hidden = true; $("#run-demo").focus(); };
+  $("#run-demo").onclick = async () => {
+    const button = $("#run-demo"), status = $("#demo-status");
+    if (!shownId && (currentReport().title || currentReport().body) && !confirm("Replace this tab’s report with the public sample? Save or export first.")) return;
+    const ticket=ownershipEpoch; button.disabled = true; setStatus(status,"Loading public sample and checking…");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    try {
+      if(ticket!==ownershipEpoch)return;
+      if (!loadExample("WP-20770")) throw Error();
+      if ($("#demo-scenario").value === "missing") {
+        $("#in-body").value = T.variant(BY_ID[shownId], "no_steps"); shownId = null; exSel.value = "";
+        $("#ex-source").replaceChildren(h("a", { href: gh(BY_ID["WP-20770"]), target: "_blank", rel: "noopener" }, "WordPress #20770"), " · Derived sample: steps removed");
+        setHash("check"); updateChecklist(true);
+      }
+      sound("demo"); status.textContent = "Offline check complete. " + lastResult.summary.present + " of " + lastResult.summary.required + " required details found. Compare to inspect the effect of removing steps.";
+    } catch { sound("validation-error");status.textContent = "Sample could not be loaded. Retry Run Interactive Demo or paste a report."; }
+    finally { button.disabled = false; }
+  };
   $("#btn-clear").addEventListener("click", () => {
     if (importController) stopIssueImport("Import cancelled because the report was cleared.");
     shownId = null; exSel.value = "";
@@ -2891,7 +3330,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     for (const k in gapDraft) delete gapDraft[k];
     resetSavedDraft();
     $("#ex-source").textContent = "Cleared.";
-    $("#link-status").textContent = ""; $("#gap-status").textContent = "";
+    $("#link-status").textContent = ""; setStatus("#gap-status", "");
     updateChecklist(true); setHash("check");
     $("#in-body").focus();
   });
@@ -2905,16 +3344,10 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     updateChecklist(true); setHash("check"); $("#in-body").focus();
   });
   $("#btn-link").addEventListener("click", (e) => {
-    const r = currentReport();
-    if (!shownId && r.title.length > 500) { $("#link-status").textContent="Share links support titles up to 500 characters. Copy or download the full draft instead; your report is unchanged."; return; }
-    let params = checkParams();
-    if (!params) {
-      const code = C.encodeState(r.title, r.body);
-      if (!code) { $("#link-status").textContent = "This report is too long to put in a link (over " + C.MAX_LINK_CHARS.toLocaleString("en-US") + " characters). Copy the draft instead."; return; }
-      params = new URLSearchParams({ text: code });
-    }
+    const params = checkParams();
+    if (!params) { $("#link-status").textContent = "Private or edited report: use Copy draft or Download Markdown. Report contents stay out of links."; return; }
     setHash("check", params);
-    copyText(location.href, e.currentTarget, shownId ? "Link copied." : "Link copied. The report text is in the part of the link after #, which browsers don't send to any server.", "#link-status");
+    copyText(location.href, e.currentTarget, "Public sample link copied.", "#link-status");
   });
 
   let exportRevision = 0;
@@ -2948,10 +3381,12 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if (!repo) { $("#github-link-status").textContent = "Enter owner/repository to prepare the GitHub link. Copy or download is available without it."; return; }
     if (!GITHUB_REPO.test(repo)) { $("#github-link-status").textContent = "Use a GitHub repository in owner/repository format."; return; }
     if (title.length > 256) { $("#github-link-status").textContent = "GitHub issue titles are limited to 256 characters. Edit the title, or copy/download the draft."; return; }
-    const url = "https://github.com/" + repo + "/issues/new?" + new URLSearchParams({ title, body }).toString();
-    if (url.length > MAX_GITHUB_LINK_LENGTH) { $("#github-link-status").textContent = "The pre-filled link is longer than 7,000 characters. Copy or download the draft, then paste it into GitHub."; return; }
-    link.href = url; link.hidden = false;
-    $("#github-link-status").textContent = "";
+    if (!checkParams()) {
+      link.href = "https://github.com/" + repo + "/issues/new"; link.hidden = false;
+      $("#github-link-status").textContent = "Copy the draft, then paste it into GitHub. Private text is never included in the link."; return;
+    }
+    link.href="https://github.com/"+repo+"/issues/new";link.hidden=false;
+    setStatus('#github-link-status','Review the visible draft, then copy it and paste into GitHub. No report text or credentials are included in this link.');
   }
   $("#github-repo").addEventListener("input", updateGithubIssueLink);
   for (const id of ["#btn-copy-tpl", "#inline-copy"]) $(id).addEventListener("click", (e) => {
@@ -2961,16 +3396,19 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   });
   for (const id of ["#btn-dl-tpl", "#inline-download"]) $(id).addEventListener("click", async () => {
     updateChecklist(true);
-    const revision = exportRevision;
+    const revision = exportRevision, ticket=ownershipEpoch;
+    const active=()=>revision===exportRevision && ticket===ownershipEpoch;
     const status = $(id === "#inline-download" ? "#inline-export-status" : "#copy-tpl-status");
     const name = "talkback-report-draft.md", text = draftText();
     await ready;
-    if (downloads) { try { await downloads.save({ filename: name, data: text }); if (revision === exportRevision) status.textContent = "Draft saved as " + name + "."; return; } catch (e) { /* fall back to a browser download */ } }
+    if(!active())return;
+    if (downloads) { try { await downloads.save({ filename: name, data: text }); if (active()) status.textContent = "Draft saved as " + name + "."; return; } catch (e) { /* fall back to a browser download */ } }
+    if(!active())return;
     const url = URL.createObjectURL(new Blob([text], { type: "text/markdown;charset=utf-8" }));
     const a = h("a", { href: url, download: name, hidden: true });
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    if (revision === exportRevision) status.textContent = "Draft downloaded as " + name + ".";
+    if (active()) status.textContent = "Draft downloaded as " + name + ".";
   });
 
   // Open whatever the URL asks for; with nothing asked, keep this tab's report, or show the first sample so the
@@ -2985,8 +3423,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     } else if (savedDraft) {
       shownId = null; exSel.value = "";
       $("#in-title").value = savedDraft.title; $("#in-body").value = savedDraft.body;
-      $("#ex-source").textContent = "Your saved draft on this device.";
-      draftSaveStatus.textContent = "Restored saved draft from this device.";
+      $("#ex-source").textContent = "Your saved draft in this tab.";
+      draftSaveStatus.textContent = "Restored saved draft in this tab.";
       updateChecklist(true);
     } else if (saved && saved.id && BY_ID[saved.id]) loadExample(saved.id);
     else if (saved && (saved.title || saved.body)) {
@@ -2994,7 +3432,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       $("#ex-source").textContent = "Your text from earlier in this tab.";
       updateChecklist(true);
     } else if (saved) { $("#ex-source").textContent = "Cleared."; updateChecklist(true); }
-    else loadExample(SAMPLES[0]);
+    else if(isServer()) updateChecklist(true); else loadExample(SAMPLES[0]);
   }
   function applyCheckParams(params) {
     const id = params.get("report"), code = params.get("text");
@@ -3013,13 +3451,13 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       if (st) {
         shownId = null; exSel.value = "";
         $("#in-title").value = st.title; $("#in-body").value = st.body;
-        $("#ex-source").textContent = "Opened from a shared link.";
+        setHash("check");
+        $("#ex-source").textContent = "Imported legacy link into this tab; report text removed from the address.";
         updateChecklist(true);
       } else {
-        shownId = null; exSel.value = "";
-        $("#in-title").value = ""; $("#in-body").value = "";
-        updateChecklist(true);
-        $("#ex-source").textContent = "That link's report couldn't be read. Paste the report, or try a sample.";
+        ensureReport();
+        setHash("check", checkParams());
+        $("#ex-source").textContent = "That link's report couldn't be read. Current report retained; paste the report or try a sample.";
       }
     } else { ensureReport(); if (shownId) setHash("check", checkParams()); }
   }
@@ -3101,14 +3539,16 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
 
   let checkCtl = null;
   async function runCheck(compare) {
+    const ownerTicket=ownershipEpoch;
     const sessionRevision = window.ProductSurface.profiles.revision();
     const reportRevision = exportRevision;
     await ready;
-    if (sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
+    if (ownerTicket!==ownershipEpoch || sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
     const out = $("#triage-out"), st = $("#triage-status");
     if (!sample) { $("#sample-off").hidden = false; st.textContent = ""; return; }
     const r = currentReport();
-    if (!r.body.trim() && !r.title.trim()) { st.textContent = "Add a title or report text first."; return; }
+    if (!r.body.trim() && !r.title.trim()) { setStatus(st,"Add a title or report text first.");sound("validation-error");return; }
+    if (r.body.length > T.MAX_BODY && !confirm("The provider accepts only the first " + T.MAX_BODY.toLocaleString("en-US") + " characters. Later evidence will be omitted. Send this shortened report? The original stays unchanged.")) { st.textContent = "Provider request cancelled. Full report remains available for offline checks and export."; return; }
     if (checkCtl) checkCtl.abort();
     const ctl = (checkCtl = new AbortController());
     const app = $("#ex-app-ai").value;
@@ -3120,14 +3560,14 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     try {
       if (!compare) {
         const a = await triage(r.title, r.body, app, "default", ctl.signal);
-        if (sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
+        if (ownerTicket!==ownershipEpoch || sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
         out.replaceChildren(h("div", { class: "verdicts" }, verdictCard("Claude's triage", a, "Report as written")));
         st.textContent = "Done. " + IMPACT[a.impact].t + ", " + EVID[a.evidence].t.toLowerCase() + "." + cutNote;
       } else {
         const cut = T.strip(r, { steps: T.check(r).tbSteps, version: true });
         const same = cut.trim() === r.body.trim();
         const [a, b] = await Promise.all([triage(r.title, r.body, app, "default", ctl.signal), same ? null : triage(r.title, cut, app, "default", ctl.signal)]);
-        if (sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
+        if (ownerTicket!==ownershipEpoch || sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
         const cards = [verdictCard("As written", a, "Full report")];
         if (b) cards.push(verdictCard("Steps & version removed", b, ""));
         const changed = b && (a.impact !== b.impact || a.evidence !== b.evidence);
@@ -3138,7 +3578,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
         st.textContent = (same ? "Done." : changed ? "Done. Claude's call changed when the details were removed." : "Done. Claude's call stayed the same without the details.") + cutNote;
       }
     } catch (e) {
-      if (sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
+      if (ownerTicket!==ownershipEpoch || sessionRevision !== window.ProductSurface.profiles.revision() || reportRevision !== exportRevision) return;
       st.textContent = errText(e);
       st.classList.toggle("err", e.code !== "cancelled");
       if (e.code === "not_granted" || e.code === "sampling_disabled") $("#sample-off").hidden = false;
@@ -3205,34 +3645,38 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   for (const id in ARCHIVE) RUNS[id] = { meta: ARCHIVE[id].meta, items: ARCHIVE[id].items, archived: true };
   let currentRun = null;
   let running = false, runCtl = null;
-  const localRuns = store.get("tbt-runs") || {};
+  const localRuns = isServer() ? {} : store.get("tbt-runs") || {};
   Object.assign(RUNS, localRuns);
 
   let unsubItems = null;
   function startDb() {
+    const ticket=ownershipEpoch;
     if (!db) {
       const ids = Object.keys(RUNS).sort().reverse();
       if (ids.length && !currentRun) currentRun = ids[0];
       return;
     }
-    let timer = setTimeout(() => { if (!Object.keys(RUNS).length) $("#run-status").textContent = "Saved runs can't be reached yet."; }, 10000);
+    let timer = setTimeout(() => { if (ticket===ownershipEpoch && !Object.keys(RUNS).length) setStatus("#run-status", "Saved runs can't be reached yet."); }, 10000);
     db.collection("runs").orderBy("created", "desc").limit(30).onSnapshot((snap) => {
-      clearTimeout(timer);
+      clearTimeout(timer);if(ticket!==ownershipEpoch)return;
       for (const d of snap.docs) { const m = d.data(); RUNS[d.id] = RUNS[d.id] || { meta: m, items: {} }; RUNS[d.id].meta = m; }
       if (!currentRun && snap.docs.length) selectRun(snap.docs[0].id);
       else renderResults();
     }, () => { clearTimeout(timer); });
     db.collection("labels").onSnapshot((snap) => {
+      if(ticket!==ownershipEpoch)return;
       LABEL_DOCS = {};
       for (const d of snap.docs) LABEL_DOCS[d.id] = d.data();
       renderLabelView(); renderResults();
     }, () => {});
   }
   function selectRun(id) {
+    const ticket=ownershipEpoch;
     currentRun = id;
     if (db && RUNS[id] && !RUNS[id].local) {
       if (unsubItems) unsubItems();
       unsubItems = db.collection("runs/" + id + "/items").onSnapshot((snap) => {
+        if(ticket!==ownershipEpoch || !RUNS[id])return;
         if (running && id === runningId) return renderResults();
         const items = {};
         for (const d of snap.docs) items[d.id] = d.data().answers || {};
@@ -3245,7 +3689,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
 
   let runningId = null;
   async function execute(runId, tasks) {
-    const run = RUNS[runId];
+    const run = RUNS[runId], ticket=ownershipEpoch;
+    const owned=()=>ticket===ownershipEpoch && RUNS[runId]===run;
     const total = tasks.length;
     let done = 0, failed = null, unsaved = 0;
     running = true; runningId = runId;
@@ -3254,15 +3699,16 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     $("#btn-run").disabled = true; $("#btn-stop").disabled = false; $("#btn-resume").hidden = true;
     const st = $("#run-status"); st.classList.remove("err");
     const bar = $("#run-bar");
-    const step = () => { bar.style.setProperty("--p", total ? done / total : 1); st.textContent = done + " of " + total + " calls done"; };
+    const step = () => { if (!owned())return; bar.style.setProperty("--p", total ? done / total : 1); setStatus("#run-call-progress",done + " of " + total + " calls done"); };
     step();
     // group by report so each report's answers are written once
     const pending = {};
     for (const t of tasks) pending[t.r.id] = (pending[t.r.id] || 0) + 1;
     let writes = Promise.resolve();
     const saveItem = (rid) => {
+      if (!owned())return;
       const answers = run.items[rid];
-      if (db && !run.local) writes = writes.then(() => db.doc("runs/" + runId + "/items/" + rid).set({ answers, at: new Date().toISOString() }).catch(() => { unsaved++; }));
+      if (db && !run.local) writes = writes.then(() => owned() ? db.doc("runs/" + runId + "/items/" + rid).set({ answers, at: new Date().toISOString() }) : Promise.resolve()).catch(() => { if(owned())unsaved++; });
       else { run.localItems = run.items; persistLocal(); }
     };
     const queue = tasks.slice();
@@ -3272,8 +3718,10 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
         try {
           const body = T.variant(r, c);
           const a = await triage(r.title, body, APPS[r.app].name, run.meta.tier, signal);
+          if (!owned())return;
           run.items[r.id] = Object.assign({}, run.items[r.id], { [c]: a });
         } catch (e) {
+          if (!owned())return;
           if (e && (e.code === "invalid_json" || e.code === "upstream_error" || e.code === "empty_completion" || e.code === "refused")) {
             run.items[r.id] = Object.assign({}, run.items[r.id], { [c]: { error: e.code } });
           } else { failed = e; break; }
@@ -3284,17 +3732,19 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       }
     }
     await Promise.all([worker(), worker()]);
+    if (!owned())return;
     // save partial reports too
     for (const rid in pending) if (pending[rid] > 0 && run.items[rid]) saveItem(rid);
     // never let a slow save hold the page in "running"
     const settle = (pr) => Promise.race([pr.catch(() => {}), new Promise((r) => setTimeout(r, 8000))]);
     await settle(writes);
+    if (!owned())return;
     // a run is done only when every planned call has an answer; unreadable or refused replies can be retried
     const prog = T.runProgress(run.items, run.meta.total);
     const status = failed || signal.aborted ? "stopped" : prog.complete ? "done" : "incomplete";
     run.meta.status = status;
     // mark the run finished after its answers are saved, without holding the page
-    if (db && !run.local) writes.then(() => db.doc("runs/" + runId).update({ status })).catch(() => db.doc("runs/" + runId).set(Object.assign({}, run.meta, { status })).catch(() => {}));
+    if (db && !run.local) writes.then(() => owned() ? db.doc("runs/" + runId).update({ status }) : Promise.resolve()).catch(() => owned() ? db.doc("runs/" + runId).set(Object.assign({}, run.meta, { status })) : Promise.resolve()).catch(() => {});
     else persistLocal();
     running = false; runningId = null;
     $("#btn-stop").disabled = true;
@@ -3302,7 +3752,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     if (failed) { st.textContent = errText(failed) + " " + done + " of " + total + " calls finished; use Finish this run to continue later."; st.classList.add("err"); }
     else if (signal.aborted) st.textContent = "Stopped after " + done + " of " + total + " calls. Use Finish this run to continue.";
     else if (prog.errors) { st.textContent = "Finished with failures: " + prog.answered + " of " + prog.total + " calls answered, " + prog.errors + " came back unreadable or refused. Use Finish this run to retry them."; st.classList.add("err"); }
-    else st.textContent = "Finished: " + done + " calls.";
+    else {setStatus(st,"Finished: " + done + " calls."); sound("evaluation");}
+    if($('#cue-record-kind').value==='evaluation')prepareEvaluation();else publishCurrent();
     // shortcut: counts only saves that failed before the 8-second wait above ended
     if (unsaved) { st.textContent += " Answers for " + unsaved + (unsaved === 1 ? " report were" : " reports were") + " not saved with this page and will be gone after a reload. Download the CSV now."; st.classList.add("err"); }
     renderResults();
@@ -3313,8 +3764,8 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     store.set("tbt-runs", keep);
   }
   $("#btn-run").addEventListener("click", async () => {
-    await ready;
-    if (!sample) { $("#run-status").textContent = NO_AI_RUN; return; }
+    const ticket=ownershipEpoch;await ready;if(ticket!==ownershipEpoch)return;
+    if (!sample) { setStatus("#run-status", NO_AI_RUN); return; }
     const conds = COND_ORDER.filter((c) => selectedConds().includes(c));
     const tier = radio("tier"), scope = radio("scope");
     const tasks = plan(conds, scope);
@@ -3323,19 +3774,20 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     const meta = { created: new Date().toISOString(), tier, conds, scope, total: tasks.length, by: (me && me.id) || null, status: "running", method: 2 };
     RUNS[id] = { meta, items: {}, local: !db };
     currentRun = id;
-    if (db) { try { await db.doc("runs/" + id).set(meta); selectRun(id); } catch (e) { RUNS[id].local = true; } }
+    if (db) { try { await db.doc("runs/" + id).set(meta); if(ticket!==ownershipEpoch)return;selectRun(id); } catch (e) {if(ticket!==ownershipEpoch)return;RUNS[id].local = true; } }
     renderResults();
     execute(id, tasks);
   });
   $("#btn-stop").addEventListener("click", () => { if (runCtl) runCtl.abort(); });
   $("#btn-resume").addEventListener("click", async () => {
-    await ready;
-    const run = RUNS[currentRun];
+    const ticket=ownershipEpoch,id=currentRun;await ready;if(ticket!==ownershipEpoch)return;
+    const run = RUNS[id];
     if (!run || !sample) return;
     const tasks = plan(run.meta.conds, run.meta.scope).filter(({ r, c }) => !(run.items[r.id] && run.items[r.id][c] && !run.items[r.id][c].error));
     if (!tasks.length) return;
     if (db && !run.local) await db.doc("runs/" + currentRun).update({ status: "running" }).catch(() => {});
-    execute(currentRun, tasks);
+    if(ticket!==ownershipEpoch || RUNS[id]!==run)return;
+    execute(id, tasks);
   });
 
   // ---------- results ----------
@@ -3351,7 +3803,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     const run = RUNS[currentRun];
     const conds = COND_ORDER.filter((c) => (run.meta.conds || []).includes(c));
     const results = {};
-    for (const rid in run.items) { results[rid] = {}; for (const c in run.items[rid]) if (!run.items[rid][c].error) results[rid][c] = run.items[rid][c]; }
+    for (const rid in run.items) { results[rid] = {}; for (const c in run.items[rid]) { const answer = run.items[rid][c]; if (!answer.error && T.parseAnswer(JSON.stringify({ ...answer, task_impact: answer.impact }))) results[rid][c] = answer; } }
     const reports = (run.meta.scope === "all" ? REPORTS : eligible);
     const S = T.summarize(reports, results, conds);
     // count answers and failed calls separately: a saved error is not an answer
@@ -3471,26 +3923,56 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   function renderAblation(params = parseHash().params) {
     const select = $("#ablation-report");
     if (!select.options.length) {
-      select.replaceChildren(...REPORTS.map(r => h("option", { value: r.id }, r.app + " #" + r.number + ": " + r.title)));
-      select.addEventListener("change", () => {
-        const params = new URLSearchParams(location.search); params.set("report", select.value);
-        history.replaceState(null, "", location.pathname + "?" + params);
-        renderAblation(params);
-      });
+      select.replaceChildren(h("option", { value: "" }, "Current report in this tab"), ...REPORTS.map(r => h("option", { value: r.id }, r.app + " #" + r.number + ": " + r.title)));
+      select.onchange = () => {
+        const query = new URLSearchParams(); if (select.value) query.set("report", select.value);
+        if (location.hash) setHash("ablation", query);
+        else history.replaceState(null, "", location.pathname + (query.size ? "?" + query : ""));
+        renderAblation(query);
+      };
+      $("#ablation-copy").onclick = e => {const ticket=ownershipEpoch,revision=exportRevision;return copyText($("#ablation-modified").textContent,e.currentTarget,"Modified report copied locally.","#ablation-status",()=>ticket===ownershipEpoch&&revision===exportRevision);};
+      $("#ablation-remove").onchange = () => renderAblation();
+      $("#ablation-run").onclick = async () => {
+        const ticket=ownershipEpoch;const button = $("#ablation-run"); button.disabled = true; setStatus("#ablation-status", "Checking both reports…");
+        await new Promise(resolve => setTimeout(resolve, 0));
+        try { if(ticket!==ownershipEpoch)return;renderAblation(); sound("ablation"); publishCurrent(); } catch { sound("validation-error");setStatus("#ablation-status", "Comparison failed. Select a sample and retry Run comparison."); }
+        finally { button.disabled = false; }
+      };
+      $("#ablation-reset").onclick = () => { $("#ablation-remove").checked = false; renderAblation(); };
     }
     const id = params.get("report");
-    const r = BY_ID[id] || REPORTS.find(r => T.applies(r, "no_steps", r.chk)) || REPORTS[0];
-    if (!r) { $("#ablation-check").textContent = "No reports available."; return; }
-    select.value = r.id;
-    const cut = T.variant(r, "no_steps"), check = T.pairCheck(r, "no_steps");
+    const stored = session.get();
+    const own = lastResult ? currentReport() : stored && (stored.title || stored.body) ? stored : savedDraft;
+    const r = BY_ID[id] || (!id && own) || REPORTS.find(r => T.applies(r, "no_steps", r.chk)) || REPORTS[0];
+    if (!r) { setStatus("#ablation-status", "No report. Paste a report or select a sample."); return; }
+    const publicId = REPORTS.find(x => x.title === r.title && x.body === r.body)?.id;
+    select.value = id && BY_ID[id] ? id : own && !id ? "" : publicId || "";
+    const remove = $("#ablation-remove").checked;
+    const cut = remove ? T.variant(r, "no_steps") : r.body;
+    const original = PlatformChecks.analyze(r), modified = PlatformChecks.analyze({ ...r, body: cut });
+    const score = result => result.manualReview ? "Manual review required for this language." : result.summary.present + " of " + result.summary.required + " required details found.";
+    $("#ablation-original").textContent = r.title + "\n\n" + r.body;
+    $("#ablation-modified").textContent = r.title + "\n\n" + cut;
+    $("#ablation-original-score").textContent = score(original);
+    $("#ablation-modified-score").textContent = score(modified);
+    comparisonEvidence={report:r, modified_body:cut, removal:remove, original:original.items.map(x=>({key:x.key,status:x.status})), modified:modified.items.map(x=>({key:x.key,status:x.status}))};
+    let changes = 0;
+    $("#ablation-findings").replaceChildren(...original.items.map(item => {
+      const after = modified.items.find(x => x.key === item.key), changed = after && after.status !== item.status;
+      if (changed) changes++;
+      return h("li", { "data-key": item.key, "data-before": item.status, "data-after": after?.status || "unavailable" }, item.name + ": " + STATE_TEXT[item.status] + " → " + (after ? STATE_TEXT[after.status] : "Unavailable") + (changed ? "." : " (unchanged)."));
+    }));
+    setStatus("#ablation-summary", original.manualReview || modified.manualReview ? "Manual review required; no automatic completeness verdict for this language." : changes ? changes + " finding" + (changes === 1 ? " changed." : "s changed.") : "Checker findings unchanged.");
     $("#ablation-diff").replaceChildren(removedView(r.body, cut));
-    $("#ablation-source").replaceChildren(h("a", { href: gh(r), target: "_blank", rel: "noopener" }, "Open source issue"));
-    $("#ablation-check").textContent = id && !BY_ID[id] ? "Report not found. Select a dataset report." : cut.trim() === r.body.trim() ? "No removable TalkBack steps." : check.clean ? "Other measured details retained." : "Removal needs review: " + [...check.lostOther, ...check.gainedOther, ...check.targetLeft].join(", ") + ".";
+    $("#ablation-source").replaceChildren(...(publicId ? [h("a", { href: gh(BY_ID[publicId]), target: "_blank", rel: "noopener" }, "Public source: " + publicId)] : ["Current private or edited report · stays in this tab"]));
+    $("#ablation-check").textContent = id && !BY_ID[id] ? "Report not found. Select a dataset report and retry." : cut === r.body ? "Report text unchanged. No steps removed." : "Removed text is shown in Methods. Original report preserved.";
+    setStatus("#ablation-status", "Offline comparison complete. No model request was made.");
     const box = $("#ablation-verdicts"); box.replaceChildren();
+    if (!publicId) { box.append(h("p", null, "No archived answer matches this private or edited report. Live provider unavailable here; offline findings remain available.")); return; }
     for (const [runId, run] of Object.entries(ARCHIVE)) {
-      const item = run.items[r.id] || {};
+      const item = run.items[publicId] || {};
       box.append(h("p", { class: "small muted" }, "Archived " + runId + " · " + run.meta.created + " · " + (run.meta.model || run.meta.tier || "model setting unavailable")));
-      for (const cond of ["full", "no_steps"]) box.append(item[cond] && !item[cond].error ? verdictCard(T.CONDITIONS[cond].label, item[cond]) : h("p", null, T.CONDITIONS[cond].label + ": Not triaged in this run."));
+      for (const cond of ["full", ...(remove ? ["no_steps"] : [])]) box.append(item[cond] && !item[cond].error ? verdictCard(T.CONDITIONS[cond].label, item[cond]) : h("p", null, T.CONDITIONS[cond].label + ": Not triaged in this run."));
     }
     if (!Object.keys(ARCHIVE).length) box.append(h("p", null, "No archived run available."));
   }
@@ -3536,6 +4018,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   }
   // Copy to the clipboard; if the browser refuses or doesn't answer, show the text selected in a box instead.
   async function copyText(text, btn, okMsg, stSel, isCurrent = () => true) {
+    const ticket=ownershipEpoch;
     const st = $(stSel || "#copy-status");
     let ok = false;
     try {
@@ -3544,7 +4027,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
         new Promise((r) => setTimeout(() => r(false), 1500)),
       ]);
     } catch (e) { ok = false; }
-    if (!isCurrent()) return;
+    if (ticket!==ownershipEpoch || !isCurrent()) return;
     if (ok) { if (st) st.textContent = okMsg; return; }
     const anchor = btn.closest(".row") || btn;
     let ta = anchor.nextElementSibling && anchor.nextElementSibling.classList && anchor.nextElementSibling.classList.contains("copybox") ? anchor.nextElementSibling : null;
@@ -3562,7 +4045,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   const LS_KEY = "cuereport_guest_labels_v2";
   let storageOK = (() => { try { localStorage.setItem("cuereport_probe_v1", "1"); localStorage.removeItem("cuereport_probe_v1"); return true; } catch (e) { return false; } })();
   let LABEL_DOCS = {};           // from the page's store: {docId: {labels, name?, imported?}}
-  let localLabels = Object.assign({}, store.get("tbt-labels") || {}, store.get(LS_KEY) || {});
+  let localLabels = isServer() ? {} : Object.assign({}, store.get("tbt-labels") || {}, store.get(LS_KEY) || {});
   let sharedOK = null;           // null until the first shared save is tried
   let labIndex = 0, labSet = "starter", labCond = "full";
   const myKey = () => (db && me && me.id ? me.id : null);
@@ -3592,16 +4075,19 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   }
   let writing = Promise.resolve();
   function saveMyLabel(key, val) {
+    const ticket=ownershipEpoch;
     val = Object.assign({}, val, { at: new Date().toISOString() });
     localLabels[key] = val;
     storageOK = store.set(LS_KEY, localLabels);
+    publishCurrent();
     const k = myKey();
     if (k && sharedOK !== false) {
       const labels = myLabels();
-      writing = writing.then(() => db.doc("labels/" + k).set({ labels, updated: val.at })).then(() => {
+      writing = writing.then(() => ticket===ownershipEpoch ? db.doc("labels/" + k).set({ labels, updated: val.at }) : Promise.resolve()).then(() => {
+        if(ticket!==ownershipEpoch)return;
         sharedOK = true;
         LABEL_DOCS[k] = Object.assign({}, LABEL_DOCS[k], { labels });
-      }).catch(() => { sharedOK = false; }).then(() => { $("#lab-where").textContent = whereSaved(); });
+      }).catch(() => { if(ticket===ownershipEpoch)sharedOK = false; }).then(() => { if(ticket===ownershipEpoch)setStatus("#lab-where",whereSaved()); });
     }
     $("#lab-where").textContent = whereSaved();
   }
@@ -3622,6 +4108,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     requestAnimationFrame(() => { if (heading.isConnected && current() === "research/labels") heading.focus(); });
   }
   async function renderLabelView() {
+    const ticket=ownershipEpoch;
     const order = labelOrder();
     const mine = myLabels();
     labIndex = Math.max(0, Math.min(labIndex, order.length - 1));
@@ -3674,6 +4161,7 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
     const list = raters();
     let names = {};
     if (user) { try { names = await user.profiles(list.filter((x) => !x.imported && x.key !== "local").map((x) => x.key)); } catch (e) { names = {}; } }
+    if(ticket!==ownershipEpoch)return;
     const nameOf = (x) => x.imported ? x.name : x.mine ? (x.name || "You") : ((names[x.key] && names[x.key].name) || "Another rater");
     $("#lab-who").textContent = "Label without looking at Claude's answers; this tab never shows them.";
     const rows = list.map((x) => h("tr", null, h("th", { scope: "row" }, nameOf(x)), h("td", { class: "num" }, String(Object.keys(x.labels).length))));
@@ -3738,8 +4226,9 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       h("tbody", null, rows)));
   }
 
-  $("#btn-copy-labels").addEventListener("click", (e) => copyText(JSON.stringify({ tool: "talkback-triage-pilot", version: 2, labels: myLabels() }), e.target, (() => { const n = Object.keys(myLabels()).length; return "Copied " + n + (n === 1 ? " label." : " labels."); })(), "#lab-status"));
+  $("#btn-copy-labels").addEventListener("click", (e) => {const ticket=ownershipEpoch;return copyText(JSON.stringify({ tool: "talkback-triage-pilot", version: 2, labels: myLabels() }), e.target, (() => { const n = Object.keys(myLabels()).length; return "Copied " + n + (n === 1 ? " label." : " labels."); })(), "#lab-status",()=>ticket===ownershipEpoch);});
   $("#btn-import").addEventListener("click", async () => {
+    const ticket=ownershipEpoch;
     const st = $("#lab-status");
     const name = $("#imp-name").value.trim();
     const button = $("#btn-import");
@@ -3769,17 +4258,19 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       button.disabled = true;
       let saved = false;
       if (db && user) {
-        try { if (await user.isOwner()) { await db.doc("labels/" + id).set({ imported: true, name, labels: clean }); saved = true; } } catch (e) { saved = false; }
+        try { if (await user.isOwner()) { if(ticket!==ownershipEpoch)return;await db.doc("labels/" + id).set({ imported: true, name, labels: clean }); saved = true; } } catch (e) { saved = false; }
       }
+      if(ticket!==ownershipEpoch)return;
       LABEL_DOCS[id] = { imported: true, name, labels: clean };
       st.textContent = "Added " + Object.keys(clean).length + " labels from " + name + (saved ? "." : " for this visit only.");
       renderLabelView(); renderResults();
-    } catch (e) { st.textContent = e.message; }
-    finally { button.disabled = false; }
+    } catch (e) { if(ticket===ownershipEpoch)setStatus(st,e.message); }
+    finally { if(ticket===ownershipEpoch)button.disabled = false; }
   });
 
 
-  const reportTools=document.createElement('div');reportTools.className='report-disclosures';document.querySelector('.document-sheet .tools').after(reportTools);
+  function arrangeReportOptions(){const options=$('#report-options');if(!options)return;const compact=canonicalPage()==='workbench'&&parseHash().path==='check';const tools=document.querySelector('.document-sheet .tools');if(compact){options.append($('#btn-link'),$('#btn-reset-draft'),$('#checker-scope'),$('#save-options'));}else{tools.append($('#btn-link'),$('#btn-reset-draft'));$('#check>header').after($('#checker-scope'));$('#canonical-tools').prepend($('#save-options'));}}
+  const reportOptions=document.createElement('details');reportOptions.id='report-options';reportOptions.className='report-options';reportOptions.open=!canonicalPage();const optionsSummary=document.createElement('summary');optionsSummary.textContent='Report options';const reportTools=document.createElement('div');reportTools.className='report-disclosures';reportOptions.append(optionsSummary,document.querySelector('#secondary-report-controls'),reportTools);document.querySelector('.document-sheet .tools').after(reportOptions);arrangeReportOptions();
   for(const detail of [document.querySelector('.github-import'),document.querySelector('#ex-select').closest('details')]){
     reportTools.append(detail);detail.addEventListener('keydown',e=>{if(e.key==='Escape'){detail.open=false;detail.querySelector('summary').focus();e.preventDefault();}});
   }
@@ -3796,18 +4287,22 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
   $('#report-row').onchange=previewImport;
   $('#report-load').onclick=()=>{try{const r=selectedImport();if(!r||!$('#report-map-body').value)throw Error('Map the report body first.');if($('#in-body').value.trim()&&!confirm('Replace the current editor with this selected report? Save or export first.'))return;shownId=null;exSel.value='';$('#in-title').value=r.title;$('#in-body').value=r.body;updateChecklist(true);collection.open=false;$('#in-body').focus();}catch(error){$('#report-import-status').textContent=error.message;}};
   window.ProductSurface.configure({
-    reset() {
-      clearingSession = true;
+    reset({server=false}={}) {
+      clearingSession = true; ownershipEpoch++; clearCollection(); clearTimeout(draftAnnounceTimer);window.dispatchEvent(new CustomEvent('cuereport-private-reset',{detail:{server}}));$('#btn-import').disabled=false; comparisonEvidence=null;evaluationExport=null;preparingEvaluation=false;detailId=null;$('#restored-evaluation').replaceChildren();$('#restored-evaluation').hidden=true;
+      for(const id in RUNS) if(!RUNS[id].archived)delete RUNS[id];
+      currentRun=null; running=false; runningId=null; unsubItems?.(); unsubItems=null;
+      $("#ablation-original").textContent=""; $("#ablation-modified").textContent=""; $("#ablation-findings").replaceChildren(); $("#ablation-verdicts").replaceChildren();$("#ablation-diff").replaceChildren();
       stopIssueImport(''); clearTimeout(inputTimer); clearTimeout(saveTimer); clearTimeout(summaryTimer);
       invalidateExport(); shownId = null; savedDraft = null; lastResult = null; exSel.value = '';
       $('#in-title').value = ''; $('#in-body').value = '';
       for (const key in gapDraft) delete gapDraft[key];
-      try { sessionStorage.removeItem('cuereport_guest_report_v1'); } catch { /* Locked session never reads guest recovery. */ }
-      localLabels = Object.assign({}, store.get(LS_KEY) || {}); LABEL_DOCS = {};
+      // Retained recovery remains owned by the previous principal; never read it after logout.
+      localLabels = {}; LABEL_DOCS = {};
       $('#imp-name').value = ''; $('#imp-json').value = ''; $('#github-issue-url').value = '';
       $('#github-repo').value = ''; updateGithubIssueLink();
       checkCtl?.abort(); runCtl?.abort(); checkCtl = null; $('#triage-out').replaceChildren(); $('#triage-status').textContent = '';
       $('#btn-triage').disabled = $('#btn-compare').disabled = false;
+      setStatus('#run-status','');setStatus('#run-call-progress','');$('#btn-stop').disabled=true;$('#cue-record-kind').value='report';window.WorkspaceStore?.capture(null,{autosave:false});
       document.querySelectorAll('.copybox').forEach((node) => node.remove());
       $('#link-status').textContent = ''; $('#gap-status').textContent = ''; $('#import-status').textContent = '';
       // Render the cleared input without saving it over the retained guest draft.
@@ -3825,13 +4320,39 @@ addEventListener('DOMContentLoaded',()=>{'use strict';
       stopIssueImport(''); clearTimeout(inputTimer); shownId=null; exSel.value=''; $('#in-title').value='Report excerpt'; $('#in-body').value=body; updateChecklist(true); location.hash='#/app';
     },
     capture() { const value = currentReport(); if (value.title.length > MAX_DRAFT_TITLE || value.body.length > MAX_DRAFT_BODY) throw new Error('Draft exceeds the title or report limit.'); return { version: 1, title: value.title, body: value.body }; },
-    restore(value) {
+    restore(value, {navigate=true}={}) {
       if (!value || value.version !== 1 || typeof value.title !== 'string' || typeof value.body !== 'string' || value.title.length > MAX_DRAFT_TITLE || value.body.length > MAX_DRAFT_BODY) throw new Error('Saved draft is invalid or unsupported.');
       stopIssueImport(''); clearTimeout(inputTimer); clearTimeout(saveTimer); invalidateExport();
       shownId = null; exSel.value = ''; $('#in-title').value = value.title; $('#in-body').value = value.body;
-      updateChecklist(true); location.hash = '#/app';
+      updateChecklist(true); if(navigate){if(isServer() || canonicalPage()){history.pushState(null,'','/workbench');route();}else location.hash = '#/app';}
     },
   });
+  function savedCurrent() {
+    const kind=$('#cue-record-kind').value, report=currentReport();
+    if (!report.title && !report.body && kind!=='evaluation')return null;
+    const payload={schema:'cuereport/1',versions:SOURCE_VERSIONS,report,checks:lastResult ? {summary:lastResult.summary,items:lastResult.items.map(x=>({key:x.key,status:x.status,required:x.required})),manual_review:!!lastResult.manualReview}:null,labels:localLabels};
+    if(kind==='ablation'){if(!comparisonEvidence)return null;payload.comparison=comparisonEvidence;payload.report=comparisonEvidence.report;const result=PlatformChecks.analyze(payload.report);payload.checks={summary:result.summary,items:result.items.map(x=>({key:x.key,status:x.status,required:x.required})),manual_review:!!result.manualReview};}
+    if(kind==='evaluation'){const selected=RUNS[currentRun];if(!selected||!evaluationExport||evaluationExport.runId!==currentRun||evaluationExport.key!==JSON.stringify({meta:selected.meta,items:selected.items}))return null;const results={};for(const id in selected.items){results[id]={};for(const condition in selected.items[id]){const answer=selected.items[id][condition];if(!answer.error&&T.parseAnswer(JSON.stringify({...answer,task_impact:answer.impact})))results[id][condition]=answer;}}payload.evaluation={id:currentRun,meta:selected.meta,summary:T.summarize(selected.meta.scope==='all'?REPORTS:eligible,results,COND_ORDER.filter(c=>(selected.meta.conds||[]).includes(c))),progress:T.runProgress(selected.items,selected.meta.total),archived:!!selected.archived,csv_sha256:evaluationExport.sha256,scope:'Actual evaluation summary with full schema-validated response CSV retained as an owned source artifact.'};delete payload.report;delete payload.checks;}
+    return {kind,title:(kind==='evaluation'?'Evaluation summary · '+currentRun:payload.report.title || 'Accessibility report').slice(0,200),payload};
+  }
+  function publishCurrent(){if(!persistenceReady || !window.WorkspaceStore || clearingSession)return;const value=savedCurrent();window.WorkspaceStore.capture(value,{autosave:false});const oversized=value&&new TextEncoder().encode(JSON.stringify(value)).length>60000;setStatus('#cue-unsynced',oversized?'Unsynced: this evidence may exceed the 64 KiB server limit. Keep a local Markdown export; the editor is unchanged.':value?.kind==='evaluation'?'Save retains the actual evaluation summary and versions. Full responses are saved as a downloadable owned CSV artifact.':'');}
+  persistenceReady=true;
+  window.CueApp={currentReport,updateChecklist,savedCurrent,sourceVersions:SOURCE_VERSIONS};
+  async function prepareEvaluation(){
+    if(preparingEvaluation||$('#cue-record-kind').value!=='evaluation')return;
+    const selected=RUNS[currentRun];if(!selected)return;const ticket=ownershipEpoch,id=currentRun,key=JSON.stringify({meta:selected.meta,items:selected.items});
+    if(evaluationExport?.key===key&&evaluationExport.runId===id){publishCurrent();return;}
+    preparingEvaluation=true;evaluationExport=null;window.WorkspaceStore?.capture(null,{autosave:false});setStatus('#cue-unsynced','Preparing full evaluation CSV…');
+    try{const reports=selected.meta.scope==='all'?REPORTS:eligible,csv=toCSV(selected,reports,COND_ORDER.filter(c=>(selected.meta.conds||[]).includes(c)));const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(csv));
+      if(ticket!==ownershipEpoch||id!==currentRun||key!==JSON.stringify({meta:selected.meta,items:selected.items}))return;
+      evaluationExport={runId:id,key,csv,sha256:Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('')};publishCurrent();
+    }catch(error){if(ticket===ownershipEpoch)setStatus('#cue-unsynced','Evaluation export not prepared. Keep Copy results (CSV) and retry.');}finally{if(ticket===ownershipEpoch)preparingEvaluation=false;}
+  }
+  $('#cue-record-kind').onchange=()=>{$('#cue-record-kind').value==='evaluation'?prepareEvaluation():publishCurrent();};
+  $('#import-browser-draft').onclick=()=>{try{let raw;for(const key of ['cuereport_guest_draft_v1','cuereport_guest_report_v1']){raw=sessionStorage.getItem(key)||localStorage.getItem(key);if(raw)break;}if(!raw)throw Error('No previous browser draft found. Local profile and encrypted backups remain available below.');const value=JSON.parse(raw);if(!confirm('Import this browser draft into the current server workspace editor? Existing copies are retained.'))return;window.ProductSurface.restore({version:1,title:value.title,body:value.body});setStatus('#browser-import-status','Imported into this editor. Choose Save current run to upload. Original copy retained.');}catch(error){setStatus('#browser-import-status',error.message);}};
+  window.WorkspaceStore?.register({readCurrent:savedCurrent,readArtifacts(){return $('#cue-record-kind').value==='evaluation'&&savedCurrent()&&evaluationExport?[{name:'evaluation-results.csv',blob:new Blob([evaluationExport.csv],{type:'text/csv;charset=utf-8'})}]:[];},onLogout(){window.ProductSurface.reset({server:true});},restore(saved,files,isCurrent){if(!isCurrent())return;if(saved.payload?.schema!=='cuereport/1')throw Error('Unsupported saved evidence. Export it for review.');if(saved.kind==='evaluation'){const evidence=saved.payload.evaluation;if(!evidence||!Array.isArray(evidence.summary?.rows))throw Error('Invalid evaluation summary. Download it for review.');const box=$('#restored-evaluation');box.replaceChildren(h('h2',null,'Saved evaluation summary'),h('p',null,evidence.scope),h('p',null,'Source run: '+evidence.id+' · App '+saved.payload.versions?.app),...evidence.summary.rows.slice(0,4).map(row=>h('p',null,(T.CONDITIONS[row.cond]?.label||row.cond)+': '+row.n+' schema-validated answers')));box.hidden=false;history.pushState(null,'','/reports');route();return;}window.ProductSurface.restore({version:1,...saved.payload.report});if(!isCurrent())return;if(saved.payload.labels&&typeof saved.payload.labels==='object')localLabels=saved.payload.labels;renderResults();renderLabelView();publishCurrent();}});
+  let previousPrincipal=null;
+  window.WorkspaceStore?.subscribe(state=>{const principal=state.session?.principal_id;if(!principal)previousPrincipal=null;if(principal&&principal!==previousPrincipal){previousPrincipal=principal;const saved=session.get();if(saved&&!currentReport().body){window.ProductSurface.restore({version:1,...saved},{navigate:false});if(parseHash().path==='ablation')renderAblation(parseHash().params);}}});
   updateCallCount();
   renderResults();
   renderLabelView();

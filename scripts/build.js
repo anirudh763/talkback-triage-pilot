@@ -31,8 +31,9 @@ for (const id of listRuns()) {
 const page = tpl
   .replace("/*STORAGE_MIGRATION*/", () => script(src("storage-migration.js")))
   .replace("/*UICSS*/", () => style(src("ui.css")))
-  .replace("/*APPCSS*/", () => style(src("app.css") + "\n" + src("product.css") + "\n" + src("pwa.css") + "\n" + src("routes.css")))
-  .replace("/*CORE*/", () => script(core) + "\n" + script(checker) + "\n" + script(src("platform-checks.js")) + "\n" + script(src("report-import.js")) + "\n" + script(src("local-profile.js")) + "\n" + script(src("product.js")) + "\n" + script(src("pwa.js")) + "\n" + script(src("ecosystem.js")) + "\n" + script(src("encrypted-backup.js")) + "\n" + script(src("backup-ui.js")) + "\n" + script(src("sync-provider.js")) + "\n" + script(src("sync-ui.js")))
+  .replace("/*APPCSS*/", () => style(src("app.css") + "\n" + src("product.css") + "\n" + src("pwa.css") + "\n" + src("routes.css") + "\n" + src("server-workspace.css")))
+  .replace("/*CORE*/", () => script(src("server-workspace.js")) + "\n" + script(src("audio.js")) + "\n" + script(core) + "\n" + script(checker) + "\n" + script(src("platform-checks.js")) + "\n" + script(src("report-import.js")) + "\n" + script(src("local-profile.js")) + "\n" + script(src("product.js")) + "\n" + script(src("pwa.js")) + "\n" + script(src("ecosystem.js")) + "\n" + script(src("encrypted-backup.js")) + "\n" + script(src("backup-ui.js")) + "\n" + script(src("sync-provider.js")) + "\n" + script(src("sync-ui.js")))
+  .replace("/*SOURCE_VERSIONS*/", () => safeJson({app: VERSION, checker: crypto.createHash("sha256").update(checker + src("platform-checks.js")).digest("hex"), method: crypto.createHash("sha256").update(core).digest("hex"), dataset: crypto.createHash("sha256").update(safeJson(reports)).digest("hex")}))
   .replace("/*DATA*/", () => safeJson(reports))
   .replace("/*ARCHIVE*/", () => safeJson(archive))
   .replace("/*VERSION*/", () => VERSION);

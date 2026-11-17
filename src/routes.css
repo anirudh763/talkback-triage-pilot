@@ -19,7 +19,41 @@
 .comparison-grid>section{align-content:start}
 
 html[data-direct-route]:not([data-direct-route=""]) .product-header[data-workspace=true]{display:none}
-html[data-direct-route=ablation] .profile-tools,html[data-direct-route=statistics] .profile-tools,html[data-direct-route=system] .profile-tools{display:none}
+
 
 html[data-direct-route=""] .direct-route-link{display:none}
 html[data-direct-route]:not([data-direct-route=""]) #rail a[data-nav=research]{display:none}
+
+#demo-scenario{flex:1 1 220px;min-width:0}#workflow-guide{display:flex;gap:12px;align-items:center;flex-wrap:wrap}#workflow-guide p{flex:1;min-width:160px;margin:0}
+#ablation .comparison-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.comparison-report{white-space:pre-wrap;overflow-wrap:anywhere;max-height:500px;overflow:auto;margin:0;font:inherit;line-height:1.6;border-top:1px solid var(--border);padding-top:12px}#ablation-findings{padding-left:20px}#ablation .row input[type=checkbox]{width:20px;min-height:20px}#ablation label.row{min-height:44px;cursor:pointer}#ablation-original-score,#ablation-modified-score{font-variant-numeric:tabular-nums}
+@media(max-width:767px){#ablation .comparison-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Keep four task pages primary; local work stays available without a full toolbar. */
+html[data-direct-route]:not([data-direct-route=""]) #rail .report-extra{display:none}
+html:not([data-direct-route]) .direct-report-tools,html[data-direct-route=""] .direct-report-tools{display:none}
+.direct-report-tools{position:relative}.direct-report-tools>summary,.local-work>summary{min-height:44px;display:flex;align-items:center;padding:8px 12px;color:var(--fg-muted);cursor:pointer}
+#rail .direct-report-tools>ul{position:absolute;z-index:20;top:100%;right:0;display:grid;min-width:220px;max-width:calc(100vw - 32px);padding:8px;background:var(--bg);border:1px solid var(--border-strong)}
+.local-work-area{padding:0 16px;border-bottom:1px solid var(--border)}
+.local-work .profile-tools{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0;margin:0;border:0}
+@media(max-width:999px){#rail .direct-report-tools>ul{position:static;min-width:0;width:100%}}
+
+/* Canonical navigation reuses the report's typography and the existing mobile modal. */
+.canonical-nav{display:none!important}.canonical-shell .legacy-nav,.canonical-shell .local-work-area{display:none}
+.canonical-shell #settings-local-tools .local-work-area{display:block;padding:0;border:0}
+.canonical-shell .canonical-nav{display:block!important}.canonical-shell .canonical-nav ul{display:grid;gap:4px}
+.canonical-shell .canonical-nav a{white-space:normal;border:0;border-radius:4px;color:var(--fg)}
+.canonical-shell .canonical-nav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+.context-tabs{display:flex;flex-wrap:wrap;gap:8px}.context-tabs a{display:flex;align-items:center;min-height:44px;padding:8px 12px;border-bottom:3px solid transparent;color:var(--fg)}
+.context-tabs a[aria-current=page]{border-color:var(--accent);background:var(--accent-subtle);font-weight:700;text-decoration:none}
+.canonical-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0}.canonical-tools label{font-weight:600}.canonical-tools p{flex-basis:100%}
+.canonical-tools select{min-width:0;max-width:100%;min-height:44px;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);padding:8px}
+#settings-local-tools .profile-tools{margin:0;gap:8px}.canonical-shell #main{max-width:1440px}#audio-volume{width:min(100%,320px);min-height:44px}
+@media(min-width:1000px){.canonical-shell .shell{display:grid;grid-template-columns:220px minmax(0,1fr)}.canonical-shell .rail{height:100dvh;position:sticky;top:0;padding:16px 12px;display:flex;flex-direction:column;align-items:stretch;gap:16px;border-right:1px solid var(--border);border-bottom:0}.canonical-shell .rail .rail-foot{margin: auto 0 0}.canonical-shell .rail .wordmark{padding:0 12px}.canonical-shell #pwa-status{left:232px}}
+@media(max-width:699px){.context-tabs a{flex:1 1 100px;justify-content:center}.canonical-tools>*{max-width:100%}.canonical-tools select{width:100%}}
+
+.canonical-tools server-workspace{flex-basis:100%;margin:4px 0}
+
+#sample-scenario>summary,.report-options>summary,#save-options>summary{min-height:44px;cursor:pointer;padding:8px 0;font-weight:600}
+.report-options{margin-block:8px}#secondary-report-controls{display:grid;gap:8px}#save-options label{display:block;margin-block:8px}
+
+.canonical-shell #check .focal{display:none}#sample-scenario:not([open]){padding:0 12px}.report-options>button{margin:8px 8px 8px 0}

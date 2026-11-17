@@ -9,13 +9,27 @@ The local serving process exposes these routes at `http://127.0.0.1:3004`:
 | Route | Working capability |
 | --- | --- |
 | `/` | Deterministic report checks, repairs, draft export and public issue import |
-| `/ablation?report=WP-20770` | Actual step-removal diff and original archived model answers |
+| `/ablation` or `/ablation?report=WP-20770` | Current-tab or public-sample original/modified comparison, actual completeness findings, local copy, and separate archived model answers |
 | `/statistics` | Existing condition comparison and exact two-sided McNemar analysis |
 | `/system` | Actual `/healthz`, `/readyz`, `/api/system`, and `/metrics` responses |
 
 GitHub Pages retains the existing hash landing and routes (`#/`, `#/check`, `#/research`, and others). It has no local health API: unavailable endpoint messages on System are expected when using a static host. Archived model tier is recorded as quick; exact model version and prompt revision were not recorded. Condition comparisons are not a controlled comparison of different models, human validation remains incomplete, and p-values are exploratory and unadjusted.
 
-Frontend verification: `npm test`, `npm run test:e2e`, and `npm run test:direct`. Use `TB_BASE_URL=http://127.0.0.1:3004 npm run test:direct` against the running container. See the [runtime verification summary](docs/verification/runtime.md) for focused server checks and portable setup; local run artifacts are not published. Newsreader and Inter are bundled locally under their included OFL licences.
+Frontend verification: `npm test`, `npm run test:e2e`, `npm run test:direct`, and `npm run test:repair`. Use `CUEREPORT_BASE_URL=http://127.0.0.1:3004 npm run test:repair` (or `test:direct`) against the running container. See the [runtime verification summary](docs/verification/runtime.md) for focused server checks and portable setup; local run artifacts are not published. Newsreader and Inter are bundled locally under their included OFL licences.
+
+## Try the interactive comparison
+
+On `/`, choose **Original reproduction steps** and **Run Interactive Demo**. This loads the verified WordPress #20770 excerpt and runs the existing offline checker: six of six required details are recognized. Choose **Steps removed** to run the same checker on the existing study variant: four of six are recognized. These counts describe recognized report details, not AI actionability or successful reproduction.
+
+Choose **Compare current report** to inspect the original and modified text side by side. Toggle step removal, restore the original, or copy the modified text locally. Both outputs use the same deterministic rules; unchanged findings remain unchanged. The original editor is preserved. **Removed lines and methods** explains exact removal boundaries. **Archived model answers** is separate: edited/private reports have no matching archived response, and this comparison has no live provider. Missing environment details remain missing.
+
+Guest drafts recover only in their own tab after reload. **Recover previous device draft** explicitly imports an older local backup without deleting it. Optional local profiles, named saved work, and encrypted backups remain available. Browser session storage and local profile records are plain text; closing a tab can discard its unsaved session. Save or export work you need to retain.
+
+**Copy link** shares only an unchanged verified public sample ID. Private and edited reports use clipboard/Markdown exports. Their GitHub handoff opens a validated bare new-issue URL; paste the copied draft yourself. Legacy report-text links still import into the current tab, then the current address is scrubbed. An incoming URL already retained by another browser or external history cannot be recalled. The workflow helper emits source-only links for explicitly public issues and no composer link for private or unknown repository visibility. Nothing is sent to GitHub or a model by either demo scenario.
+
+The checker bounds recognition to 64,000 report characters. A 50 KiB report shows its measured size; oversized input remains editable with an explicit partial-check/autosave warning. If the legacy Claude integration is present, a long report requires confirmation before sending its first 6,000 characters. Missing provider access leaves offline checks available.
+
+The cached run has 75 source reports and valid paired subsets: 32 step-removal pairs (12 changes toward missing evidence, 1 toward sufficient evidence; exact two-sided McNemar p = 0.00341796875), 49 environment-removal pairs, and 53 combined-removal pairs. `test/paired-evidence.test.cjs` independently validates archived answer schemas, pair counts and binomial tails. The study data, removal rules and saved answers are unchanged; no significance or model-performance claim follows from these exploratory results.
 
 **A report checker for Android accessibility bug reports, and the small pilot study behind it.**
 
@@ -272,8 +286,8 @@ node scripts/build.js                  # rebuild docs/index.html after changing 
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-node scripts/run-triage.mjs --model claude-haiku-5-5 --limit 5    # a quick trial on 5 reports
-node scripts/run-triage.mjs --model claude-haiku-5-5              # the full pilot (187 calls)
+node scripts/run-triage.mjs --model YOUR_CONFIGURED_MODEL --limit 5    # a quick trial on 5 reports
+node scripts/run-triage.mjs --model YOUR_CONFIGURED_MODEL              # the full configured pilot; provider usage and retries vary
 node scripts/analyze.js <run id printed above>
 ```
 
@@ -424,3 +438,20 @@ node test/pwa-launch.cjs
 These tests use installed Chrome on macOS or Playwright’s installed browser elsewhere; `CHROME_PATH` overrides the executable. Receiver fixtures exercise owned local protocols, not a deployed cloud service. Print checks verify the app's print document and Chromium PDF generation; they do not automate an operating-system print dialog.
 
 Local verification: [2026-11-15 checks and limits](docs/verification/release-2026-11-15.md).
+
+## November 16 local verification
+
+PASS: `npm test` (including 20 named launch tests with zero skips, 38 sync-protocol checks and three independently verified archived paired comparisons); `npm run test:e2e` (all five browser programs, 370 logged assertions, plus the bounded fake-provider consent scenario); `npm run test:repair` (14 browser groups); `npm run test:direct` (four routes, three widths, 12 axe scans). Profile, encrypted backup, owned HTTP sync, ecosystem, workstation and PWA browser scripts also passed. The PWA run exercised 16 recorded scenarios with no unexpected console errors; flagship checks passed at 1440, 390 and 320 px. These are local frontend results. The actual production container, live provider and physical-device/screen-reader acceptance are separate checks; no live AI request or certification is claimed.
+
+### Canonical local workspaces
+
+The local server exposes `/overview` (also `/`), `/workbench`, `/reports` and `/settings`. The original checker, step-removal rules, public dataset and frozen research results are unchanged. The optional same-origin persistence runtime stores explicitly saved, versioned browser-computed reports, comparisons and evaluation summaries in an owned workspace. An evaluation save also retains the full existing CSV export as an owned artifact, identified by SHA-256; snapshots preserve that source evidence. Guest sessions and optional server accounts live in Settings. Local browser profiles and encrypted backups remain separate legacy tools; importing a previous browser draft is explicit and retains the original copy.
+
+Server storage is bounded: requests are 64 KiB UTF-8. Large Unicode drafts can fit the editor while exceeding this limit; they remain unsynced and available for local Markdown export. Reconnection never silently uploads. Snapshots use the local persistent volume, not an independent device backup. Private app links contain no report bodies or credentials; public fixture IDs remain usable. GitHub handoff opens the validated repository's bare issue page for explicit paste.
+
+Sound cues are optional, off each visit, and require a user gesture. Settings provides enable/mute and volume; Alt+Shift+M works outside editors without Ctrl/Cmd. See [AUDIO.md](AUDIO.md) for the terminal event contract and limitations. Automated tests instrument actual WebAudio graph calls without autoplay bypass flags; no human listening or screen-reader certification is claimed.
+
+
+### Private server workspaces
+
+The optional HTTP image adds owned saved runs, source artifacts, durable guest/account sessions and real workspace snapshots. Explicit Save controls uploads; domain checks stay in the browser. See [server configuration, API bounds and recovery](SERVER_WORKSPACES.md). Static Pages remains usable without these APIs.

@@ -20,7 +20,7 @@
     "analyze": "node scripts/analyze.js",
     "agreement": "node scripts/agreement.js",
     "triage": "node scripts/run-triage.mjs",
-    "test": "node test/core.test.js && node test/checker.test.js && node test/draft-evidence.test.js && node test/workflow.test.js && node test/talkback-action.test.js && node test/copy.test.js && node test/issue-form.test.js && node test/version.test.js && node test/redos.test.js && node test/triage-call.test.js && node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js && npm run test:launch-unit && node test/sync-provider.test.cjs",
+    "test": "node test/core.test.js && node test/paired-evidence.test.cjs && node test/checker.test.js && node test/draft-evidence.test.js && node test/workflow.test.js && node test/talkback-action.test.js && node test/copy.test.js && node test/issue-form.test.js && node test/version.test.js && node test/redos.test.js && node test/triage-call.test.js && node scripts/check.js --quiet && node scripts/pair-review.js && node scripts/build.js && npm run test:launch-unit && node test/sync-provider.test.cjs && npm run test:audio",
     "test:e2e": "node test/e2e.js && node test/checker.e2e.js && node test/offline.e2e.js && node test/noscript.e2e.js && node test/routes.e2e.js",
     "screenshots": "node test/checker.e2e.js --shots",
     "icons": "node scripts/icons.js",
@@ -28,7 +28,11 @@
     "test:product": "node test/product-flow.cjs",
     "test:launch-unit": "node --test test/local-profile.test.cjs test/storage-migration.test.cjs test/platform-checks.test.cjs test/encrypted-backup.test.cjs test/report-import.test.cjs",
     "test:pwa": "node test/pwa-launch.cjs",
-    "test:direct": "node test/direct-routes.e2e.cjs"
+    "test:direct": "node test/direct-routes.e2e.cjs && node test/pages-links.e2e.cjs",
+    "test:repair": "node test/product-repair.e2e.cjs",
+    "test:audio": "node --test test/audio.test.cjs",
+    "test:canonical": "node test/canonical.e2e.cjs",
+    "test:private-crypto": "node test/private-crypto.e2e.cjs"
   },
   "devDependencies": {
     "axe-core": "^4.10.0",

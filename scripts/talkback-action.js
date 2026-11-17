@@ -18,12 +18,12 @@ const body = typeof issue.body === "string" ? issue.body : "";
 const withinCheckerLimit = issue.title.length <= 1000 && body.length <= T.MAX_INPUT;
 const analysis = withinCheckerLimit ? T.analyze({ title: issue.title, body }) : null;
 const missing = analysis ? analysis.items.filter((x) => x.required && (x.status === "partial" || x.status === "notfound")).map((x) => x.key) : [];
-const composerState = withinCheckerLimit ? T.encodeState(issue.title, body) : null;
+const publicSource = event.repository?.private === false && typeof issue.html_url === "string" && /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/issues\/[1-9][0-9]*$/.test(issue.html_url) ? issue.html_url : null;
 const output = {
   number: issue.number,
   checked: !!analysis,
   missing,
-  composer: composerState ? "https://anirudh763.github.io/talkback-triage-pilot/#/check?text=" + composerState : "",
+  composer: publicSource && withinCheckerLimit ? "https://anirudh763.github.io/talkback-triage-pilot/#/check?source=" + encodeURIComponent(publicSource) : "",
 };
 if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT,
   "number=" + output.number + "\nchecked=" + output.checked + "\nmissing=" + output.missing.join(",") + "\ncomposer=" + output.composer + "\n");

@@ -218,8 +218,9 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await page.fill("#in-title", title);
     await page.fill("#in-body", body);
     await page.waitForTimeout(250);
-    await page.click("#btn-link");
-    await page.waitForFunction(() => location.hash.includes("?text="));
+    const code = await page.evaluate(({title,body}) => window.TBC.encodeState(title,body), {title,body});
+    await goHash(page, "#/check?text=" + code);
+    await page.waitForFunction(() => !location.hash.includes("?text="));
     if (change === "title") {
       // Legacy shared links must open normally, then detach when their text is edited.
       const legacy = (await page.evaluate(() => location.hash)).replace("#/check", "#check");
@@ -296,7 +297,7 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     const code = await page.evaluate(() => window.TBC.encodeState("Old text link", "1. Turn on TalkBack"));
     await ctx.close();
     const t = await open({}, "#check?text=" + code);
-    ok((await t.page.evaluate(() => location.hash)) === "#/check?text=" + code && (await t.page.inputValue("#in-title")) === "Old text link", "#check?text= links still restore the pasted text");
+    ok((await t.page.evaluate(() => location.hash)) === "#/check" && (await t.page.inputValue("#in-title")) === "Old text link", "legacy text links import then scrub the address");
     await t.ctx.close();
     for (const [old, now, h1] of [["#pilot", "#/research", "Results"], ["#label", "#/research/labels", "Label reports"], ["#about", "#/research/methods", "Methods"]]) {
       const o = await open({}, old);
@@ -344,21 +345,23 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
   await guard("local draft autosave", async () => {
     const { ctx, page } = await open();
     await page.fill("#in-title", "Saved offline title"); await page.fill("#in-body", "A local draft with no credentials.");
-    await page.waitForFunction(() => localStorage.getItem("cuereport_guest_draft_v1") && document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
+    await page.waitForFunction(() => sessionStorage.getItem("cuereport_guest_draft_v1") && document.querySelector("#draft-save-status").textContent === "Draft saved in this tab.");
     const reopened = await ctx.newPage(); await reopened.goto(base + "#/check"); await reopened.waitForSelector("#checklist li", { state: "attached" });
-    ok((await reopened.inputValue("#in-title")) === "Saved offline title" && (await reopened.inputValue("#in-body")) === "A local draft with no credentials.", "versioned local draft restores in a fresh tab");
+    ok((await reopened.inputValue("#in-title")) !== "Saved offline title" && (await reopened.inputValue("#in-body")) !== "A local draft with no credentials.", "fresh tab never silently restores another tab’s private draft");
+    await page.reload();
+    ok((await page.inputValue("#in-title")) === "Saved offline title" && (await page.inputValue("#in-body")) === "A local draft with no credentials.", "the original tab restores its own draft on reload");
     await reopened.fill("#in-title", ""); await reopened.fill("#in-body", "");
     await reopened.waitForTimeout(450);
-    ok(await reopened.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "manually erasing both fields removes the saved copy");
+    ok(await reopened.evaluate(() => sessionStorage.getItem("cuereport_guest_draft_v1") === null), "manually erasing both fields removes the saved copy");
     const erased = await ctx.newPage(); await erased.goto(base + "#/check"); await erased.waitForSelector("#checklist li", { state: "attached" });
     ok((await erased.inputValue("#in-title")) !== "Saved offline title" &&
       (await erased.inputValue("#in-body")) !== "A local draft with no credentials." &&
       !(await erased.textContent("#draft-save-status")).includes("Restored saved draft"), "a fresh tab shows the public sample instead of manually erased report text");
     await erased.close();
     await reopened.fill("#in-title", "Reset this draft");
-    await reopened.waitForFunction(() => document.querySelector("#draft-save-status").textContent === "Draft saved on this device.");
+    await reopened.waitForFunction(() => document.querySelector("#draft-save-status").textContent === "Draft saved in this tab.");
     await reopened.getByRole("button", { name: "Reset draft" }).click();
-    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "Reset draft clears fields and removes local copy");
+    ok((await reopened.inputValue("#in-title")) === "" && await reopened.evaluate(() => sessionStorage.getItem("cuereport_guest_draft_v1") === null), "Reset draft clears fields and removes local copy");
     await ctx.close();
   });
   for (const [name, errorName, message] of [["blocked", "SecurityError", /storage is blocked/], ["quota", "QuotaExceededError", /storage is full/]]) { await guard(name + " storage", async () => {
@@ -377,12 +380,12 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     await ctx.close();
   }); }
   await guard("malformed draft storage", async () => {
-    const ctx = await browser.newContext(); await ctx.addInitScript(() => localStorage.setItem("cuereport_guest_draft_v1", "{bad"));
+    const ctx = await browser.newContext(); await ctx.addInitScript(() => sessionStorage.setItem("cuereport_guest_draft_v1", "{bad"));
     const page = await ctx.newPage(); await page.goto(base + "#/check"); await page.waitForSelector("#checklist li", { state: "attached" });
     await page.waitForFunction(() => /invalid or too large/.test(document.querySelector("#draft-save-status").textContent));
     ok(/invalid or too large/.test(await page.textContent("#draft-save-status")), "malformed saved JSON is ignored with a status");
     await page.getByRole("button", { name: "Reset draft" }).click();
-    ok(await page.evaluate(() => localStorage.getItem("cuereport_guest_draft_v1") === null), "reset removes malformed data");
+    ok(await page.evaluate(() => sessionStorage.getItem("cuereport_guest_draft_v1") === null), "reset removes malformed data");
     await ctx.close();
   });
   await guard("strict GitHub issue import", async () => {
@@ -432,15 +435,15 @@ const overflow = (page) => page.evaluate(() => document.scrollingElement.scrollW
     ok((await page.inputValue("#in-title")) === "Typed after request" && /cancelled because the report changed/.test(await page.textContent("#import-status")), "a stale request cannot replace newer user text");
     await ctx.close();
   });
-  await guard("prefilled GitHub link and length fallback", async () => {
+  await guard("explicit GitHub handoff and private-text boundary", async () => {
     const { ctx, page } = await open({}, "#/check?report=AP-3563"); await page.locator("#btn-review").click();
     const link = page.locator("#btn-open-github-issue");
     await page.waitForFunction(() => document.querySelector("#btn-open-github-issue").href.startsWith("https://github.com/"));
     const href = await link.getAttribute("href");
-    ok(!(await link.isHidden()) && /^https:\/\/github\.com\/AntennaPod\/AntennaPod\/issues\/new\?/.test(href || ""), "sample repository gets a user-initiated prefilled new-issue link (" + (href || "no href") + ")");
+    ok(!(await link.isHidden()) && /^https:\/\/github\.com\/AntennaPod\/AntennaPod\/issues\/new$/.test(href || ""), "sample repository gets a bare, explicit new-issue handoff (" + (href || "no href") + ")");
     await goHash(page, "#/check"); await page.fill("#in-title", "Large report"); await page.fill("#in-body", "x".repeat(8000)); await page.waitForTimeout(400); await goHash(page, "#/draft");
-    ok(await link.isHidden() && /longer than 7,000/.test(await page.textContent("#github-link-status")) &&
-      await page.locator("#btn-copy-tpl").isVisible() && await page.locator("#btn-dl-tpl").isVisible(), "overlong prefill is disabled while Copy and Download stay available");
+    ok(!(await link.isHidden()) && (await link.getAttribute("href")) === "https://github.com/AntennaPod/AntennaPod/issues/new" && /Private text is never included/.test(await page.textContent("#github-link-status")) &&
+      await page.locator("#btn-copy-tpl").isVisible() && await page.locator("#btn-dl-tpl").isVisible(), "custom report has a bare GitHub handoff while Copy and Download stay available");
     await ctx.close();
   });
 
